@@ -1,7 +1,73 @@
 @include('layouts.head')
+<!-- Tambahkan CSS ini di bagian head atau file CSS Anda -->
+<style>
+    #pageLoader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    /* Deteksi dark mode dari awal menggunakan CSS */
+    html.dark #pageLoader,
+    body.dark #pageLoader,
+    html[data-mode="dark"] #pageLoader,
+    body[data-mode="dark"] #pageLoader {
+        background-color: #18181b;
+    }
+
+    #pageLoader.dark-mode {
+        background-color: #18181b;
+    }
+
+    #pageLoader.hide {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .loader-spinner {
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid #3b82f6;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+
+    html.dark .loader-spinner,
+    body.dark .loader-spinner,
+    html[data-mode="dark"] .loader-spinner,
+    body[data-mode="dark"] .loader-spinner,
+    #pageLoader.dark-mode .loader-spinner {
+        border: 4px solid #3f3f46;
+        border-top: 4px solid #3b82f6;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 
 <body
     class="text-base bg-body-bg text-body font-public dark:text-zink-100 dark:bg-zink-800 group-data-[skin=bordered]:bg-body-bordered group-data-[skin=bordered]:dark:bg-zink-700">
+
+    <div id="pageLoader">
+        <div class="loader-spinner"></div>
+    </div>
+
     <div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
         @include('layouts.sidebar')
         @include('layouts.topbar')
@@ -106,7 +172,8 @@
                                         class="transition-all duration-150 ease-linear text-slate-500 dark:text-zink-200 hover:text-red-500 dark:hover:text-red-500"><i
                                             data-lucide="x" class="size-4"></i></button>
                                 </div>
-                                <a href="#!" class="transition-all duration-200 ease-linear hover:text-custom-500">
+                                <a href="#!"
+                                    class="transition-all duration-200 ease-linear hover:text-custom-500">
                                     <h6 class="mb-1 text-15">Blive Printed Men Round Neck</h6>
                                 </a>
                                 <div class="flex items-center mb-3">
@@ -442,6 +509,29 @@
         </div>
     </div>
 
+    <script>
+        // Fungsi untuk menyembunyikan loader
+        function hideLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.classList.add('hide');
+                // Hapus elemen setelah animasi selesai
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // Sembunyikan loader setelah semua resource (termasuk gambar) selesai dimuat
+        window.addEventListener('load', function() {
+            hideLoader();
+        });
+
+        // Fallback: sembunyikan loader setelah 3 detik jika load event tidak terpicu
+        setTimeout(function() {
+            hideLoader();
+        }, 3000);
+    </script>
     @include('layouts.script')
 </body>
 

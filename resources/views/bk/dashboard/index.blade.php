@@ -21,16 +21,34 @@
                 </ul>
             </div>
 
-            {{-- Tampilkan pesan sukses/error --}}
-            @if (session('success'))
-                <div class="p-4 mb-4 text-green-700 bg-green-100 border border-green-300 rounded">
-                    {{ session('success') }}
+            {{-- Alert untuk error --}}
+            @if ($errors->has('error'))
+                <div
+                    class="relative p-3 pr-12 text-sm text-red-500 border border-transparent rounded-md bg-red-50 dark:bg-red-400/20 mb-4">
+                    <button
+                        class="absolute top-0 bottom-0 right-0 p-3 text-red-200 transition hover:text-red-500 dark:text-red-400/50 dark:hover:text-red-500"
+                        onclick="this.parentElement.style.display='none'">
+                        <i data-lucide="x" class="h-5"></i>
+                    </button>
+                    <div>
+                        <span class="font-bold">⚠️ Peringatan!</span>
+                        {{ $errors->first('error') }}
+                    </div>
                 </div>
             @endif
 
-            @if (session('error'))
-                <div class="p-4 mb-4 text-red-700 bg-red-100 border border-red-300 rounded">
-                    {{ session('error') }}
+            {{-- Alert untuk success --}}
+            @if (session('success') && !$errors->has('error'))
+                <div
+                    class="relative p-3 pr-12 text-sm text-green-500 border border-transparent rounded-md bg-green-50 dark:bg-green-400/20 mb-4">
+                    <button
+                        class="absolute top-0 bottom-0 right-0 p-3 text-green-200 transition hover:text-green-500 dark:text-green-400/50 dark:hover:text-green-500"
+                        onclick="this.parentElement.style.display='none'">
+                        <i data-lucide="x" class="h-5"></i>
+                    </button>
+                    <div>
+                        <span class="font-bold">✅ Berhasil!</span> {{ session('success') }}
+                    </div>
                 </div>
             @endif
 
