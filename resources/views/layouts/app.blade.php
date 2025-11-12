@@ -513,7 +513,7 @@
         // Fungsi untuk menyembunyikan loader
         function hideLoader() {
             const loader = document.getElementById('pageLoader');
-            if (loader) {
+            if (loader && !loader.classList.contains('hide')) {
                 loader.classList.add('hide');
                 // Hapus elemen setelah animasi selesai
                 setTimeout(() => {
@@ -522,16 +522,74 @@
             }
         }
 
-        // Sembunyikan loader setelah semua resource (termasuk gambar) selesai dimuat
-        window.addEventListener('load', function() {
-            hideLoader();
-        });
+        // Cek apakah semua resource sudah dimuat
+        function checkIfAllLoaded() {
+            // Cek document ready state
+            if (document.readyState === 'complete') {
+                // Tunggu sebentar untuk memastikan rendering selesai
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        hideLoader();
+                    });
+                });
+            }
+        }
 
-        // Fallback: sembunyikan loader setelah 3 detik jika load event tidak terpicu
+        // Event listener untuk berbagai tahap loading
+        if (document.readyState === 'complete') {
+            // Jika sudah complete saat script dijalankan
+            checkIfAllLoaded();
+        } else {
+            // Event ketika DOM selesai di-parse
+            document.addEventListener('DOMContentLoaded', function() {
+                // Cek apakah ada gambar yang perlu dimuat
+                const images = document.querySelectorAll('img');
+                let imagesLoaded = 0;
+                const totalImages = images.length;
+
+                if (totalImages === 0) {
+                    // Tidak ada gambar, langsung hide setelah DOM ready
+                    checkIfAllLoaded();
+                } else {
+                    // Tunggu semua gambar selesai dimuat
+                    images.forEach(img => {
+                        if (img.complete) {
+                            imagesLoaded++;
+                        } else {
+                            img.addEventListener('load', () => {
+                                imagesLoaded++;
+                                if (imagesLoaded === totalImages) {
+                                    checkIfAllLoaded();
+                                }
+                            });
+                            img.addEventListener('error', () => {
+                                imagesLoaded++;
+                                if (imagesLoaded === totalImages) {
+                                    checkIfAllLoaded();
+                                }
+                            });
+                        }
+                    });
+
+                    // Jika semua gambar sudah loaded dari cache
+                    if (imagesLoaded === totalImages) {
+                        checkIfAllLoaded();
+                    }
+                }
+            });
+
+            // Event ketika semua resource (termasuk CSS, font, dll) selesai dimuat
+            window.addEventListener('load', function() {
+                checkIfAllLoaded();
+            });
+        }
+
+        // Fallback: sembunyikan loader setelah 5 detik untuk mencegah stuck
         setTimeout(function() {
             hideLoader();
-        }, 3000);
+        }, 5000);
     </script>
+
     @include('layouts.script')
 </body>
 

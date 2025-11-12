@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\RefStudentAcademicYear;
 use App\Models\P_Violations;
 use App\Models\P_Recaps;
+use App\Models\RefClass;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -18,20 +19,131 @@ class SuperAdminController extends Controller
         // Ambil tahun akademik aktif
         $activeAcademicYear = P_Configs::getActiveAcademicYear();
 
-        // Query dari RefStudentAcademicYear sebagai base
-        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
-            ->with([
-                'recaps' => function ($query) {
-                    $query->orderBy('created_at', 'desc');
-                },
-                'class'
-            ])
-            ->get();
+        if (!$activeAcademicYear) {
+            return view('superadmin.dashboard.index', [
+                'totalViolations' => 0,
+                'studentsWithoutViolations' => 0,
+                'topClass' => null,
+                'topStudent' => null,
+                'mostFrequentViolation' => null
+            ]);
+        }
+
+        // Normalisasi format academic_year
+        $academicYear = str_replace('-', '/', $activeAcademicYear->academic_year);
+
+        // 1. Total Pelanggaran (hanya yang verified)
+        $totalViolations = P_Recaps::where('status', 'verified')->count();
+
+        // 2. Siswa Tanpa Pelanggaran
+        // Ambil semua siswa aktif di tahun akademik ini
+        $totalActiveStudents = RefStudentAcademicYear::where('ref_student_academic_years.academic_year', $academicYear)->count();
+
+        // Ambil jumlah siswa yang memiliki pelanggaran verified
+        $studentsWithViolations = P_Recaps::where('status', 'verified')
+            ->distinct('ref_student_id')
+            ->count('ref_student_id');
+
+        $studentsWithoutViolations = $totalActiveStudents - $studentsWithViolations;
+
+        // 3. Kelas dengan Poin Terbanyak
+        $topClass = RefStudentAcademicYear::where('ref_student_academic_years.academic_year', $academicYear)
+            ->join('ref_classes', 'ref_student_academic_years.class_id', '=', 'ref_classes.id')
+            ->join('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
+            ->leftJoin('p_recaps', function ($join) {
+                $join->on('ref_students.id', '=', 'p_recaps.ref_student_id')
+                    ->where('p_recaps.status', '=', 'verified');
+            })
+            ->leftJoin('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
+            ->select(
+                'ref_classes.name as class_name',
+                DB::raw('COALESCE(SUM(p_violations.point), 0) as total_points')
+            )
+            ->groupBy('ref_classes.id', 'ref_classes.name')
+            ->orderBy('total_points', 'desc')
+            ->first();
+
+        // 4. Siswa dengan Poin Terbanyak
+        $topStudent = RefStudentAcademicYear::where('ref_student_academic_years.academic_year', $academicYear)
+            ->join('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
+            ->join('ref_classes', 'ref_student_academic_years.class_id', '=', 'ref_classes.id')
+            ->leftJoin('p_recaps', function ($join) {
+                $join->on('ref_students.id', '=', 'p_recaps.ref_student_id')
+                    ->where('p_recaps.status', '=', 'verified');
+            })
+            ->leftJoin('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
+            ->select(
+                'ref_students.full_name as student_name',
+                'ref_students.student_number as nis',
+                'ref_classes.name as class_name',
+                DB::raw('COALESCE(SUM(p_violations.point), 0) as total_points')
+            )
+            ->groupBy('ref_students.id', 'ref_students.full_name', 'ref_students.student_number', 'ref_classes.name')
+            ->orderBy('total_points', 'desc')
+            ->first();
+
+        // 5. Pelanggaran Paling Sering
+        $mostFrequentViolation = P_Recaps::where('status', 'verified')
+            ->join('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
+            ->join('p_categories', 'p_violations.p_category_id', '=', 'p_categories.id')
+            ->select(
+                'p_violations.name as violation_name',
+                'p_violations.point',
+                'p_categories.name as category_name',
+                DB::raw('COUNT(p_recaps.id) as violation_count')
+            )
+            ->groupBy(
+                'p_violations.id',
+                'p_violations.name',
+                'p_violations.point',
+                'p_categories.name'
+            )
+            ->orderBy('violation_count', 'desc')
+            ->first();
+
+        return view('superadmin.dashboard.index', compact(
+            'totalViolations',
+            'studentsWithoutViolations',
+            'topClass',
+            'topStudent',
+            'mostFrequentViolation'
+        ));
+    }
+    public function studentData(Request $request)
+    {
+        // Ambil tahun akademik aktif
+        $activeAcademicYear = P_Configs::getActiveAcademicYear();
+
+        // Ambil semua kelas untuk filter
+        $classes = RefClass::orderBy('academic_level', 'asc')->get();
 
         // Ambil semua violations dengan sorting
         $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 
-        return view('superadmin.dashboard.index', compact('studentAcademicYears', 'vals', 'activeAcademicYear'));
+        // Jika ada filter kelas, ambil data siswa
+        $studentAcademicYears = collect();
+        $selectedClassId = $request->input('class_id');
+
+        if ($selectedClassId) {
+            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+                ->where('class_id', $selectedClassId)
+                ->with([
+                    'student',
+                    'recaps' => function ($query) {
+                        $query->orderBy('created_at', 'desc');
+                    },
+                    'class'
+                ])
+                ->get();
+        }
+
+        return view('superadmin.student-data.index', compact(
+            'studentAcademicYears',
+            'vals',
+            'activeAcademicYear',
+            'classes',
+            'selectedClassId'
+        ));
     }
 
     public function store(Request $request, $studentId)

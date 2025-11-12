@@ -35,6 +35,7 @@ Route::prefix('bk')->name('bk.')->group(function () {
 
 Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
+    Route::get('/student-data', [SuperAdminController::class, 'studentData'])->name('student-data');
     Route::get('/-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
     // routes/web.php
     Route::post('/superadmin/store/{student}', [SuperAdminController::class, 'store'])

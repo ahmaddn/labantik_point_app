@@ -85,38 +85,19 @@ class UserController extends Controller
             $appType = $role->pivot->app_type ?? null;
 
             switch (strtolower($role->code)) {
-
-
-
-                case 'teacher':
-                case 'guru':
+                case 'kesiswaan':
                     return '/kesiswaan/dashboard';
 
-                case 'bk':
                 case 'guru-bk':
                     return '/bk/dashboard';
 
-                case 'wakel':
-                case 'wal':
-                    return '/student/dashboard';
-
-                case 'admin':
                 case 'super-admin':
                     return '/superadmin/dashboard';
+
+                case 'guru':
+                    return '/guru/dashboard';
             }
         }
-
-        // Fallback: determine by profile type
-        if ($employee) {
-            return '/employee/dashboard';
-        }
-
-        if ($student) {
-            return '/student/dashboard';
-        }
-
-        // Default fallback
-        return '/dashboard';
     }
 
     /**

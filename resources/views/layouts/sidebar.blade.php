@@ -179,6 +179,41 @@ if (count($segments) > 0 && in_array($segments[0], ['bk', 'kesiswaan', 'superadm
                 @endif
                 @if ($routePrefix === 'superadmin.')
                     <li class="relative group-data-[layout=horizontal]:shrink-0 group/sm">
+                        <a href="{{ route($routePrefix . 'student-data') }}"
+                            class="relative flex items-center ltr:pl-3 rtl:pr-3 ltr:pr-5 rtl:pl-5 mx-3 my-1 group/menu-link
+              text-vertical-menu-item-font-size font-normal transition-all duration-75 ease-linear rounded-md py-2.5
+              text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover
+              [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active
+              group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark
+              group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500
+              group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600
+              group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark
+              {{ request()->routeIs($routePrefix . 'student-data') ? 'active' : '' }}">
+
+                            <span
+                                class="min-w-[1.75rem] group-data-[sidebar-size=sm]:h-[1.75rem] inline-block text-start text-[16px]
+                     group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="users-round"
+                                    class="h-4 group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5 transition group-hover/menu-link:animate-icons
+                      fill-slate-100 group-hover/menu-link:fill-blue-200
+                      group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600
+                      group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand
+                      group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern
+                      group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark
+                      group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20
+                      group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20
+                      group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand
+                      group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern
+                      group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2"></i>
+                            </span>
+
+                            <span
+                                class="group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10 align-middle
+                     group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:hidden"
+                                data-key="t-student-data">Data Siswa</span>
+                        </a>
+                    </li>
+                    <li class="relative group-data-[layout=horizontal]:shrink-0 group/sm">
                         <a href="{{ route($routePrefix . 'confirm-recaps') }}"
                             class="relative flex items-center ltr:pl-3 rtl:pr-3 ltr:pr-5 rtl:pl-5 mx-3 my-1 group/menu-link
               text-vertical-menu-item-font-size font-normal transition-all duration-75 ease-linear rounded-md py-2.5

@@ -6,11 +6,11 @@
 
             <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
                 <div class="grow">
-                    <h5 class="text-16">Dashboard Super Admin</h5>
+                    <h5 class="text-16">Dashboard Pelanggaran</h5>
                 </div>
                 <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
                     <li
-                        class="relative before:content-['\ea54'] before:font-remix ltr:before:-right-1 rtl:before:-left-1  before:absolute before:text-[18px] before:-top-[3px] ltr:pr-4 rtl:pl-4 before:text-slate-400 dark:text-zink-200">
+                        class="relative before:content-['\ea54'] before:font-remix ltr:before:-right-1 rtl:before:-left-1 before:absolute before:text-[18px] before:-top-[3px] ltr:pr-4 rtl:pl-4 before:text-slate-400 dark:text-zink-200">
                         <a href="#!" class="text-slate-400 dark:text-zink-200">Dashboards</a>
                     </li>
                     <li class="text-slate-700 dark:text-zink-100">
@@ -18,261 +18,116 @@
                     </li>
                 </ul>
             </div>
-            {{-- Alert untuk error --}}
-            @if ($errors->has('error'))
+
+            <div class="grid grid-cols-12 gap-x-5">
+                <!-- Total Pelanggaran -->
                 <div
-                    class="relative p-3 pr-12 text-sm text-red-500 border border-transparent rounded-md bg-red-50 dark:bg-red-400/20 mb-4">
-                    <button
-                        class="absolute top-0 bottom-0 right-0 p-3 text-red-200 transition hover:text-red-500 dark:text-red-400/50 dark:hover:text-red-500"
-                        onclick="this.parentElement.style.display='none'">
-                        <i data-lucide="x" class="h-5"></i>
-                    </button>
-                    <div>
-                        <span class="font-bold">⚠️ Peringatan!</span>
-                        {{ $errors->first('error') }}
-
-                        {{-- Tampilkan detail poin jika ada --}}
-                        @if (session('current_total_points') !== null)
-                            <div class="mt-2 text-xs bg-red-100 dark:bg-red-500/10 p-2 rounded border-l-4 border-red-300">
-                                <div class="font-semibold mb-1">📊 Detail Poin:</div>
-
-                                {{-- Poin saat ini --}}
-                                <div class="mb-1">
-                                    • <strong>Total poin saat ini:</strong>
-                                    {{ session('current_total_points') }} poin
-                                    <div class="ml-4 text-xs opacity-75">
-                                        - Terverifikasi:
-                                        {{ session('current_verified_points') ?? 0 }}
-                                        poin<br>
-                                        - Pending:
-                                        {{ session('current_pending_points') ?? 0 }} poin
-                                    </div>
-                                </div>
-
-                                {{-- Poin yang akan ditambah --}}
-                                @if (session('new_points') > 0)
-                                    <div class="mb-1">
-                                        • <strong>Poin yang akan ditambah:</strong>
-                                        {{ session('new_points') }} poin
-                                    </div>
-                                @endif
-
-                                {{-- Total setelah penambahan (jika ada) --}}
-                                @if (session('total_points_after'))
-                                    <div class="mb-1">
-                                        • <strong>Total setelah penambahan:</strong>
-                                        {{ session('total_points_after') }} poin
-                                    </div>
-                                @endif
-
-                                {{-- Kelebihan poin (jika ada) --}}
-                                @if (session('excess_points'))
-                                    <div class="text-red-600 font-semibold">
-                                        • <strong>Kelebihan:</strong>
-                                        {{ session('excess_points') }} poin dari batas
-                                        maksimal
-                                    </div>
-                                @endif
-
-                                <div class="mt-2 pt-1 border-t border-red-200 dark:border-red-400/30 text-xs opacity-80">
-                                    <strong>Batas maksimal:</strong> 100 poin
-                                </div>
-                            </div>
-                        @endif
+                    class="order-1 md:col-span-6 lg:col-span-4 col-span-12 bg-red-100 dark:bg-red-500/20 card relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="alert-triangle"
+                            class="absolute top-0 stroke-1 size-32 text-red-200/50 dark:text-red-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center bg-red-500 rounded-md size-12 text-15 text-red-50">
+                            <i data-lucide="alert-circle"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2">
+                            <span class="counter-value" data-target="{{ $totalViolations }}">0</span>
+                        </h5>
+                        <p class="text-slate-500 dark:text-slate-200">Total Pelanggaran</p>
                     </div>
                 </div>
-            @endif
 
-            {{-- Alert untuk success --}}
-            @if (session('success') && !$errors->has('error'))
+                <!-- Siswa Tanpa Pelanggaran -->
                 <div
-                    class="relative p-3 pr-12 text-sm text-green-500 border border-transparent rounded-md bg-green-50 dark:bg-green-400/20 mb-4">
-                    <button
-                        class="absolute top-0 bottom-0 right-0 p-3 text-green-200 transition hover:text-green-500 dark:text-green-400/50 dark:hover:text-green-500"
-                        onclick="this.parentElement.style.display='none'">
-                        <i data-lucide="x" class="h-5"></i>
-                    </button>
-                    <div>
-                        <span class="font-bold">✅ Berhasil!</span> {{ session('success') }}
-                        @if (session('verified_points') !== null && session('pending_points') !== null)
-                            <div class="mt-2 text-xs">
-                                • Poin verified: {{ session('verified_points') }}<br>
-                                • Poin pending: {{ session('pending_points') }}<br>
-                                • Total semua poin: {{ session('total_all_points') }}
-                            </div>
-                        @endif
+                    class="order-2 md:col-span-6 lg:col-span-4 col-span-12 bg-green-100 dark:bg-green-500/20 card relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="check-circle"
+                            class="absolute top-0 stroke-1 size-32 text-green-200/50 dark:text-green-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center bg-green-500 rounded-md size-12 text-15 text-green-50">
+                            <i data-lucide="user-check"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2">
+                            <span class="counter-value" data-target="{{ $studentsWithoutViolations }}">0</span>
+                        </h5>
+                        <p class="text-slate-500 dark:text-slate-200">Siswa Tanpa Pelanggaran</p>
                     </div>
                 </div>
-            @endif
 
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="mb-4 text-15">Datatable Siswa</h6>
-                    <table id="hoverableTable" style="width: 100%" class="hover group">
-                        <thead>
-                            <tr>
-                                <th>Aksi</th>
-                                <th>No</th>
-                                <th>Nama Lengkap</th>
-                                <th>NIS</th>
-                                <th>NISN</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Kelas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($studentAcademicYears as $murid)
-                                <tr>
-                                    <td>
-                                        <!-- Tombol buka modal -->
-                                        <button data-modal-target="modal-{{ $murid->id }}" type="button"
-                                            class="flex rounded-full items-center justify-center size-[37.5px] p-0 text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><svg
-                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                                stroke-linecap="round" stroke-linejoin="round"
-                                                class="lucide lucide-chevron-right-icon lucide-chevron-right">
-                                                <path d="m9 18 6-6-6-6" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $murid->student->full_name }}</td>
-                                    <td>{{ $murid->student->student_number }}</td>
-                                    <td>{{ $murid->student->national_identification_number }}</td>
-                                    <td>{{ $murid->student->gender }}</td>
-                                    <td>{{ $murid->class->name ?? '-' }}</td>
-                                </tr>
-
-                                <!-- Modal untuk siswa ini -->
-                                <div id="modal-{{ $murid->id }}" modal-center=""
-                                    class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-                                    <div
-                                        class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
-                                        <div
-                                            class=" flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
-                                            <h5 class="text-16 font-semibold">Tambah Pelanggaran -
-                                                {{ $murid->student->full_name }}
-                                            </h5>
-                                            <button data-modal-close="modal-{{ $murid->id }}"
-                                                class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">✕</button>
-                                        </div>
-
-                                        <div class="p-4 overflow-y-auto" style="height: 475px">
-
-
-                                            <form method="POST"
-                                                action="{{ route('superadmin.violations.store', $murid->id) }}">
-                                                @csrf
-
-
-                                                <div class="flex items-center justify-between mb-3">
-                                                    <h5 class="text-16 font-medium">Pilih Pelanggaran:</h5>
-                                                    <button type="submit"
-                                                        class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-                                                        Submit
-                                                    </button>
-                                                </div>
-
-                                                <!-- Search Input -->
-                                                <div class="mb-4">
-                                                    <input type="text" id="searchViolation-{{ $murid->id }}"
-                                                        placeholder="Cari pelanggaran..."
-                                                        class="w-full px-3 py-2 text-sm border rounded-md border-slate-200 dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:outline-none focus:border-custom-500">
-                                                </div>
-
-                                                <div class="space-y-4" id="violationList-{{ $murid->id }}">
-                                                    @foreach ($vals as $violation)
-                                                        <div class="violation-item"
-                                                            data-violation-name="{{ strtolower($violation->name) }}">
-
-                                                            <div class="ml-2">
-                                                                {{-- Ubah dari sortByDesc ke sortBy --}}
-
-                                                                <div class="flex items-center py-1">
-                                                                    <input type="checkbox" name="violations[]"
-                                                                        value="{{ $violation->id }}"
-                                                                        id="violation_{{ $violation->id }}"
-                                                                        class="border rounded-sm appearance-none cursor-pointer size-4 bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-red-500 checked:border-red-500 dark:checked:bg-red-500 dark:checked:border-red-500 checked:disabled:bg-red-400 checked:disabled:border-red-400">
-                                                                    <label for="violation_{{ $violation->id }}"
-                                                                        class="ml-2 text-sm cursor-pointer select-none">
-                                                                        {{ $violation->name }}
-                                                                        ({{ $violation->point }} poin)
-                                                                    </label>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-
-                                                </div>
-
-                                                <!-- No Results Message -->
-                                                <div id="noResults-{{ $murid->id }}"
-                                                    class="hidden p-4 text-center text-slate-500 dark:text-zink-300">
-                                                    Tidak ada pelanggaran yang ditemukan
-                                                </div>
-
-
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Script untuk fitur search -->
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const searchInput = document.getElementById('searchViolation-{{ $murid->id }}');
-                                        const violationList = document.getElementById('violationList-{{ $murid->id }}');
-                                        const noResults = document.getElementById('noResults-{{ $murid->id }}');
-                                        const violationItems = violationList.querySelectorAll('.violation-item');
-
-                                        searchInput.addEventListener('input', function() {
-                                            const searchTerm = this.value.toLowerCase().trim();
-                                            let visibleCount = 0;
-
-                                            violationItems.forEach(function(item) {
-                                                const violationName = item.getAttribute('data-violation-name');
-
-                                                if (violationName.includes(searchTerm)) {
-                                                    item.style.display = '';
-                                                    visibleCount++;
-                                                } else {
-                                                    item.style.display = 'none';
-                                                }
-                                            });
-
-                                            // Show/hide no results message
-                                            if (visibleCount === 0) {
-                                                noResults.classList.remove('hidden');
-                                            } else {
-                                                noResults.classList.add('hidden');
-                                            }
-                                        });
-                                    });
-                                </script>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <style>
-                        .modal-custom {
-                            width: 700px;
-                            height: 500px;
-                            max-width: 100%;
-                        }
-
-                        @media (max-width: 768px) {
-                            .modal-custom {
-                                width: 95%;
-                                height: auto;
-                                max-height: 90vh;
-                            }
-                        }
-                    </style>
-
+                <!-- Kelas dengan Poin Terbanyak -->
+                <div
+                    class="order-3 md:col-span-6 lg:col-span-4 col-span-12 bg-orange-100 dark:bg-orange-500/20 card relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="users"
+                            class="absolute top-0 stroke-1 size-32 text-orange-200/50 dark:text-orange-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div
+                            class="flex items-center justify-center bg-orange-500 rounded-md size-12 text-15 text-orange-50">
+                            <i data-lucide="home"></i>
+                        </div>
+                        @if ($topClass)
+                            <h5 class="mt-5 mb-1">{{ $topClass->class_name }}</h5>
+                            <p class="text-lg font-semibold text-orange-600">
+                                <span class="counter-value" data-target="{{ $topClass->total_points }}">0</span> Poin
+                            </p>
+                        @else
+                            <h5 class="mt-5 mb-1">-</h5>
+                            <p class="text-lg font-semibold text-orange-600">0 Poin</p>
+                        @endif
+                        <p class="text-slate-500 dark:text-slate-200">Kelas Poin Terbanyak</p>
+                    </div>
                 </div>
-            </div><!--end card-->
+                <!-- Siswa dengan Poin Terbanyak -->
+                <div
+                    class="order-4 md:col-span-6 lg:col-span-6 col-span-12 bg-purple-100 dark:bg-purple-500/20 card relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="user-x"
+                            class="absolute top-0 stroke-1 size-32 text-purple-200/50 dark:text-purple-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div
+                            class="flex items-center justify-center bg-purple-500 rounded-md size-12 text-15 text-purple-50">
+                            <i data-lucide="user-x"></i>
+                        </div>
+                        @if ($topStudent)
+                            <h5 class="mt-5 mb-1">{{ $topStudent->student_name }}</h5>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mb-1">
+                                {{ $topStudent->nis }} | {{ $topStudent->class_name }}
+                            </p>
+                            <p class="text-lg font-semibold text-purple-600">
+                                <span class="counter-value" data-target="{{ $topStudent->total_points }}">0</span> Poin
+                            </p>
+                        @else
+                            <h5 class="mt-5 mb-1">-</h5>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mb-1">NIS: - | Kelas: -</p>
+                            <p class="text-lg font-semibold text-purple-600">0 Poin</p>
+                        @endif
+                        <p class="text-slate-500 dark:text-slate-200">Siswa Poin Terbanyak</p>
+                    </div>
+                </div>
+
+                <!-- Pelanggaran Paling Sering -->
+                <div
+                    class="order-5 md:col-span-6 lg:col-span-6 col-span-12 bg-sky-100 dark:bg-sky-500/20 card relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="trending-up"
+                            class="absolute top-0 stroke-1 size-32 text-sky-200/50 dark:text-sky-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center rounded-md size-12 bg-sky-500 text-15 text-sky-50">
+                            <i data-lucide="bar-chart-3"></i>
+                        </div>
+                        @if ($mostFrequentViolation)
+                            <h5 class="mt-5 mb-1">{{ $mostFrequentViolation->violation_name }}</h5>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mb-1">
+                                {{ $mostFrequentViolation->category_name }} | {{ $mostFrequentViolation->point }} Poin
+                            </p>
+                            <p class="text-lg font-semibold text-sky-600">
+                                <span class="counter-value"
+                                    data-target="{{ $mostFrequentViolation->violation_count }}">0</span> Kali
+                            </p>
+                        @else
+                            <h5 class="mt-5 mb-1">-</h5>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mb-1">- | 0 Poin</p>
+                            <p class="text-lg font-semibold text-sky-600">0 Kali</p>
+                        @endif
+                        <p class="text-slate-500 dark:text-slate-200">Pelanggaran Tersering</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- container-fluid -->
     </div>
 @endsection
