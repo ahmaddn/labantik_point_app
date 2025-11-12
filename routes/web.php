@@ -19,6 +19,8 @@ Route::prefix('guru')
     ->group(function () {
         Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');
         Route::get('/recaps', [GuruController::class, 'recaps'])->name('recaps');
+        Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
+
 
         Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
         Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
@@ -26,7 +28,7 @@ Route::prefix('guru')
 
 
 // BK Routes
-Route::prefix('guru-bk')->name('guru-bk.')->group(function () {
+Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
     Route::get('/dashboard', [BKController::class, 'index'])->name('dashboard');
     Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
     Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\RefStudentAcademicYear;
 use App\Models\P_Violations;
 use App\Models\P_Recaps;
+use App\Models\RefClass;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -228,6 +229,44 @@ class GuruController extends Controller
             ]);
         }
     }
+
+    public function studentData(Request $request)
+    {
+        // Ambil tahun akademik aktif
+        $activeAcademicYear = P_Configs::getActiveAcademicYear();
+
+        // Ambil semua kelas untuk filter
+        $classes = RefClass::orderBy('academic_level', 'asc')->get();
+
+        // Ambil semua violations dengan sorting
+        $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
+
+        // Jika ada filter kelas, ambil data siswa
+        $studentAcademicYears = collect();
+        $selectedClassId = $request->input('class_id');
+
+        if ($selectedClassId) {
+            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+                ->where('class_id', $selectedClassId)
+                ->with([
+                    'student',
+                    'recaps' => function ($query) {
+                        $query->orderBy('created_at', 'desc');
+                    },
+                    'class'
+                ])
+                ->get();
+        }
+
+        return view('guru.student-data.index', compact(
+            'studentAcademicYears',
+            'vals',
+            'activeAcademicYear',
+            'classes',
+            'selectedClassId'
+        ));
+    }
+
 
     public function recaps(Request $request)
     {
