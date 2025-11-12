@@ -1,35 +1,35 @@
 @extends('layouts.app')
 @section('content')
     <div
-        class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm px-4 pb-[calc(theme('spacing.header')_*_0.8)] pt-[calc(theme('spacing.header')_*_1)] group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)] group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto">
         <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 
             <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
                 <div class="grow">
                     <h5 class="text-16">Recap Point</h5>
                 </div>
-                <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
+                <ul class="flex shrink-0 items-center gap-2 text-sm font-normal">
                     <li
-                        class="relative before:content-['\ea54'] before:font-remix ltr:before:-right-1 rtl:before:-left-1  before:absolute before:text-[18px] before:-top-[3px] ltr:pr-4 rtl:pl-4 before:text-slate-400 dark:text-zink-200">
-                        <a href="#!" class="text-slate-400 dark:text-zink-200">Dashboards</a>
+                        class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
+                        <a href="#!" class="dark:text-zink-200 text-slate-400">Dashboards</a>
                     </li>
-                    <li class="text-slate-700 dark:text-zink-100">
-                        BK
+                    <li class="dark:text-zink-100 text-slate-700">
+                        Kesiswaan dan BK
                     </li>
                 </ul>
             </div>
             <!-- Tambahkan filter ini sebelum div dengan class "card" -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Filter Data</h6>
-                    <div class="flex flex-col sm:flex-row gap-4">
+                    <h6 class="text-15 mb-4">Filter Data</h6>
+                    <div class="flex flex-col gap-4 sm:flex-row">
                         <div class="flex-1">
                             <label for="classFilter"
-                                class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">
+                                class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                 Filter Kelas
                             </label>
                             <select id="classFilter"
-                                class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100">
+                                class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
 
                                 <option value="">Semua Kelas</option>
 
@@ -54,24 +54,12 @@
                             </select>
                         </div>
                         <div class="flex-1">
-                            <label for="genderFilter"
-                                class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">
-                                Filter Jenis Kelamin
-                            </label>
-                            <select id="genderFilter"
-                                class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100">
-                                <option value="">Semua Jenis Kelamin</option>
-                                <option value="Laki-laki">Laki-laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
                             <label for="pointRangeFilter"
-                                class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">
+                                class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                 Filter Range Poin
                             </label>
                             <select id="pointRangeFilter"
-                                class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100">
+                                class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                 <option value="">Semua Range</option>
                                 <option value="0">0 Poin</option>
                                 <option value="1-10">1-10 Poin</option>
@@ -82,7 +70,7 @@
                         </div>
                         <div class="flex items-end">
                             <button type="button" id="resetMainFilter"
-                                class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 focus:ring-2 focus:ring-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 dark:hover:bg-zink-700 transition-colors duration-200">
+                                class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 dark:hover:bg-zink-700 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50 focus:ring-2 focus:ring-blue-500">
                                 Reset Filter
                             </button>
                         </div>
@@ -91,22 +79,20 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Datatable Rekap Pelanggaran</h6>
+                    <h6 class="text-15 mb-4">Datatable Rekap Pelanggaran</h6>
 
                     <!-- Info hasil filter -->
-                    <div id="filterInfo" class="mb-3 text-sm text-slate-600 dark:text-zink-300 hidden">
+                    <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
                         <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
                     </div>
 
                     <table id="hoverableTable" style="width: 100%" class="hover group">
                         <thead>
                             <tr>
+                                <th>Aksi</th> <!-- TAMBAHAN BARU -->
                                 <th>No</th>
                                 <th>Total Poin Pelanggaran</th>
                                 <th>Nama Lengkap</th>
-                                <th>NIS</th>
-                                <th>NISN</th>
-                                <th>Jenis Kelamin</th>
                                 <th>Kelas</th>
                             </tr>
                         </thead>
@@ -115,26 +101,56 @@
                                 <tr class="student-row" data-class="{{ $rec->class->name }}"
                                     data-gender="{{ $rec->student->gender }}"
                                     data-points="{{ $rec->violations_sum_point ?? 0 }}">
+
+                                    <!-- TAMBAHAN KOLOM AKSI BARU -->
+                                    <td>
+                                        <div class="flex gap-2">
+                                            <!-- Tombol Detail (mata) -->
+                                            <button data-modal-target="modal-{{ $rec->id }}" type="button"
+                                                class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-slate-500 bg-white p-0 text-slate-500 hover:border-slate-600 hover:bg-slate-600 hover:text-white focus:border-slate-600 focus:bg-slate-600 focus:text-white focus:ring focus:ring-slate-100 active:border-slate-600 active:bg-slate-600 active:text-white active:ring active:ring-slate-100 dark:ring-slate-400/20 dark:hover:bg-slate-500 dark:focus:bg-slate-500"
+                                                title="Lihat Detail">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path
+                                                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Tombol Konfirmasi (check-check) - HANYA MUNCUL JIKA ADA PENDING -->
+                                            @php
+                                                $hasPending = $rec->recaps->where('status', 'pending')->count() > 0;
+                                            @endphp
+                                            @if ($hasPending)
+                                                <button data-modal-target="modal-confirm-{{ $rec->id }}" type="button"
+                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white focus:border-green-600 focus:bg-green-600 focus:text-white focus:ring focus:ring-green-100 active:border-green-600 active:bg-green-600 active:text-white active:ring active:ring-green-100 dark:ring-green-400/20 dark:hover:bg-green-500 dark:focus:bg-green-500"
+                                                    title="Konfirmasi Pelanggaran">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M18 6 7 17l-5-5" />
+                                                        <path d="m22 10-7.5 7.5L13 16" />
+                                                    </svg>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+
                                     <td class="row-number">{{ $loop->iteration }}</td>
                                     <td>
-                                        <button data-modal-target="modal-{{ $rec->id }}" type="button"
-                                            class="font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline cursor-pointer transition-colors duration-200">
-                                            {{ $rec->violations_sum_point ?? 0 }} Poin
-                                        </button>
+                                        {{ $rec->violations_sum_point ?? 0 }} Poin
                                     </td>
                                     <td>{{ $rec->student->full_name }}</td>
-                                    <td>{{ $rec->student->student_number }}</td>
-                                    <td>{{ $rec->student->national_student_number }}</td>
-                                    <td>{{ $rec->student->gender }}</td>
-                                    <td>{{ $rec->class->name }}</td>
+                                    <td>{{ $rec->class->academic_level }} {{ $rec->class->name }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
 
                     <!-- Pesan jika tidak ada data -->
-                    <div id="noMainData" class="hidden text-center py-8">
-                        <div class="flex flex-col items-center text-slate-500 dark:text-zink-400">
+                    <div id="noMainData" class="hidden py-8 text-center">
+                        <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                 stroke-linejoin="round" class="mb-2">
@@ -151,16 +167,17 @@
             @foreach ($recaps as $rec)
                 @if ($rec->recaps->count() > 0)
                     <div id="modal-{{ $rec->id }}" modal-center=""
-                        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 top-2/4 show">
+                        class="z-drawer show fixed left-2/4 top-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
                         <!-- Modal dengan ukuran yang lebih besar -->
-                        <div class="modal-container bg-white shadow rounded-md dark:bg-zink-600 flex flex-col">
+                        <div class="modal-container dark:bg-zink-600 flex flex-col rounded-md bg-white shadow">
                             <!-- Header Modal - Fixed -->
                             <div
-                                class="modal-header flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500 flex-shrink-0">
-                                <h5 class="text-16 font-semibold">Detail Rekap Pelanggaran - {{ $rec->student->full_name }}
+                                class="modal-header dark:border-zink-500 flex flex-shrink-0 items-center justify-between border-b border-slate-200 p-4">
+                                <h5 class="text-16 font-semibold">Detail Rekap Pelanggaran -
+                                    {{ $rec->student->full_name }}
                                 </h5>
                                 <button data-modal-close="modal-{{ $rec->id }}"
-                                    class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+                                    class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500 dark:hover:text-red-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round">
@@ -174,16 +191,16 @@
                             <div class="modal-content flex-1 overflow-y-auto">
                                 <div class="p-4">
                                     <!-- Filter Section -->
-                                    <div class="filter-section mb-4 p-3 bg-slate-50 dark:bg-zink-700 rounded-lg">
-                                        <div class="flex flex-col sm:flex-row gap-4">
+                                    <div class="filter-section dark:bg-zink-700 mb-4 rounded-lg bg-slate-50 p-3">
+                                        <div class="flex flex-col gap-4 sm:flex-row">
                                             <div class="flex-1">
                                                 <label for="categoryFilter-{{ $rec->id }}"
-                                                    class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">
+                                                    class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                                     Filter Kategori
                                                 </label>
                                                 <select id="categoryFilter-{{ $rec->id }}"
                                                     data-student-id="{{ $rec->id }}"
-                                                    class="category-filter w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100">
+                                                    class="category-filter dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                                     <option value="">Semua Kategori</option>
                                                     <option value="Ringan">Ringan</option>
                                                     <option value="Sedang">Sedang</option>
@@ -192,12 +209,12 @@
                                             </div>
                                             <div class="flex-1">
                                                 <label for="statusFilter-{{ $rec->id }}"
-                                                    class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">
+                                                    class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                                     Filter Status
                                                 </label>
                                                 <select id="statusFilter-{{ $rec->id }}"
                                                     data-student-id="{{ $rec->id }}"
-                                                    class="status-filter w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100">
+                                                    class="status-filter dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                                     <option value="">Semua Status</option>
                                                     <option value="pending">Pending</option>
                                                     <option value="verified">Verifikasi</option>
@@ -206,7 +223,7 @@
                                             </div>
                                             <div class="flex items-end">
                                                 <button type="button" data-student-id="{{ $rec->id }}"
-                                                    class="reset-filter-btn px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 focus:ring-2 focus:ring-blue-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 dark:hover:bg-zink-700">
+                                                    class="reset-filter-btn dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 dark:hover:bg-zink-700 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 focus:ring-2 focus:ring-blue-500">
                                                     Reset Filter
                                                 </button>
                                             </div>
@@ -215,51 +232,51 @@
 
                                     <!-- Table Container dengan tinggi tetap - Scrollable -->
                                     <div
-                                        class="table-container overflow-hidden border border-slate-200 rounded-lg dark:border-zink-500 mb-4">
+                                        class="table-container dark:border-zink-500 mb-4 overflow-hidden rounded-lg border border-slate-200">
                                         <div class="table-scroll-wrapper">
-                                            <table class="table-violations w-full text-sm text-left"
+                                            <table class="table-violations w-full text-left text-sm"
                                                 id="violationsTable-{{ $rec->id }}">
                                                 <thead
-                                                    class="text-xs uppercase bg-slate-50 dark:bg-zink-700 sticky top-0 z-10">
+                                                    class="dark:bg-zink-700 sticky top-0 z-10 bg-slate-50 text-xs uppercase">
                                                     <tr>
                                                         <th scope="col"
-                                                            class="px-3 py-3 w-10 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-10 px-3 py-3 font-semibold text-slate-700">
                                                             No</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-24 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-24 px-4 py-4 font-semibold text-slate-700">
                                                             Tanggal</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 min-w-[200px] font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 min-w-[200px] px-4 py-4 font-semibold text-slate-700">
                                                             Pelanggaran</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-20 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-20 px-4 py-4 font-semibold text-slate-700">
                                                             Kategori</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-16 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-16 px-4 py-4 font-semibold text-slate-700">
                                                             Poin</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-20 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-20 px-4 py-4 font-semibold text-slate-700">
                                                             Status</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-24 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-24 px-4 py-4 font-semibold text-slate-700">
                                                             Dibuat oleh</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-24 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-24 px-4 py-4 font-semibold text-slate-700">
                                                             Diverifikasi oleh</th>
                                                         <th scope="col"
-                                                            class="px-4 py-4 w-24 font-semibold text-slate-700 dark:text-zink-200">
+                                                            class="dark:text-zink-200 w-24 px-4 py-4 font-semibold text-slate-700">
                                                             Diupdate oleh</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @php $counter = 1; @endphp
                                                     @forelse ($rec->recaps as $recapsViol)
-                                                        <tr class="violation-row bg-white border-b dark:bg-zink-800 dark:border-zink-700 hover:bg-slate-50 dark:hover:bg-zink-700"
+                                                        <tr class="violation-row dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50"
                                                             data-category="{{ $recapsViol->violation->category->name ?? '' }}"
                                                             data-status="{{ $recapsViol->status }}">
-                                                            <td class="px-3 py-3 font-medium row-number">
+                                                            <td class="row-number px-3 py-3 font-medium">
                                                                 {{ $counter++ }}</td>
-                                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                            <td class="whitespace-nowrap px-4 py-4">
                                                                 {{ \Carbon\Carbon::parse($recapsViol->created_at)->format('d/m/Y') }}
                                                             </td>
                                                             <td class="px-4 py-4">
@@ -268,57 +285,56 @@
                                                             </td>
                                                             <td class="px-4 py-4">
                                                                 <span
-                                                                    class="px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap
-                                                        @if (($recapsViol->violation->category->name ?? '') === 'Berat') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
+                                                                    class="@if (($recapsViol->violation->category->name ?? '') === 'Berat') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
                                                         @elseif(($recapsViol->violation->category->name ?? '') === 'Sedang') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300
-                                                        @else bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 @endif">
+                                                        @else bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 @endif whitespace-nowrap rounded-full px-2 py-1 text-xs font-medium">
                                                                     {{ $recapsViol->violation->category->name ?? 'Tidak Diketahui' }}
                                                                 </span>
                                                             </td>
                                                             <td class="px-4 py-4">
                                                                 <span
-                                                                    class="font-semibold text-red-600 dark:text-red-400 whitespace-nowrap">
+                                                                    class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">
                                                                     {{ $recapsViol->violation->point ?? 0 }}
                                                                 </span>
                                                             </td>
                                                             <td class="px-4 py-4">
                                                                 @if ($recapsViol->status === 'pending')
                                                                     <span
-                                                                        class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300 rounded-full">
+                                                                        class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
                                                                         Pending
                                                                     </span>
                                                                 @elseif($recapsViol->status === 'verified')
                                                                     <span
-                                                                        class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full">
+                                                                        class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
                                                                         Terverifikasi
                                                                     </span>
                                                                 @elseif($recapsViol->status === 'not_verified')
                                                                     <span
-                                                                        class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 rounded-full">
+                                                                        class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
                                                                         Tidak Terverifikasi
                                                                     </span>
                                                                 @endif
                                                             </td>
                                                             <td class="px-4 py-4">
-                                                                <span class="text-sm text-slate-600 dark:text-zink-300">
+                                                                <span class="dark:text-zink-300 text-sm text-slate-600">
                                                                     {{ $recapsViol->createdBy->name ?? '-' }}
                                                                 </span>
                                                             </td>
                                                             <td class="px-4 py-4">
-                                                                <span class="text-sm text-slate-600 dark:text-zink-300">
+                                                                <span class="dark:text-zink-300 text-sm text-slate-600">
                                                                     {{ $recapsViol->verifiedBy->name ?? '-' }}
                                                                 </span>
                                                             </td>
                                                             <td class="px-4 py-4">
-                                                                <span class="text-sm text-slate-600 dark:text-zink-300">
+                                                                <span class="dark:text-zink-300 text-sm text-slate-600">
                                                                     {{ $recapsViol->updatedBy->name ?? '-' }}
                                                                 </span>
                                                             </td>
                                                         </tr>
                                                     @empty
-                                                        <tr class="bg-white dark:bg-zink-800 no-data-row">
+                                                        <tr class="dark:bg-zink-800 no-data-row bg-white">
                                                             <td colspan="9"
-                                                                class="px-4 py-8 text-center text-slate-500 dark:text-zink-400">
+                                                                class="dark:text-zink-400 px-4 py-8 text-center text-slate-500">
                                                                 <div class="flex flex-col items-center">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="48"
                                                                         height="48" viewBox="0 0 24 24" fill="none"
@@ -342,8 +358,8 @@
                                     </div>
 
                                     <!-- No data filtered message -->
-                                    <div id="noFilteredData-{{ $rec->id }}" class="hidden text-center py-8 mb-4">
-                                        <div class="flex flex-col items-center text-slate-500 dark:text-zink-400">
+                                    <div id="noFilteredData-{{ $rec->id }}" class="mb-4 hidden py-8 text-center">
+                                        <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
@@ -376,17 +392,17 @@
 
                                         <div class="summary-section space-y-3" id="summary-{{ $rec->id }}">
                                             <!-- Total Pelanggaran Card -->
-                                            <div class="p-3 bg-slate-50 dark:bg-zink-700 rounded-lg">
-                                                <div class="flex justify-between items-center">
-                                                    <span class="text-sm font-medium text-slate-600 dark:text-zink-300">
+                                            <div class="dark:bg-zink-700 rounded-lg bg-slate-50 p-3">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
                                                         Total Pelanggaran:
                                                     </span>
                                                     <span class="text-sm font-bold" id="totalCount-{{ $rec->id }}">
                                                         {{ $rec->recaps->count() }}
                                                     </span>
                                                 </div>
-                                                <div class="flex justify-between items-center mt-1">
-                                                    <span class="text-sm font-medium text-slate-600 dark:text-zink-300">
+                                                <div class="mt-1 flex items-center justify-between">
+                                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
                                                         Total Poin (Semua):
                                                     </span>
                                                     <span class="text-sm font-bold text-slate-600 dark:text-slate-400"
@@ -395,8 +411,8 @@
                                                     </span>
                                                 </div>
                                                 <div
-                                                    class="flex justify-between items-center mt-1 pt-2 border-t border-slate-200 dark:border-zink-600">
-                                                    <span class="text-sm font-medium text-slate-600 dark:text-zink-300">
+                                                    class="dark:border-zink-600 mt-1 flex items-center justify-between border-t border-slate-200 pt-2">
+                                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
                                                         Total Poin Terverifikasi:
                                                     </span>
                                                     <span class="text-sm font-bold text-red-600 dark:text-red-400"
@@ -407,10 +423,10 @@
                                             </div>
 
                                             <!-- Handling Action Card (jika ada) -->
-                                            <div class="handling-action-card {{ $applicableHandling ? '' : 'hidden' }} p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border-l-4 border-orange-500"
+                                            <div class="handling-action-card {{ $applicableHandling ? '' : 'hidden' }} rounded-lg border-l-4 border-orange-500 bg-gradient-to-r from-orange-50 to-red-50 p-4 dark:from-orange-900/20 dark:to-red-900/20"
                                                 data-handling-options='@json($handlingOptions)'>
                                                 <div class="flex items-start gap-3">
-                                                    <div class="flex-shrink-0 mt-0.5">
+                                                    <div class="mt-0.5 flex-shrink-0">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20"
                                                             height="20" viewBox="0 0 24 24" fill="none"
                                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -424,28 +440,28 @@
                                                     </div>
                                                     <div class="flex-1">
                                                         <h6
-                                                            class="text-sm font-semibold text-orange-800 dark:text-orange-300 mb-1">
+                                                            class="mb-1 text-sm font-semibold text-orange-800 dark:text-orange-300">
                                                             ⚠️ Tindakan Diperlukan
                                                         </h6>
-                                                        <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                                                        <p class="mb-2 text-xs text-slate-600 dark:text-slate-400">
                                                             Siswa telah mencapai <span
-                                                                class="font-bold text-orange-700 dark:text-orange-400 current-points">{{ $totalVerifiedPoints }}</span>
+                                                                class="current-points font-bold text-orange-700 dark:text-orange-400">{{ $totalVerifiedPoints }}</span>
                                                             poin pelanggaran terverifikasi
                                                         </p>
                                                         <div
-                                                            class="bg-white dark:bg-zink-800 rounded-md p-3 border border-orange-200 dark:border-orange-800">
+                                                            class="dark:bg-zink-800 rounded-md border border-orange-200 bg-white p-3 dark:border-orange-800">
                                                             <div class="flex items-start gap-2">
                                                                 <span
-                                                                    class="text-xs font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                                                    class="whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">
                                                                     Tindakan:
                                                                 </span>
                                                                 <span
-                                                                    class="text-sm font-semibold text-orange-700 dark:text-orange-300 action-text">
+                                                                    class="action-text text-sm font-semibold text-orange-700 dark:text-orange-300">
                                                                     {{ $applicableHandling->handling_action ?? '' }}
                                                                 </span>
                                                             </div>
                                                             <div
-                                                                class="flex items-center gap-2 mt-2 text-xs text-slate-500 dark:text-slate-400">
+                                                                class="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                                                     height="14" viewBox="0 0 24 24" fill="none"
                                                                     stroke="currentColor" stroke-width="2"
@@ -464,7 +480,7 @@
 
                                             <!-- Status Aman Card -->
                                             <div
-                                                class="status-good-card {{ $applicableHandling ? 'hidden' : '' }} p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-l-4 border-green-500">
+                                                class="status-good-card {{ $applicableHandling ? 'hidden' : '' }} rounded-lg border-l-4 border-green-500 bg-green-50 p-3 dark:bg-green-900/20">
                                                 <div class="flex items-center gap-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -486,10 +502,10 @@
 
                                             <!-- Info Handling Options -->
                                             @if ($handlingOptions->count() > 0)
-                                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                                <div class="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
                                                     <details class="group">
                                                         <summary
-                                                            class="flex items-center justify-between cursor-pointer text-sm font-medium text-blue-800 dark:text-blue-300">
+                                                            class="flex cursor-pointer items-center justify-between text-sm font-medium text-blue-800 dark:text-blue-300">
                                                             <span class="flex items-center gap-2">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                     height="16" viewBox="0 0 24 24" fill="none"
@@ -512,9 +528,9 @@
                                                         <div class="mt-3 space-y-2">
                                                             @foreach ($handlingOptions->sortBy('handling_point') as $handling)
                                                                 <div
-                                                                    class="flex items-start gap-2 text-xs bg-white dark:bg-zink-800 p-2 rounded border border-blue-100 dark:border-blue-800">
+                                                                    class="dark:bg-zink-800 flex items-start gap-2 rounded border border-blue-100 bg-white p-2 text-xs dark:border-blue-800">
                                                                     <span
-                                                                        class="font-semibold text-blue-700 dark:text-blue-400 whitespace-nowrap">
+                                                                        class="whitespace-nowrap font-semibold text-blue-700 dark:text-blue-400">
                                                                         ≥{{ $handling->handling_point }} poin:
                                                                     </span>
                                                                     <span class="text-slate-600 dark:text-slate-400">
@@ -528,6 +544,147 @@
                                             @endif
                                         </div>
                                     @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+
+            @foreach ($recaps as $rec)
+                @php
+                    $pendingRecaps = $rec->recaps->where('status', 'pending');
+                @endphp
+
+                @if ($pendingRecaps->count() > 0)
+                    <!-- Modal Konfirmasi -->
+                    <div id="modal-confirm-{{ $rec->id }}" modal-center=""
+                        class="z-drawer show fixed left-2/4 top-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+                        <!-- Modal dengan ukuran yang lebih besar -->
+                        <div class="modal-container dark:bg-zink-600 flex flex-col rounded-md bg-white shadow">
+                            <!-- Header Modal - Fixed -->
+                            <div
+                                class="modal-header dark:border-zink-500 flex flex-shrink-0 items-center justify-between border-b border-slate-200 p-4">
+                                <h5 class="text-16 font-semibold">
+                                    Konfirmasi Pelanggaran - {{ $rec->student->full_name }}
+                                </h5>
+                                <button data-modal-close="modal-confirm-{{ $rec->id }}"
+                                    class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500 dark:hover:text-red-500">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <!-- Modal Content - Scrollable -->
+                            <div class="overflow-y-auto p-4" style="max-height: 70vh">
+                                <!-- Table Container -->
+                                <div class="mb-4 overflow-x-auto">
+                                    <table class="w-full text-left text-sm" id="confirmTable-{{ $rec->id }}">
+                                        <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
+                                            <tr>
+                                                <th class="px-4 py-3">Aksi</th>
+                                                <th class="px-3 py-3">No</th>
+                                                <th class="px-4 py-3">Tanggal</th>
+                                                <th class="px-4 py-3">Pelanggaran</th>
+                                                <th class="px-4 py-3">Kategori</th>
+                                                <th class="px-4 py-3">Poin</th>
+                                                <th class="px-4 py-3">Status</th>
+                                                <th class="px-4 py-3">Dibuat oleh</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $confirmCounter = 1; @endphp
+                                            @foreach ($pendingRecaps as $recapItem)
+                                                <tr
+                                                    class="dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50">
+                                                    <td class="px-4 py-4">
+                                                        <div class="flex gap-2">
+                                                            <!-- Form untuk verifikasi -->
+                                                            <form method="POST"
+                                                                action="{{ route('kesiswaan-bk.violation-status.update', $recapItem->id) }}"
+                                                                class="inline-block">
+                                                                @csrf
+                                                                @method('PUT')
+
+                                                                <button type="submit" value="verified" name="status"
+                                                                    class="rounded-full p-2 text-green-600 transition-colors duration-200 hover:bg-green-50 hover:text-green-700"
+                                                                    title="Verifikasi">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                                        <polyline points="20,6 9,17 4,12"></polyline>
+                                                                    </svg>
+                                                                </button>
+
+                                                                <button type="submit" value="not_verified"
+                                                                    name="status"
+                                                                    onclick="return confirm('Apakah Anda yakin ingin menolak pelanggaran ini?')"
+                                                                    class="rounded-full p-2 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
+                                                                    title="Tolak">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                        height="16" viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                                        <line x1="18" y1="6"
+                                                                            x2="6" y2="18"></line>
+                                                                        <line x1="6" y1="6"
+                                                                            x2="18" y2="18"></line>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-3">{{ $confirmCounter++ }}</td>
+                                                    <td class="whitespace-nowrap px-4 py-3">
+                                                        {{ \Carbon\Carbon::parse($recapItem->created_at)->format('d/m/Y') }}
+                                                    </td>
+                                                    <td class="px-4 py-3">{{ $recapItem->violation->name }}</td>
+                                                    <td class="px-4 py-3">
+                                                        <span
+                                                            class="@if (($recapItem->violation->category->name ?? '') === 'Berat') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
+                                                @elseif(($recapItem->violation->category->name ?? '') === 'Sedang') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300
+                                                @else bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 @endif rounded-full px-2 py-1 text-xs font-medium">
+                                                            {{ $recapItem->violation->category->name ?? 'Tidak Diketahui' }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span class="font-semibold text-red-600 dark:text-red-400">
+                                                            {{ $recapItem->violation->point ?? 0 }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span
+                                                            class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
+                                                            Pending
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm">{{ $recapItem->createdBy->name ?? '-' }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Summary Section -->
+                                <div class="dark:bg-zink-700 rounded-lg bg-slate-50 p-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
+                                            Total Pelanggaran Pending:
+                                        </span>
+                                        <span class="text-sm font-bold">
+                                            {{ $pendingRecaps->count() }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-1 flex items-center justify-between">
+                                        <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
+                                            Total Poin Pending:
+                                        </span>
+                                        <span class="text-sm font-bold text-orange-600 dark:text-orange-400">
+                                            {{ $pendingRecaps->sum(function ($item) {return $item->violation->point ?? 0;}) }}
+                                            Poin
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

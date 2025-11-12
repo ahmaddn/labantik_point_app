@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BKController;
 use App\Http\Controllers\ConfigController;
-use App\Http\Controllers\KesiswaanController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdminController;
 
@@ -12,22 +12,24 @@ Route::get('/', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'authenticate'])->name('login.authenticate');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-// Kesiswaan Routes
-Route::prefix('kesiswaan')
-    ->name('kesiswaan.')
+// guru Routes
+Route::prefix('guru')
+    ->name('guru.')
     // ✅ tambahin middleware auth
     ->group(function () {
-        Route::get('/dashboard', [KesiswaanController::class, 'index'])->name('dashboard');
-        Route::get('/recaps', [KesiswaanController::class, 'recaps'])->name('recaps');
+        Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');
+        Route::get('/recaps', [GuruController::class, 'recaps'])->name('recaps');
 
-        Route::post('/store', [KesiswaanController::class, 'store'])->name('violations.store');
-        Route::post('/violations/{student}', [KesiswaanController::class, 'store'])->name('violations.store.student');
+        Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
+        Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
     });
 
 
 // BK Routes
-Route::prefix('bk')->name('bk.')->group(function () {
+Route::prefix('guru-bk')->name('guru-bk.')->group(function () {
     Route::get('/dashboard', [BKController::class, 'index'])->name('dashboard');
+    Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
+    Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');
     Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
     Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
     Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
