@@ -341,4 +341,19 @@ class SuperAdminController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui status: ' . $e->getMessage());
         }
     }
+
+    public function destroyRecap($id)
+    {
+        try {
+            $recap = P_Recaps::findOrFail($id);
+
+            $recap->delete();
+
+            return redirect()->back()->with('success', 'Rekap pelanggaran berhasil dihapus!');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Data rekap pelanggaran tidak ditemukan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus rekap pelanggaran: ' . $e->getMessage());
+        }
+    }
 }

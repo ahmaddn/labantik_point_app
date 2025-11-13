@@ -696,7 +696,34 @@
                                                                         @endif
 
                                                                     </form>
-
+                                                                    @if ($recap->status == 'pending')
+                                                                        <form method="POST"
+                                                                            action="{{ route('superadmin.recaps.destroy', $recap->id) }}"
+                                                                            class="inline-block">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit"
+                                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggaran ini?')"
+                                                                                class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200"
+                                                                                title="Hapus">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="16" height="16"
+                                                                                    viewBox="0 0 24 24" fill="none"
+                                                                                    stroke="currentColor" stroke-width="2"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round"
+                                                                                    class="lucide lucide-trash">
+                                                                                    <path d="M3 6h18" />
+                                                                                    <path
+                                                                                        d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                                                    <path d="M10 11v6" />
+                                                                                    <path d="M14 11v6" />
+                                                                                    <path
+                                                                                        d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </form>
+                                                                    @endif
                                                                 </div>
                                                             </td>
                                                             <td class="px-3 py-3 font-medium row-number">
