@@ -48,7 +48,7 @@
 
                                 @foreach ($groupedClasses as $level => $classes)
                                     @foreach ($classes->sortBy('name') as $class)
-                                        <option value="{{ $class->name }}">
+                                        <option value="{{ $level }} {{ $class->name }}">
                                             {{ $level }} {{ $class->name }}
                                         </option>
                                     @endforeach

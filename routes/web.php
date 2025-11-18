@@ -6,6 +6,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\ViolationController;
 
 // Auth Routes
 Route::get('/', [UserController::class, 'login'])->name('login');
@@ -44,6 +45,16 @@ Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(func
     // routes/web.php
     Route::post('/superadmin/store/{student}', [SuperAdminController::class, 'store'])
         ->name('violations.store');
+
+    //Violations
+    Route::get('/violations', [ViolationController::class, 'index'])
+        ->name('violations');
+    Route::post('/violations/add', [ViolationController::class, 'add'])
+        ->name('violations.add');
+    Route::put('/violations/{id}/update', [ViolationController::class, 'update'])
+        ->name('violations.update');
+    Route::delete('/violations/{id}/destroy', [ViolationController::class, 'destroy'])
+        ->name('violations.destroy');
 
 
     Route::get('/confirm-recaps', [SuperAdminController::class, 'confirmRecaps'])->name('confirm-recaps');

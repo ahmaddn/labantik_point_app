@@ -5,6 +5,7 @@
 <script src="{{ asset('assets/libs/prismjs/prism.js') }}"></script>
 <script src="{{ asset('assets/libs/lucide/umd/lucide.js') }}"></script>
 <script src="{{ asset('assets/js/starcode.bundle.js') }}"></script>
+
 <script src="{{ asset('assets/js/datatables/jquery-3.7.0.js') }}"></script>
 <script src="{{ asset('assets/js/datatables/data-tables.min.js') }}"></script>
 <script src="{{ asset('assets/js/datatables/data-tables.tailwindcss.min.js') }}"></script>
@@ -13,6 +14,7 @@
 <script src="{{ asset('assets/js/datatables/buttons.html5.min.js') }}"></script>
 
 <script src="{{ asset('assets/js/datatables/datatables.init.js') }}"></script>
+
 
 <!-- list js-->
 <script src="{{ asset('assets/libs/list.js/list.min.js') }}"></script>
