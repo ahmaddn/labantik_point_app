@@ -61,7 +61,7 @@
                             <select id="genderFilter"
                                 class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                 <option value="">Semua Jenis Kelamin</option>
-                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Laki - Laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
                             </select>
                         </div>
@@ -113,7 +113,8 @@
                         <tbody>
                             @foreach ($recaps as $rec)
                                 <tr class="student-row" data-class="{{ $rec->class->name }}"
-                                    data-gender="{{ $rec->gender }}" data-points="{{ $rec->violations_sum_point ?? 0 }}">
+                                    data-gender="{{ $rec->student->gender }}"
+                                    data-points="{{ $rec->violations_sum_point ?? 0 }}">
                                     <td class="row-number">{{ $loop->iteration }}</td>
                                     <td>
                                         <button data-modal-target="modal-{{ $rec->id }}" type="button"
@@ -279,8 +280,9 @@
                                                                     {{ $recapsViol->violation->point ?? 0 }}
                                                                 </span>
                                                             </td>
-                                                            <td class="px-4 py-4" {{ $recapsViol->status }}
-                                                                @if ($recapsViol->status === 'pending') <span
+                                                            <td class="px-4 py-4">
+                                                                @if ($recapsViol->status === 'pending')
+                                                                    <span
                                                                         class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
                                                                         Pending
                                                                     </span>
@@ -293,8 +295,9 @@
                                                                     <span
                                                                         class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
                                                                         Tidak Terverifikasi
-                                                                    </span> @endif
-                                                                </td>
+                                                                    </span>
+                                                                @endif
+                                                            </td>
                                                             <td class="px-4 py-4">
                                                                 <span class="dark:text-zink-300 text-sm text-slate-600">
                                                                     {{ $recapsViol->createdBy->name ?? '-' }}
@@ -718,7 +721,9 @@
 
                 rows.forEach(row => {
                     const rowClass = row.getAttribute('data-class');
-                    const rowGender = row.getAttribute('data-gender');
+                    // Normalisasi gender: hapus semua spasi dan ubah ke lowercase
+                    const rowGender = row.getAttribute('data-gender') ?
+                        row.getAttribute('data-gender').replace(/\s+/g, '').toLowerCase().trim() : '';
                     const rowPoints = parseInt(row.getAttribute('data-points')) || 0;
 
                     let showRow = true;
@@ -729,8 +734,12 @@
                     }
 
                     // Filter by gender
-                    if (genderValue && genderValue !== rowGender) {
-                        showRow = false;
+                    if (genderValue) {
+                        // Normalisasi gender filter juga
+                        const normalizedGenderValue = genderValue.replace(/\s+/g, '').toLowerCase().trim();
+                        if (normalizedGenderValue !== rowGender) {
+                            showRow = false;
+                        }
                     }
 
                     // Filter by point range
