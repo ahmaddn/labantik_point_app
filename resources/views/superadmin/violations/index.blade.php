@@ -28,7 +28,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h6 class="text-15 mb-4">Filter Data Pelanggaran</h6>
-                    <form method="GET" action="{{ route('superadmin.violations') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('superadmin.violations') }}" class="space-y-4" id="filterForm">
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                             <!-- Filter Kategori -->
                             <div>
@@ -36,16 +36,19 @@
                                     class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                     Filter Kategori
                                 </label>
-                                <select id="category" name="category"
-                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                <select id="categoryFilter" name="category"
+                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 @error('category') border-red-500 @enderror w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                     <option value="">Semua Kategori</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->name }}"
-                                            {{ request('category') == $category->name ? 'selected' : '' }}>
+                                            {{ old('category', request('category')) == $category->name ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('category')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Filter Poin Minimum -->
@@ -54,9 +57,12 @@
                                     class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">
                                     Poin Minimum
                                 </label>
-                                <input type="number" id="min_point" name="min_point" value="{{ request('min_point') }}"
-                                    placeholder="0"
-                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                <input type="number" id="min_point" name="min_point"
+                                    value="{{ old('min_point', request('min_point')) }}" placeholder="0"
+                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 @error('min_point') border-red-500 @enderror w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                @error('min_point')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Filter Poin Maximum -->
@@ -66,22 +72,16 @@
                                     Poin Maximum
                                 </label>
                                 <input type="number" id="max_point" max="100" name="max_point"
-                                    value="{{ request('max_point') }}" placeholder="100"
-                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                    value="{{ old('max_point', request('max_point')) }}" placeholder="100"
+                                    class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 @error('max_point') border-red-500 @enderror w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                @error('max_point')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="mt-4 flex justify-end gap-2">
-                            <button type="submit"
-                                class="text-custom-500 btn bg-custom-100 hover:bg-custom-600 focus:bg-custom-600 focus:ring-custom-100 active:bg-custom-600 active:ring-custom-100 dark:bg-custom-500/20 dark:text-custom-500 dark:hover:bg-custom-500 dark:focus:bg-custom-500 dark:active:bg-custom-500 dark:ring-custom-400/20 hover:text-white focus:text-white focus:ring active:text-white active:ring dark:hover:text-white dark:focus:text-white dark:active:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="mr-1 inline-block">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.35-4.35"></path>
-                                </svg>
-                                Terapkan Filter
-                            </button>
+
+                        <div class="mt-4 flex justify-end">
                             <a href="{{ route('superadmin.violations') }}"
                                 class="btn bg-slate-100 text-slate-500 hover:bg-slate-600 hover:text-white focus:bg-slate-600 focus:text-white focus:ring focus:ring-slate-100 active:bg-slate-600 active:text-white active:ring active:ring-slate-100 dark:bg-slate-500/20 dark:text-slate-400 dark:ring-slate-400/20 dark:hover:bg-slate-500 dark:hover:text-white dark:focus:bg-slate-500 dark:focus:text-white dark:active:bg-slate-500 dark:active:text-white">
                                 Reset Filter
@@ -386,7 +386,7 @@
                                 </button>
                             </div>
                             <div class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-4">
-                                <form method="POST" action="{{ route('superadmin.violations.add', $violation->id) }}">
+                                <form method="POST" action="{{ route('superadmin.violations.add') }}">
                                     @csrf
                                     <div id="alert-error-msg"
                                         class="hidden rounded-md border border-transparent bg-red-50 px-4 py-3 text-sm text-red-500 dark:bg-red-500/20">
@@ -397,12 +397,12 @@
                                             <label for="categorySelect" class="mb-2 inline-block text-base font-medium">
                                                 Kategori
                                             </label>
-                                            <select name="category_id" id="categorySelect{{ $violation->id }}"
+                                            <select name="category_id" id="categorySelect"
                                                 class="form-input dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
                                                 data-choices data-choices-search-false required>
+                                                <option value="">Pilih Kategori</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}"
-                                                        {{ $violation->category_id == $category->id ? 'selected' : '' }}>
+                                                    <option value="{{ $category->id }}">
                                                         {{ $category->name }}
                                                     </option>
                                                 @endforeach
@@ -417,7 +417,6 @@
                                                 class="form-input dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
                                                 placeholder="Masukkan nama pelanggaran" required>
                                         </div>
-
 
                                         <div>
                                             <label for="pointInput" class="mb-2 inline-block text-base font-medium">
@@ -480,4 +479,70 @@
             transform: scale(1.05);
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const minPointInput = document.getElementById('min_point');
+            const maxPointInput = document.getElementById('max_point');
+            const filterForm = document.getElementById('filterForm');
+
+            let debounceTimer;
+            let minChanged = false;
+            let maxChanged = false;
+
+            // Fungsi untuk cek apakah kedua input sudah diubah
+            function checkAndSubmit() {
+                if (minChanged && maxChanged) {
+                    clearTimeout(debounceTimer);
+                    filterForm.submit();
+                    // Reset flag setelah submit
+                    minChanged = false;
+                    maxChanged = false;
+                }
+            }
+
+            // Fungsi debounce untuk delay submit
+            function debounceSubmit() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    checkAndSubmit();
+                }, 500); // Delay 500ms setelah user berhenti mengetik
+            }
+
+            if (filterForm) {
+                // Auto submit saat kategori berubah (langsung tanpa delay)
+                if (categoryFilter) {
+                    categoryFilter.addEventListener('change', function() {
+                        filterForm.submit();
+                    });
+                }
+
+                // Track perubahan poin minimum
+                if (minPointInput) {
+                    minPointInput.addEventListener('input', function() {
+                        minChanged = true;
+                        debounceSubmit();
+                    });
+
+                    minPointInput.addEventListener('blur', function() {
+                        minChanged = true;
+                        checkAndSubmit();
+                    });
+                }
+
+                // Track perubahan poin maksimum
+                if (maxPointInput) {
+                    maxPointInput.addEventListener('input', function() {
+                        maxChanged = true;
+                        debounceSubmit();
+                    });
+
+                    maxPointInput.addEventListener('blur', function() {
+                        maxChanged = true;
+                        checkAndSubmit();
+                    });
+                }
+            }
+        });
+    </script>
 @endsection

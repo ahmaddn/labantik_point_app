@@ -10,6 +10,17 @@ class ViolationController extends Controller
 {
     public function index(Request $request)
     {
+        // Validasi input
+        $validated = $request->validate([
+            'category' => 'nullable|string',
+            'min_point' => 'nullable|integer|min:0',
+            'max_point' => 'nullable|integer|min:0|gte:min_point', // max_point harus >= min_point
+        ], [
+            'max_point.gte' => 'Poin maksimum harus lebih besar atau sama dengan poin minimum.',
+            'min_point.min' => 'Poin minimum tidak boleh kurang dari 0.',
+            'max_point.min' => 'Poin maksimum tidak boleh kurang dari 0.',
+        ]);
+
         $query = P_Violations::with('category');
 
         // Filter berdasarkan kategori

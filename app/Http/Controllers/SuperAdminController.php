@@ -295,12 +295,12 @@ class SuperAdminController extends Controller
     }
     public function confirmRecaps()
     {
-        // Ambil tahun akademik aktif
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
         $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
             ->orderBy('handling_point', 'asc')
             ->get();
-        // Query dari RefStudentAcademicYear sebagai base
+
+        // Filter siswa yang memiliki recaps pending di controller
         $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
             ->with([
                 'student',
@@ -312,10 +312,15 @@ class SuperAdminController extends Controller
                         'createdBy',
                         'updatedBy',
                     ])
-                        ->orderBy('created_at', 'desc');
+                    ->orderBy('created_at', 'desc');
                 }
             ])
-            ->get();
+            ->has('recaps')
+            ->get()
+            ->filter(function ($student) {
+                return $student->recaps->count() > 0; // Double check ada recaps pending
+            })
+            ->values(); // Reset array keys untuk penomoran 1, 2, 3...
 
         return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear'));
     }

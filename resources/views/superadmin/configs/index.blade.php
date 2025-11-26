@@ -1,19 +1,19 @@
 @extends('layouts.app')
 @section('content')
     <div
-        class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm px-4 pb-[calc(theme('spacing.header')_*_0.8)] pt-[calc(theme('spacing.header')_*_1)] group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)] group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto">
         <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 
             <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
                 <div class="grow">
                     <h5 class="text-16">Konfigurasi Pelanggaran</h5>
                 </div>
-                <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
+                <ul class="flex shrink-0 items-center gap-2 text-sm font-normal">
                     <li
-                        class="relative before:content-['\ea54'] before:font-remix ltr:before:-right-1 rtl:before:-left-1  before:absolute before:text-[18px] before:-top-[3px] ltr:pr-4 rtl:pl-4 before:text-slate-400 dark:text-zink-200">
-                        <a href="#!" class="text-slate-400 dark:text-zink-200">Konfigurasi</a>
+                        class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
+                        <a href="#!" class="dark:text-zink-200 text-slate-400">Konfigurasi</a>
                     </li>
-                    <li class="text-slate-700 dark:text-zink-100">
+                    <li class="dark:text-zink-100 text-slate-700">
                         List View
                     </li>
                 </ul>
@@ -21,22 +21,22 @@
 
             @if (session('success'))
                 <div id="success-alert"
-                    class="mb-4 px-4 py-3 text-sm text-green-500 border border-green-200 rounded-md bg-green-50 dark:bg-green-400/20 dark:border-green-500/50 flex items-center justify-between">
+                    class="mb-4 flex items-center justify-between rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-500 dark:border-green-500/50 dark:bg-green-400/20">
                     <span>{{ session('success') }}</span>
                     <button type="button" onclick="document.getElementById('success-alert').remove()"
                         class="ml-4 text-green-500 hover:text-green-700 dark:hover:text-green-300">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <i data-lucide="x" class="h-4 w-4"></i>
                     </button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div id="error-alert"
-                    class="mb-4 px-4 py-3 text-sm text-red-500 border border-red-200 rounded-md bg-red-50 dark:bg-red-400/20 dark:border-red-500/50 flex items-center justify-between">
+                    class="mb-4 flex items-center justify-between rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-500 dark:border-red-500/50 dark:bg-red-400/20">
                     <span>{{ session('error') }}</span>
                     <button type="button" onclick="document.getElementById('error-alert').remove()"
                         class="ml-4 text-red-500 hover:text-red-700 dark:hover:text-red-300">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                        <i data-lucide="x" class="h-4 w-4"></i>
                     </button>
                 </div>
             @endif
@@ -47,37 +47,37 @@
                         <div class="xl:col-span-3">
                             <div class="relative">
                                 <input type="text" id="searchAcademic"
-                                    class="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:bg-zink-700 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                    class="search form-input dark:border-zink-500 focus:border-custom-500 dark:bg-zink-700 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none ltr:pl-8 rtl:pr-8"
                                     placeholder="Cari tahun akademik..." autocomplete="off">
 
                                 <i data-lucide="search"
-                                    class="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600"></i>
+                                    class="dark:text-zink-200 dark:fill-zink-600 absolute top-2.5 inline-block size-4 fill-slate-100 text-slate-500 ltr:left-2.5 rtl:right-2.5"></i>
                             </div>
                         </div>
-                        <div class="lg:col-span-2 ltr:lg:text-right rtl:lg:text-left xl:col-span-2 xl:col-start-11">
+                        <div class="lg:col-span-2 xl:col-span-2 xl:col-start-11 ltr:lg:text-right rtl:lg:text-left">
                             <button data-modal-target="addConfigModal" type="button"
-                                class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
+                                class="btn bg-custom-500 border-custom-500 hover:bg-custom-600 hover:border-custom-600 focus:bg-custom-600 focus:border-custom-600 focus:ring-custom-100 active:bg-custom-600 active:border-custom-600 active:ring-custom-100 dark:ring-custom-400/20 text-white hover:text-white focus:text-white focus:ring active:text-white active:ring">
                                 <i data-lucide="plus" class="inline-block size-4"></i>
                                 <span class="align-middle">Tambah Konfigurasi</span>
                             </button>
                         </div>
                     </div>
                 </div>
-                <div class="!pt-1 card-body">
+                <div class="card-body !pt-1">
                     <div class="overflow-x-auto">
                         <table class="w-full whitespace-nowrap" id="configTable">
-                            <thead class="ltr:text-left rtl:text-right bg-slate-100 dark:bg-zink-600">
+                            <thead class="dark:bg-zink-600 bg-slate-100 ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                    <th class="dark:border-zink-500 border-b border-slate-200 px-3.5 py-2.5 font-semibold">
                                         Tahun Akademik
                                     </th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                    <th class="dark:border-zink-500 border-b border-slate-200 px-3.5 py-2.5 font-semibold">
                                         Status
                                     </th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                    <th class="dark:border-zink-500 border-b border-slate-200 px-3.5 py-2.5 font-semibold">
                                         Dibuat Oleh
                                     </th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">
+                                    <th class="dark:border-zink-500 border-b border-slate-200 px-3.5 py-2.5 font-semibold">
                                         Actions
                                     </th>
                                 </tr>
@@ -85,32 +85,32 @@
                             <tbody class="list">
                                 @forelse($configs as $config)
                                     <tr>
-                                        <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                        <td class="dark:border-zink-500 border-y border-slate-200 px-3.5 py-2.5">
                                             <span class="font-semibold">{{ $config->academic_year }}</span>
                                         </td>
-                                        <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                        <td class="dark:border-zink-500 border-y border-slate-200 px-3.5 py-2.5">
                                             @if ($config->is_active)
                                                 <span
-                                                    class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-green-100 border-green-200 text-green-500 dark:bg-green-500/20 dark:border-green-500/20">
+                                                    class="inline-block rounded border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-500 dark:border-green-500/20 dark:bg-green-500/20">
                                                     Aktif
                                                 </span>
                                             @else
                                                 <span
-                                                    class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-500/20 dark:border-slate-500/20">
+                                                    class="inline-block rounded border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:border-slate-500/20 dark:bg-slate-500/20">
                                                     Tidak Aktif
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                        <td class="dark:border-zink-500 border-y border-slate-200 px-3.5 py-2.5">
                                             {{ $config->createdBy->name ?? '-' }}
                                         </td>
-                                        <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
+                                        <td class="dark:border-zink-500 border-y border-slate-200 px-3.5 py-2.5">
                                             <div class="flex gap-2">
                                                 {{-- Button View (Slate) - Dipindah ke depan --}}
                                                 <button data-modal-target="viewHandlingsModal"
                                                     data-config-year="{{ $config->academic_year }}"
                                                     data-config-handlings='@json($config->handlings)'
-                                                    class="btn-view flex items-center justify-center size-[30px] p-0 text-slate-500 btn bg-slate-100 hover:text-white hover:bg-slate-600 focus:text-white focus:bg-slate-600 dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white"
+                                                    class="btn-view btn flex size-[30px] items-center justify-center bg-slate-100 p-0 text-slate-500 hover:bg-slate-600 hover:text-white focus:bg-slate-600 focus:text-white dark:bg-slate-500/20 dark:text-slate-400 dark:hover:bg-slate-500 dark:hover:text-white"
                                                     title="Lihat Handling Points">
                                                     <i data-lucide="list" class="size-3"></i>
                                                 </button>
@@ -120,7 +120,7 @@
                                                     data-config-id="{{ $config->id }}"
                                                     data-config-year="{{ $config->academic_year }}"
                                                     data-config-handlings='@json($config->handlings)'
-                                                    class="btn-edit flex items-center justify-center size-[30px] p-0 text-blue-500 btn bg-blue-100 hover:text-white hover:bg-blue-600 focus:text-white focus:bg-blue-600 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                                                    class="btn-edit btn flex size-[30px] items-center justify-center bg-sky-100 p-0 text-sky-500 hover:bg-sky-600 hover:text-white focus:bg-sky-600 focus:text-white focus:ring focus:ring-sky-100 active:bg-sky-600 active:text-white active:ring active:ring-sky-100 dark:bg-sky-500/20 dark:text-sky-400 dark:ring-sky-400/20 dark:hover:bg-sky-500 dark:hover:text-white dark:focus:bg-sky-500 dark:focus:text-white dark:active:bg-sky-500 dark:active:text-white"
                                                     title="Edit">
                                                     <i data-lucide="pencil" class="size-3"></i>
                                                 </button>
@@ -128,14 +128,14 @@
                                                 @if ($config->is_active)
                                                     <button data-modal-target="deactivateConfigModal"
                                                         data-config-id="{{ $config->id }}"
-                                                        class="btn-deactivate flex items-center justify-center size-[30px] p-0 text-orange-500 btn bg-orange-100 hover:text-white hover:bg-orange-600 focus:text-white focus:bg-orange-600 dark:bg-orange-500/20 dark:hover:bg-orange-500 dark:hover:text-white"
+                                                        class="btn-deactivate btn flex size-[30px] items-center justify-center bg-orange-100 p-0 text-orange-500 hover:bg-orange-600 hover:text-white focus:bg-orange-600 focus:text-white dark:bg-orange-500/20 dark:hover:bg-orange-500 dark:hover:text-white"
                                                         title="Nonaktifkan">
                                                         <i data-lucide="power" class="size-3"></i>
                                                     </button>
                                                 @else
                                                     <button data-modal-target="activateConfigModal"
                                                         data-config-id="{{ $config->id }}"
-                                                        class="btn-activate flex items-center justify-center size-[30px] p-0 text-green-500 btn bg-green-100 hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 dark:bg-green-500/20 dark:hover:bg-green-500 dark:hover:text-white"
+                                                        class="btn-activate btn flex size-[30px] items-center justify-center bg-green-100 p-0 text-green-500 hover:bg-green-600 hover:text-white focus:bg-green-600 focus:text-white dark:bg-green-500/20 dark:hover:bg-green-500 dark:hover:text-white"
                                                         title="Aktifkan">
                                                         <i data-lucide="check-circle" class="size-3"></i>
                                                     </button>
@@ -144,7 +144,7 @@
                                                 <button data-modal-target="deleteConfigModal"
                                                     data-config-id="{{ $config->id }}"
                                                     data-config-year="{{ $config->academic_year }}"
-                                                    class="btn-delete flex items-center justify-center size-[30px] p-0 text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 dark:bg-red-500/20 dark:hover:bg-red-500 dark:hover:text-white"
+                                                    class="btn-delete btn flex size-[30px] items-center justify-center bg-red-100 p-0 text-red-500 hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white dark:bg-red-500/20 dark:hover:bg-red-500 dark:hover:text-white"
                                                     title="Hapus">
                                                     <i data-lucide="trash-2" class="size-3"></i>
                                                 </button>
@@ -154,11 +154,11 @@
                                 @empty
                                     <tr>
                                         <td colspan="4"
-                                            class="px-3.5 py-8 text-center border-y border-slate-200 dark:border-zink-500">
+                                            class="dark:border-zink-500 border-y border-slate-200 px-3.5 py-8 text-center">
                                             <div class="py-6">
-                                                <i data-lucide="inbox" class="w-6 h-6 mx-auto mb-3 text-slate-500"></i>
-                                                <h5 class="mt-2 mb-1">Tidak Ada Data</h5>
-                                                <p class="mb-0 text-slate-500 dark:text-zink-200">
+                                                <i data-lucide="inbox" class="mx-auto mb-3 h-6 w-6 text-slate-500"></i>
+                                                <h5 class="mb-1 mt-2">Tidak Ada Data</h5>
+                                                <p class="dark:text-zink-200 mb-0 text-slate-500">
                                                     Belum ada konfigurasi yang ditambahkan.
                                                 </p>
                                             </div>
@@ -170,9 +170,9 @@
                     </div>
 
                     @if ($configs->count() > 0)
-                        <div class="flex flex-col items-center gap-4 px-4 mt-4 md:flex-row">
+                        <div class="mt-4 flex flex-col items-center gap-4 px-4 md:flex-row">
                             <div class="grow">
-                                <p class="text-slate-500 dark:text-zink-200">
+                                <p class="dark:text-zink-200 text-slate-500">
                                     Showing <b>{{ $configs->firstItem() }}</b> to <b>{{ $configs->lastItem() }}</b> of
                                     <b>{{ $configs->total() }}</b> Results
                                 </p>
@@ -189,24 +189,24 @@
 
     <!-- Add Config Modal -->
     <div id="addConfigModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[40rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Tambah Konfigurasi</h5>
                 <button data-modal-close="addConfigModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
-            <div class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+            <div class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-4">
                 <form action="{{ route('superadmin.configs.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label for="academicYearInput" class="inline-block mb-2 text-base font-medium">
+                        <label for="academicYearInput" class="mb-2 inline-block text-base font-medium">
                             Tahun Akademik <span class="text-red-500">*</span>
                         </label>
                         <select id="academicYearInput" name="academic_year"
-                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500"
+                            class="form-input dark:border-zink-500 focus:border-custom-500 border-slate-200 focus:outline-none"
                             required>
                             <option value="">Pilih Tahun Akademik</option>
                             @foreach ($academicYears as $year)
@@ -218,7 +218,7 @@
                     <div class="mb-3">
                         <label class="inline-flex items-center">
                             <input type="checkbox" name="is_active" value="1"
-                                class="form-checkbox border-slate-200 dark:border-zink-500 focus:ring-custom-500">
+                                class="form-checkbox dark:border-zink-500 focus:ring-custom-500 border-slate-200">
                             <span class="ml-2 text-base">Set sebagai konfigurasi aktif</span>
                         </label>
                         <p class="mt-1 text-sm text-slate-500">
@@ -227,38 +227,38 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="inline-block mb-2 text-base font-medium">
+                        <label class="mb-2 inline-block text-base font-medium">
                             Handling Points (Opsional)
                         </label>
                         <div id="handlingPointsContainer" class="space-y-2">
-                            <div class="flex items-center gap-3 mb-2 handling-point-row">
+                            <div class="handling-point-row mb-2 flex items-center gap-3">
                                 <input type="number" name="handling_points[]"
-                                    class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-24 shrink-0"
+                                    class="form-input dark:border-zink-500 focus:border-custom-500 w-24 shrink-0 border-slate-200 focus:outline-none"
                                     placeholder="Point (contoh: 25)">
 
                                 <input type="text" name="handling_actions[]"
-                                    class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 flex-1"
+                                    class="form-input dark:border-zink-500 focus:border-custom-500 flex-1 border-slate-200 focus:outline-none"
                                     placeholder="Aksi (contoh: Peringatan lisan)">
 
                                 <button type="button"
-                                    class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0">
+                                    class="btn-remove-handling btn shrink-0 rounded-lg bg-red-100 !px-3 !py-2 text-red-500 hover:bg-red-600 hover:text-white">
                                     <i data-lucide="trash-2" class="size-4"></i>
                                 </button>
                             </div>
                         </div>
 
                         <button type="button" id="btnAddHandling"
-                            class="mt-2 text-custom-500 btn bg-custom-100 hover:bg-custom-200">
+                            class="text-custom-500 btn bg-custom-100 hover:bg-custom-200 mt-2">
                             <i data-lucide="plus" class="inline-block size-4"></i> Tambah Handling Point
                         </button>
                     </div>
 
-                    <div class="flex justify-end gap-2 mt-4">
+                    <div class="mt-4 flex justify-end gap-2">
                         <button type="button" data-modal-close="addConfigModal"
-                            class="text-red-500 bg-white border-white btn hover:text-red-600 dark:bg-zink-500 dark:border-zink-500">
+                            class="btn dark:bg-zink-500 dark:border-zink-500 border-white bg-white text-red-500 hover:text-red-600">
                             Batal
                         </button>
-                        <button type="submit" class="text-white btn bg-custom-500 border-custom-500 hover:bg-custom-600">
+                        <button type="submit" class="btn bg-custom-500 border-custom-500 hover:bg-custom-600 text-white">
                             Simpan Konfigurasi
                         </button>
                     </div>
@@ -269,25 +269,25 @@
 
     <!-- Edit Config Modal -->
     <div id="editConfigModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[40rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Edit Konfigurasi</h5>
                 <button data-modal-close="editConfigModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
-            <div class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+            <div class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-4">
                 <form id="editConfigForm" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label for="editAcademicYear" class="inline-block mb-2 text-base font-medium">
+                        <label for="editAcademicYear" class="mb-2 inline-block text-base font-medium">
                             Tahun Akademik <span class="text-red-500">*</span>
                         </label>
                         <select id="editAcademicYear" name="academic_year"
-                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500"
+                            class="form-input dark:border-zink-500 focus:border-custom-500 border-slate-200 focus:outline-none"
                             required>
                             <option value="">Pilih Tahun Akademik</option>
                             @foreach ($academicYears as $year)
@@ -297,24 +297,24 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="inline-block mb-2 text-base font-medium">
+                        <label class="mb-2 inline-block text-base font-medium">
                             Handling Points
                         </label>
                         <div id="editHandlingPointsContainer" class="space-y-2">
                             <!-- Will be populated by JavaScript -->
                         </div>
                         <button type="button" id="btnAddEditHandling"
-                            class="mt-2 text-custom-500 btn bg-custom-100 hover:bg-custom-200">
+                            class="text-custom-500 btn bg-custom-100 hover:bg-custom-200 mt-2">
                             <i data-lucide="plus" class="inline-block size-4"></i> Tambah Handling Point
                         </button>
                     </div>
 
-                    <div class="flex justify-end gap-2 mt-4">
+                    <div class="mt-4 flex justify-end gap-2">
                         <button type="button" data-modal-close="editConfigModal"
-                            class="text-red-500 bg-white border-white btn hover:text-red-600 dark:bg-zink-500 dark:border-zink-500">
+                            class="btn dark:bg-zink-500 dark:border-zink-500 border-white bg-white text-red-500 hover:text-red-600">
                             Batal
                         </button>
-                        <button type="submit" class="text-white btn bg-custom-500 border-custom-500 hover:bg-custom-600">
+                        <button type="submit" class="btn bg-custom-500 border-custom-500 hover:bg-custom-600 text-white">
                             Update Konfigurasi
                         </button>
                     </div>
@@ -325,16 +325,16 @@
 
     <!-- View Handlings Modal -->
     <div id="viewHandlingsModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[40rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Handling Points - <span id="handlingAcademicYear"></span></h5>
                 <button data-modal-close="viewHandlingsModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
-            <div class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+            <div class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-4">
                 <div id="handlingsList" class="space-y-3">
                     <!-- Will be populated by JavaScript -->
                 </div>
@@ -344,20 +344,20 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteConfigModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[30rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Konfirmasi Hapus</h5>
                 <button data-modal-close="deleteConfigModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
             <div class="p-4">
                 <div class="text-center">
-                    <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500"></i>
+                    <i data-lucide="alert-triangle" class="mx-auto mb-4 h-12 w-12 text-red-500"></i>
                     <h5 class="mb-2">Apakah Anda yakin?</h5>
-                    <p class="text-slate-500 dark:text-zink-200 mb-4">
+                    <p class="dark:text-zink-200 mb-4 text-slate-500">
                         Anda akan menghapus konfigurasi <strong id="deleteConfigName"></strong>.
                         Tindakan ini tidak dapat dibatalkan.
                     </p>
@@ -367,10 +367,10 @@
                     @method('DELETE')
                     <div class="flex justify-center gap-2">
                         <button type="button" data-modal-close="deleteConfigModal"
-                            class="text-slate-500 bg-white border-slate-300 btn hover:text-slate-600 dark:bg-zink-500 dark:border-zink-500">
+                            class="btn dark:bg-zink-500 dark:border-zink-500 border-slate-300 bg-white text-slate-500 hover:text-slate-600">
                             Batal
                         </button>
-                        <button type="submit" class="text-white btn bg-red-500 border-red-500 hover:bg-red-600">
+                        <button type="submit" class="btn border-red-500 bg-red-500 text-white hover:bg-red-600">
                             Ya, Hapus
                         </button>
                     </div>
@@ -381,20 +381,20 @@
 
     <!-- Activate Confirmation Modal -->
     <div id="activateConfigModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[30rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Konfirmasi Aktivasi</h5>
                 <button data-modal-close="activateConfigModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
             <div class="p-4">
                 <div class="text-center">
-                    <i data-lucide="check-circle" class="w-12 h-12 mx-auto mb-4 text-green-500"></i>
+                    <i data-lucide="check-circle" class="mx-auto mb-4 h-12 w-12 text-green-500"></i>
                     <h5 class="mb-2">Aktifkan Konfigurasi?</h5>
-                    <p class="text-slate-500 dark:text-zink-200 mb-4">
+                    <p class="dark:text-zink-200 mb-4 text-slate-500">
                         Konfigurasi lain akan dinonaktifkan secara otomatis.
                     </p>
                 </div>
@@ -402,10 +402,10 @@
                     @csrf
                     <div class="flex justify-center gap-2">
                         <button type="button" data-modal-close="activateConfigModal"
-                            class="text-slate-500 bg-white border-slate-300 btn hover:text-slate-600 dark:bg-zink-500 dark:border-zink-500">
+                            class="btn dark:bg-zink-500 dark:border-zink-500 border-slate-300 bg-white text-slate-500 hover:text-slate-600">
                             Batal
                         </button>
-                        <button type="submit" class="text-white btn bg-green-500 border-green-500 hover:bg-green-600">
+                        <button type="submit" class="btn border-green-500 bg-green-500 text-white hover:bg-green-600">
                             Ya, Aktifkan
                         </button>
                     </div>
@@ -416,20 +416,20 @@
 
     <!-- Deactivate Confirmation Modal -->
     <div id="deactivateConfigModal" modal-center
-        class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-        <div class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600">
-            <div class="flex items-center justify-between p-4 border-b dark:border-zink-300/20">
+        class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+        <div class="dark:bg-zink-600 w-screen rounded-md bg-white shadow md:w-[30rem]">
+            <div class="dark:border-zink-300/20 flex items-center justify-between border-b p-4">
                 <h5 class="text-16">Konfirmasi Nonaktifkan</h5>
                 <button data-modal-close="deactivateConfigModal"
-                    class="transition-all duration-200 ease-linear text-slate-400 hover:text-red-500">
+                    class="text-slate-400 transition-all duration-200 ease-linear hover:text-red-500">
                     <i data-lucide="x" class="size-5"></i>
                 </button>
             </div>
             <div class="p-4">
                 <div class="text-center">
-                    <i data-lucide="power" class="w-12 h-12 mx-auto mb-4 text-orange-500"></i>
+                    <i data-lucide="power" class="mx-auto mb-4 h-12 w-12 text-orange-500"></i>
                     <h5 class="mb-2">Nonaktifkan Konfigurasi?</h5>
-                    <p class="text-slate-500 dark:text-zink-200 mb-4">
+                    <p class="dark:text-zink-200 mb-4 text-slate-500">
                         Konfigurasi ini akan dinonaktifkan.
                     </p>
                 </div>
@@ -437,10 +437,10 @@
                     @csrf
                     <div class="flex justify-center gap-2">
                         <button type="button" data-modal-close="deactivateConfigModal"
-                            class="text-slate-500 bg-white border-slate-300 btn hover:text-slate-600 dark:bg-zink-500 dark:border-zink-500">
+                            class="btn dark:bg-zink-500 dark:border-zink-500 border-slate-300 bg-white text-slate-500 hover:text-slate-600">
                             Batal
                         </button>
-                        <button type="submit" class="text-white btn bg-orange-500 border-orange-500 hover:bg-orange-600">
+                        <button type="submit" class="btn border-orange-500 bg-orange-500 text-white hover:bg-orange-600">
                             Ya, Nonaktifkan
                         </button>
                     </div>
