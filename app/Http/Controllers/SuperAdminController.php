@@ -312,15 +312,25 @@ class SuperAdminController extends Controller
                         'createdBy',
                         'updatedBy',
                     ])
-                    ->orderBy('created_at', 'desc');
+                        ->orderBy('created_at', 'desc');
                 }
             ])
             ->has('recaps')
             ->get()
             ->filter(function ($student) {
-                return $student->recaps->count() > 0; // Double check ada recaps pending
+                return $student->recaps->count() > 0;
             })
-            ->values(); // Reset array keys untuk penomoran 1, 2, 3...
+            ->map(function ($student) {
+                // Hitung total poin terverifikasi
+                $student->total_points_verified = $student->recaps
+                    ->where('status', 'verified')
+                    ->sum(function ($recap) {
+                        return $recap->violation->point ?? 0;
+                    });
+
+                return $student;
+            })
+            ->values();
 
         return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear'));
     }
