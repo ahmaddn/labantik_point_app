@@ -321,7 +321,6 @@ class SuperAdminController extends Controller
                 return $student->recaps->count() > 0;
             })
             ->map(function ($student) {
-                // Hitung total poin terverifikasi
                 $student->total_points_verified = $student->recaps
                     ->where('status', 'verified')
                     ->sum(function ($recap) {
@@ -333,6 +332,49 @@ class SuperAdminController extends Controller
             ->values();
 
         return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear'));
+    }
+
+    public function detailConfirmRecaps($studentAcademicYearId)
+    {
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+            ->orderBy('handling_point', 'asc')
+            ->get();
+
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->with([
+                    'violation.category',
+                    'verifiedBy',
+                    'createdBy',
+                    'updatedBy',
+                ])->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($studentAcademicYearId);
+
+        $totalVerifiedPoints = $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(function ($recap) {
+                return $recap->violation->point ?? 0;
+            });
+
+        $applicableHandling  = null;
+        foreach ($handlingPointOptions as $handling) {
+            if ($totalVerifiedPoints >= $handling->handling_point) {
+                $applicableHandling = $handling;
+            } else {
+                break;
+            }
+        }
+
+        return view('superadmin.confirm-recaps.detail', compact(
+            'studentAcademicYear',
+            'handlingPointOptions',
+            'totalVerifiedPoints',
+            'applicableHandling'
+        ));
     }
     public function updateViolationStatus(Request $request, $id)
     {

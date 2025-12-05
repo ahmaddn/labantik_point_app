@@ -58,6 +58,7 @@ Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(func
 
 
     Route::get('/confirm-recaps', [SuperAdminController::class, 'confirmRecaps'])->name('confirm-recaps');
+    Route::get('/confirm-recaps/{studentAcademicYearId}/detail', [SuperAdminController::class, 'detailConfirmRecaps'])->name('detailConfirm-Recaps');
     Route::delete('/recaps/{id}/delete', [SuperAdminController::class, 'destroyRecap'])->name('recaps.destroy');
     Route::put('/violation-status/{id}',  [SuperAdminController::class, 'updateViolationStatus'])->name('violation-status.update');
 
