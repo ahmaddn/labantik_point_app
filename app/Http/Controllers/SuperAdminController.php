@@ -11,8 +11,11 @@ use App\Models\P_Recaps;
 use App\Models\RefClass;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use App\Models\P_Viol_Action;
+use App\Models\P_Viol_Action_Detail;
 
 class SuperAdminController extends Controller
 {
@@ -314,7 +317,7 @@ class SuperAdminController extends Controller
                         'createdBy',
                         'updatedBy',
                     ])
-                        ->orderBy('created_at', 'desc');
+                        ->orderBy('created_at', 'asc');
                 }
             ])
             ->has('recaps')
@@ -331,7 +334,7 @@ class SuperAdminController extends Controller
 
                 // Filter handling options berdasarkan total poin siswa (kurang dari)
                 $student->available_handlings = $handlingOptions->filter(function ($handling) use ($student) {
-                    return $handling->handling_point < $student->total_points_verified;
+                    return $handling->handling_point <= $student->total_points_verified;
                 });
 
                 return $student;
@@ -427,41 +430,130 @@ class SuperAdminController extends Controller
         $request->validate([
             'handling_id' => 'required|exists:p_config_handlings,id',
             'description' => 'nullable|string',
+            'prey' => 'nullable|date',
+            'action_date' => 'nullable|date',
+            'reference_number' => 'nullable|string|max:191',
+            'time' => 'nullable|string|max:50',
+            'room' => 'nullable|string|max:100',
+            'facing' => 'nullable|string|max:100',
         ]);
 
-        // Ambil data student
+        // Ambil data student (ref_student_academic_years id)
         $studentAcademicYear = RefStudentAcademicYear::with([
             'student',
             'class',
             'recaps.violation.category'
-        ])->findOrFail($id);
+        ])->find($id);
+
+        if (!$studentAcademicYear) {
+            return back()->withErrors(['error' => 'Data tahun akademik siswa tidak ditemukan.']);
+        }
+
+        $student = $studentAcademicYear->student;
+
+        if (!$student) {
+            return back()->withErrors(['error' => 'Data siswa tidak ditemukan dalam sistem.']);
+        }
+
+        // Pastikan data wali (guardian) tersedia
+        if (empty($student->guardian_name)) {
+            return back()->withErrors(['error' => 'Data wali siswa belum lengkap. Mohon lengkapi data wali terlebih dahulu.']);
+        }
 
         // Ambil data handling
         $handling = P_Config_Handlings::findOrFail($request->handling_id);
 
-        // Hitung total poin verified
-        $totalPoints = $studentAcademicYear->recaps
-            ->where('status', 'verified')
-            ->sum(fn($recap) => $recap->violation->point ?? 0);
+        // Tentukan rekap yang akan dihubungkan ke tindakan
+        // Preferensi: latest verified -> latest pending -> any latest
 
-        // Data untuk PDF
-        $data = [
-            'student' => $studentAcademicYear->student,
-            'class' => $studentAcademicYear->class,
-            'handling' => $handling,
-            'description' => $request->description,
-            'total_points' => $totalPoints,
-            'date' => Carbon::now()->format('d F Y'),
-            'violations' => $studentAcademicYear->recaps->where('status', 'verified')
-        ];
+        // Fallback: jika collection recaps kosong atau id tidak tersedia, cari langsung dari tabel p_recaps
 
-        // Generate PDF
-        $pdf = Pdf::loadView('pdf.handling-action', $data);
 
-        // Optional: Simpan data ke database jika perlu
-        // HandlingRecord::create([...]);
+        // Mulai transaksi untuk menyimpan action dan detail
+        try {
+            DB::beginTransaction();
 
-        // Download PDF
-        return $pdf->download('Surat-Tindakan-' . $studentAcademicYear->student->full_name . '-' . Carbon::now()->format('YmdHis') . '.pdf');
+            Log::info('Creating P_Viol_Action', [
+                'p_student_academic_year_id' => $studentAcademicYear->id,
+                'handling_id' => $request->handling_id,
+                'handled_by' => Auth::id(),
+                'student_academic_year_id' => $studentAcademicYear->id,
+                'student_id' => $studentAcademicYear->student_id,
+            ]);
+
+            $action = P_Viol_Action::create([
+                'p_student_academic_year_id' => $studentAcademicYear->id,
+                'handling_id' => $request->handling_id,
+                'handled_by' => Auth::id(),
+                'activity' => $handling->handling_action ?? null,
+                'description' => $request->description,
+            ]);
+
+            P_Viol_Action_Detail::create([
+                'p_viol_action_id' => $action->id,
+                'parent_name' => $student->guardian_name ?? null,
+                'student_name' => $student->full_name ?? null,
+                'prey' => $request->prey,
+                'action_date' => $request->action_date,
+                'reference_number' => $request->reference_number,
+                'time' => $request->time,
+                'room' => $request->room,
+                'facing' => $request->facing,
+            ]);
+
+            DB::commit();
+
+            // Hitung total poin verified (untuk PDF dan info)
+            $totalPoints = $studentAcademicYear->recaps
+                ->where('status', 'verified')
+                ->sum(fn($recap) => $recap->violation->point ?? 0);
+
+            // Data untuk PDF — include lowercase variable names and kelas
+            $preyDate = $request->prey ? Carbon::parse($request->prey)->format('d F Y') : Carbon::now()->format('d F Y');
+            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->format('d F Y') : '';
+            $kelasString = trim((($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? '')));
+
+            $data = [
+                'student' => $student,
+                'class' => $studentAcademicYear->class,
+                'handling' => $handling,
+                'description' => $request->description,
+                'total_points' => $totalPoints,
+                'date' => $preyDate,
+                'violations' => $studentAcademicYear->recaps->where('status', 'verified'),
+
+                // Lowercase keys for blade
+                'prey' => $preyDate,
+                'reference_number' => $request->reference_number ?? '',
+                'student_name' => $student->full_name ?? '',
+                'parent_name' => $student->guardian_name ?? '',
+                'action_date' => $actionDateFormatted,
+                'time' => $request->time ?? '',
+                'room' => $request->room ?? '',
+                'facing' => $request->facing ?? '',
+                'kelas' => $kelasString,
+            ];
+
+            // Render the panggilan view in browser so user can preview and print manually
+            return view('pdf.panggilan', $data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('storeHandlingAction error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan tindakan: ' . $e->getMessage()]);
+        }
+    }
+
+    public function actions()
+    {
+        $actions = P_Viol_Action::with([
+            'academicYear.pRecaps.violation', // Load semua recaps beserta violation
+            'academicYear.student',            // Load student info
+            'academicYear.class',              // Load class info
+            'handling',
+            'handle',
+            'detail'
+        ])->orderBy('created_at', 'desc')->get();
+
+        return view('superadmin.actions.index', compact('actions'));
     }
 }

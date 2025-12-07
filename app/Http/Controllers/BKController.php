@@ -9,6 +9,7 @@ use App\Models\RefClass;
 use Illuminate\Http\Request;
 use App\Models\RefStudentAcademicYear;
 use App\Models\P_Recaps;
+use App\Models\P_Viol_Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -265,6 +266,8 @@ class BKController extends Controller
                     'updated_by'      => Auth::id(),
                 ]);
             }
+
+
 
             DB::commit();
 
@@ -527,5 +530,17 @@ class BKController extends Controller
 
         // Download PDF
         return $pdf->download('Surat-Tindakan-' . $studentAcademicYear->student->full_name . '-' . Carbon::now()->format('YmdHis') . '.pdf');
+    }
+
+    public function actions()
+    {
+        $actions = P_Viol_Action::with([
+            'recap.student',
+            'handling',
+            'handle',
+            'detail'
+        ])->orderBy('created_at', 'desc')->get();
+
+        return view('bk.actions.index', compact('actions'));
     }
 }

@@ -84,8 +84,8 @@ class ConfigController extends Controller
 
         try {
             DB::beginTransaction();
-
-            $config = P_Configs::findOrFail($id);
+$config = P_Configs::findOrFail
+            ($id);
 
             $config->update([
                 'academic_year' => $request->academic_year,

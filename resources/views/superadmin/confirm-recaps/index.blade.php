@@ -128,6 +128,32 @@
                             <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
                         </div>
 
+                        {{-- Validation / flash messages for the table area --}}
+                        <div id="hoverableTableAlerts">
+                            @if ($errors->any())
+                                <div class="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">
+                                    <strong class="font-semibold">Terjadi kesalahan:</strong>
+                                    <ul class="mt-1 list-inside list-disc">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            @if (session('success'))
+                                <div class="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-700" role="status">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+                        </div>
+
                         <table id="hoverableTable" style="width: 100%" class="hover group">
                             <thead>
                                 <tr>
@@ -216,6 +242,63 @@
 
                                                                 <div id="handlingDetails-{{ $student->id }}"
                                                                     class="hidden">
+                                                                    {{-- Resolve RefStudent: prefer loaded relation when it has data, otherwise try id or student_id lookups --}}
+                                                                    @php
+                                                                        $relStudent = $student->student ?? null;
+                                                                        $refStudent = null;
+
+                                                                        if (
+                                                                            $relStudent &&
+                                                                            (!empty($relStudent->guardian_name) ||
+                                                                                !empty($relStudent->full_name))
+                                                                        ) {
+                                                                            $refStudent = $relStudent;
+                                                                        } else {
+                                                                            $refStudent = \App\Models\RefStudent::find(
+                                                                                $student->student_id ?? null,
+                                                                            );
+
+                                                                            if (
+                                                                                !$refStudent &&
+                                                                                !empty($student->student_id)
+                                                                            ) {
+                                                                                // sometimes ref_student_academic_years.student_id stores a different key (student_id column)
+                                                                                $refStudent = \App\Models\RefStudent::where(
+                                                                                    'student_id',
+                                                                                    $student->student_id,
+                                                                                )->first();
+                                                                            }
+                                                                        }
+                                                                    @endphp
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Nama
+                                                                            Siswa</label>
+                                                                        <input type="text" name="student_name" readonly
+                                                                            value="{{ $refStudent->full_name ?? ($student->student->full_name ?? '') }}"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Nama
+                                                                            Wali</label>
+                                                                        <input type="text" name="parent_name" readonly
+                                                                            value="{{ $refStudent->guardian_name ?? ($student->student->guardian_name ?? '') }}"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600">
+                                                                        @if (config('app.debug'))
+                                                                            <div class="text-xs text-red-500 mt-1">
+                                                                                Debug:
+                                                                                student_academic_year_id={{ $student->id }}
+                                                                                student_id={{ $student->student_id ?? 'null' }}
+                                                                                —
+                                                                                refGuardian={{ $refStudent->guardian_name ?? 'null' }}
+                                                                                —
+                                                                                relationGuardian={{ $student->student->guardian_name ?? 'null' }}
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+
                                                                     <div class="mb-4">
                                                                         <label
                                                                             class="inline-block mb-2 text-base font-medium">Tindakan
@@ -238,38 +321,79 @@
                                                                             value="">
                                                                     </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="keterangan-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">
-                                                                            Keterangan
-                                                                        </label>
-                                                                        <textarea id="keterangan-{{ $student->id }}" name="description" rows="4"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                                                            placeholder="Masukkan keterangan tindakan..."></textarea>
-                                                                    </div>
-                                                                </div>
 
-                                                                <div class="flex items-center justify-end gap-2 mt-4">
-                                                                    <button
-                                                                        data-modal-close="modal-tindakan-{{ $student->id }}"
-                                                                        type="button"
-                                                                        class="text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 hover:border-slate-300 focus:text-slate-600 focus:bg-slate-300 focus:border-slate-300 focus:ring focus:ring-slate-100 active:text-slate-600 active:bg-slate-300 active:border-slate-300 active:ring active:ring-slate-100 dark:bg-zink-600 dark:hover:bg-zink-500 dark:border-zink-600 dark:hover:border-zink-500 dark:text-zink-200 dark:ring-zink-400/50">
-                                                                        Batal
-                                                                    </button>
+                                                                    <div class="mb-4">
+                                                                        <label for="prey-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Titimangsa
+                                                                            (prey)
+                                                                        </label>
+                                                                        <input type="date"
+                                                                            id="prey-{{ $student->id }}" name="prey"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="action_date-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Hari,
+                                                                            Tanggal (action_date)</label>
+                                                                        <input type="date"
+                                                                            id="action_date-{{ $student->id }}"
+                                                                            name="action_date"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="reference_number-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Nomor
+                                                                            Surat (reference_number)</label>
+                                                                        <input type="text"
+                                                                            id="reference_number-{{ $student->id }}"
+                                                                            name="reference_number"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            placeholder="Masukkan nomor surat">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="time-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Jam
+                                                                            (time)</label>
+                                                                        <input type="text"
+                                                                            id="time-{{ $student->id }}" name="time"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            placeholder="08:30">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="room-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Ruangan
+                                                                            (room)</label>
+                                                                        <input type="text"
+                                                                            id="room-{{ $student->id }}" name="room"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            placeholder="Ruang A">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="facing-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">Menghadap
+                                                                            Ke (facing)</label>
+                                                                        <input type="text"
+                                                                            id="facing-{{ $student->id }}"
+                                                                            name="facing"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            placeholder="Guru / Papan Tulis">
+                                                                    </div>
                                                                     <button type="submit"
-                                                                        class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-                                                                        Simpan
+                                                                        class="dark:bg-custom-600 dark:hover:bg-custom-700 bg-custom-500 hover:bg-custom-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
+                                                                        Simpan Tindakan
                                                                     </button>
-                                                                </div>
                                                             </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                         </td>
+
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $student->student->student_number }}</td>
-                                        <td>{{ $student->student->full_name }}</td>
-                                        <td>{{ $student->student->gender }}</td>
+                                        <td>{{ $student->student->student_number ?? '-' }}</td>
+                                        <td>{{ $student->student->full_name ?? '-' }}</td>
+                                        <td>{{ $student->student->gender ?? '-' }}</td>
                                         <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>
                                         <td>
                                             <span class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">

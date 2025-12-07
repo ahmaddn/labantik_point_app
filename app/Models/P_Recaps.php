@@ -55,7 +55,7 @@ class P_Recaps extends Model
     // Relationship dengan RefStudent
     public function student()
     {
-        return $this->belongsTo(RefStudentAcademicYear::class, 'ref_student_id');
+        return $this->belongsTo(\App\Models\RefStudent::class, 'ref_student_id');
     }
 
     // Relationship dengan P_Violations

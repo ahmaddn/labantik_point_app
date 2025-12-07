@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\ActionsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BKController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\ViolationController;
 
 // Auth Routes
@@ -39,6 +41,7 @@ Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
     Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
     Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
+    Route::get('/actions', [BKController::class, 'actions'])->name('actions');
 });
 
 Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(function () {
@@ -59,13 +62,19 @@ Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(func
     Route::delete('/violations/{id}/destroy', [ViolationController::class, 'destroy'])
         ->name('violations.destroy');
 
-
+    //Confirm Recaps
     Route::get('/confirm-recaps', [SuperAdminController::class, 'confirmRecaps'])->name('confirm-recaps');
     Route::get('/confirm-recaps/{studentAcademicYearId}/detail', [SuperAdminController::class, 'detailConfirmRecaps'])->name('detailConfirm-Recaps');
     Route::post('/confirm-recaps/{id}/action', [SuperAdminController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::delete('/recaps/{id}/delete', [SuperAdminController::class, 'destroyRecap'])->name('recaps.destroy');
     Route::put('/violation-status/{id}',  [SuperAdminController::class, 'updateViolationStatus'])->name('violation-status.update');
 
+    //Templates
+    Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+    Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+        ->name('templates.download');
+
+    Route::get('/actions', [SuperAdminController::class, 'actions'])->name('actions');
     //Configs
     Route::get('/configs', [ConfigController::class, 'index'])->name('configs');
     Route::post('/configs/store', [ConfigController::class, 'store'])->name('configs.store');
