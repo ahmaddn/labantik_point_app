@@ -240,8 +240,9 @@
                                                                     </select>
                                                                 </div>
 
-                                                                <div id="handlingDetails-{{ $student->id }}"
-                                                                    class="hidden">
+
+
+                                                                <div id="handlingDetails-{{ $student->id }}" class="hidden">
                                                                     {{-- Resolve RefStudent: prefer loaded relation when it has data, otherwise try id or student_id lookups --}}
                                                                     @php
                                                                         $relStudent = $student->student ?? null;
@@ -383,6 +384,11 @@
                                                                             class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
                                                                             placeholder="Guru / Papan Tulis">
                                                                     </div>
+                                                                        <div class="mb-4">
+                                                                            <label class="inline-block mb-2 text-base font-medium">Deskripsi</label>
+                                                                            <textarea id="descDetailsTextarea-{{ $student->id }}" rows="3"
+                                                                                class="form-input border-slate-200 dark:border-zink-500 w-full"></textarea>
+                                                                        </div>
                                                                     <button type="submit"
                                                                         class="dark:bg-custom-600 dark:hover:bg-custom-700 bg-custom-500 hover:bg-custom-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
                                                                         Simpan Tindakan
@@ -404,6 +410,51 @@
                                 @endforeach
                             </tbody>
                         </table>
+
+                        <script>
+                            (function(){
+                                document.querySelectorAll('.tindakan-dropdown').forEach(function(select){
+                                    var studentId = select.getAttribute('data-student-id');
+                                    var details = document.getElementById('handlingDetails-' + studentId);
+                                    var descOnly = document.getElementById('descriptionOnly-' + studentId);
+                                    var descOnlyTextarea = document.getElementById('descOnlyTextarea-' + studentId);
+                                    var descDetailsTextarea = document.getElementById('descDetailsTextarea-' + studentId);
+                                    var selectedActionInput = document.getElementById('selectedAction-' + studentId);
+                                    var selectedPointInput = document.getElementById('selectedPoint-' + studentId);
+
+                                    function update(){
+                                        var opt = select.options[select.selectedIndex];
+                                        var action = (opt && opt.dataset && opt.dataset.action) ? opt.dataset.action.toLowerCase() : '';
+                                        var point = (opt && opt.dataset && opt.dataset.point) ? opt.dataset.point : '';
+
+                                        if(selectedActionInput) selectedActionInput.value = opt ? opt.text.replace(/ - .*$/, '') : '';
+                                        if(selectedPointInput) selectedPointInput.value = point;
+
+                                        // Show details for Kegiatan Sosial or any pemanggilan/panggilan
+                                        var wantsDetails = false;
+                                        if(action.indexOf('kegiatan sosial') !== -1) wantsDetails = true;
+                                        if(action.indexOf('panggilan') !== -1) wantsDetails = true;
+                                        if(action.indexOf('pemanggilan') !== -1) wantsDetails = true;
+
+                                        if(wantsDetails){
+                                            if(details) details.classList.remove('hidden');
+                                            if(descOnly) descOnly.classList.add('hidden');
+                                            if(descDetailsTextarea) descDetailsTextarea.name = 'description';
+                                            if(descOnlyTextarea) descOnlyTextarea.removeAttribute('name');
+                                        } else {
+                                            if(details) details.classList.add('hidden');
+                                            if(descOnly) descOnly.classList.remove('hidden');
+                                            if(descDetailsTextarea) descDetailsTextarea.removeAttribute('name');
+                                            if(descOnlyTextarea) descOnlyTextarea.name = 'description';
+                                        }
+                                    }
+
+                                    select.addEventListener('change', update);
+                                    // initialize
+                                    update();
+                                });
+                            })();
+                        </script>
 
                         <!-- Pesan jika tidak ada data setelah filter -->
                         <div id="noMainData" class="hidden py-8 text-center">

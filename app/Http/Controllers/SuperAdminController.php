@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\P_Viol_Action;
 use App\Models\P_Viol_Action_Detail;
+use App\Models\User;
 
 class SuperAdminController extends Controller
 {
@@ -513,6 +514,9 @@ class SuperAdminController extends Controller
             $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->format('d F Y') : '';
             $kelasString = trim((($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? '')));
 
+            // Ambil data Kepala Sekolah (jika ada)
+            $kepalaSekolah = User::with('employee')->where('email', 'kepsek@gmail.com')->first();
+
             $data = [
                 'student' => $student,
                 'class' => $studentAcademicYear->class,
@@ -532,7 +536,9 @@ class SuperAdminController extends Controller
                 'room' => $request->room ?? '',
                 'facing' => $request->facing ?? '',
                 'kelas' => $kelasString,
+                'kepala_sekolah' => $kepalaSekolah,
             ];
+
 
             // Render the panggilan view in browser so user can preview and print manually
             return view('pdf.panggilan', $data);

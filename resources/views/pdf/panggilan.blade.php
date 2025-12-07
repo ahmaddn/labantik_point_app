@@ -160,8 +160,8 @@
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><strong><u><span
-                style="font-family:Arial;">UDIN WAHYUDIN, S.IP.,M.Si</span></u></strong></p>
+                style="font-family:Arial;">{{ $kepala_sekolah->name ?? '' }}</span></u></strong></p>
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><span
         style="font-family:Arial;">Pembina Tk. I, IV/b</span></p>
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><span
-        style="font-family:Arial;">NIP.196507051989031017</span></p>
+        style="font-family:Arial;">{{ $kepala_sekolah->nip ?? '' }}</span></p>
