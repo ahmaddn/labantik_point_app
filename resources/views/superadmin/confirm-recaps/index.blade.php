@@ -166,7 +166,105 @@
                                                         <path d="m22 10-7.5 7.5L13 16" />
                                                     </svg>
                                                 </button>
-                                            </div>
+                                                <button data-modal-target="modal-tindakan-{{ $student->id }}"
+                                                    type="button"
+                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-custom-500 bg-white p-0 text-custom-500 hover:border-custom-600 hover:bg-custom-600 hover:text-white">
+                                                    <i data-lucide="settings" class="size-4"></i>
+                                                </button>
+
+                                                <div id="modal-tindakan-{{ $student->id }}" modal-center=""
+                                                    class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
+                                                    <div
+                                                        class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+                                                        <div
+                                                            class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
+                                                            <h5 class="text-16">Tindakan -
+                                                                {{ $student->student->full_name }}</h5>
+                                                            <button data-modal-close="modal-tindakan-{{ $student->id }}"
+                                                                class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+                                                                <i data-lucide="x" class="size-5"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div
+                                                            class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+                                                            <form method="POST"
+                                                                action="{{ route('superadmin.actionConfirm-Recaps', $student->id) }}">
+                                                                @csrf
+                                                                <input type="hidden" name="student_academic_year_id"
+                                                                    value="{{ $student->id }}">
+
+                                                                <div class="mb-4">
+                                                                    <label for="tindakanSelect-{{ $student->id }}"
+                                                                        class="inline-block mb-2 text-base font-medium">
+                                                                        Pilih Tindakan <span class="text-red-500">*</span>
+                                                                    </label>
+                                                                    <select id="tindakanSelect-{{ $student->id }}"
+                                                                        name="handling_id" required
+                                                                        class="tindakan-dropdown form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                        data-student-id="{{ $student->id }}">
+                                                                        <option value="">Pilih tindakan...</option>
+                                                                        @foreach ($student->available_handlings as $item)
+                                                                            <option value="{{ $item->id }}"
+                                                                                data-action="{{ e($item->handling_action) }}"
+                                                                                data-point="{{ e($item->handling_point) }}">
+                                                                                {{ $item->handling_action }} -
+                                                                                {{ $item->handling_point }} Poin
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+
+                                                                <div id="handlingDetails-{{ $student->id }}"
+                                                                    class="hidden">
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Tindakan
+                                                                            Terpilih</label>
+                                                                        <input type="text"
+                                                                            id="selectedAction-{{ $student->id }}"
+                                                                            readonly
+                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            value="">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Poin
+                                                                            Tindakan</label>
+                                                                        <input type="text"
+                                                                            id="selectedPoint-{{ $student->id }}"
+                                                                            readonly
+                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            value="">
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="keterangan-{{ $student->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">
+                                                                            Keterangan
+                                                                        </label>
+                                                                        <textarea id="keterangan-{{ $student->id }}" name="description" rows="4"
+                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                            placeholder="Masukkan keterangan tindakan..."></textarea>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="flex items-center justify-end gap-2 mt-4">
+                                                                    <button
+                                                                        data-modal-close="modal-tindakan-{{ $student->id }}"
+                                                                        type="button"
+                                                                        class="text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 hover:border-slate-300 focus:text-slate-600 focus:bg-slate-300 focus:border-slate-300 focus:ring focus:ring-slate-100 active:text-slate-600 active:bg-slate-300 active:border-slate-300 active:ring active:ring-slate-100 dark:bg-zink-600 dark:hover:bg-zink-500 dark:border-zink-600 dark:hover:border-zink-500 dark:text-zink-200 dark:ring-zink-400/50">
+                                                                        Batal
+                                                                    </button>
+                                                                    <button type="submit"
+                                                                        class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
+                                                                        Simpan
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                         </td>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $student->student->student_number }}</td>
@@ -347,6 +445,7 @@
                                                                                     </svg>
                                                                                 </button>
                                                                             @endif
+
                                                                         </form>
 
                                                                         @if ($recap->status == 'pending')
@@ -1525,6 +1624,32 @@
                             const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
                             goToPage(studentId, totalPages);
                             break;
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener untuk semua dropdown tindakan
+            document.querySelectorAll('.tindakan-dropdown').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    const detailsDiv = document.getElementById('handlingDetails-' + studentId);
+                    const selectedOption = this.options[this.selectedIndex];
+
+                    if (this.value) {
+                        const action = selectedOption.getAttribute('data-action');
+                        const point = selectedOption.getAttribute('data-point');
+
+                        document.getElementById('selectedAction-' + studentId).value = action;
+                        document.getElementById('selectedPoint-' + studentId).value = point +
+                            ' Poin';
+
+                        detailsDiv.classList.remove('hidden');
+                    } else {
+                        detailsDiv.classList.add('hidden');
                     }
                 });
             });

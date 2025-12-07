@@ -37,6 +37,7 @@ Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
     Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
     Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
     Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
+    Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
 });
 
@@ -61,6 +62,7 @@ Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(func
 
     Route::get('/confirm-recaps', [SuperAdminController::class, 'confirmRecaps'])->name('confirm-recaps');
     Route::get('/confirm-recaps/{studentAcademicYearId}/detail', [SuperAdminController::class, 'detailConfirmRecaps'])->name('detailConfirm-Recaps');
+    Route::post('/confirm-recaps/{id}/action', [SuperAdminController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::delete('/recaps/{id}/delete', [SuperAdminController::class, 'destroyRecap'])->name('recaps.destroy');
     Route::put('/violation-status/{id}',  [SuperAdminController::class, 'updateViolationStatus'])->name('violation-status.update');
 

@@ -12,6 +12,8 @@ use App\Models\P_Recaps;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class BKController extends Controller
 {
@@ -422,7 +424,7 @@ class BKController extends Controller
                 'class'
             ])
             ->get()
-            ->map(function ($studentAcademicYear) {
+            ->map(function ($studentAcademicYear) use ($handlingOptions) {
                 // Hitung total poin violations yang verified
                 $verifiedPoints = $studentAcademicYear->recaps
                     ->where('status', 'verified')
@@ -432,6 +434,9 @@ class BKController extends Controller
                     });
 
                 $studentAcademicYear->violations_sum_point = $verifiedPoints;
+                $studentAcademicYear->available_handlings = $handlingOptions->filter(function ($handling) use ($verifiedPoints) {
+                    return $verifiedPoints >= $handling->handling_point;
+                });
                 return $studentAcademicYear;
             });
 
@@ -479,5 +484,48 @@ class BKController extends Controller
             'totalVerifiedPoints',
             'applicableHandling'
         ));
+    }
+
+    public function storeHandlingAction(Request $request, $id)
+    {
+        $request->validate([
+            'handling_id' => 'required|exists:p_config_handlings,id',
+            'description' => 'nullable|string',
+        ]);
+
+        // Ambil data student
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps.violation.category'
+        ])->findOrFail($id);
+
+        // Ambil data handling
+        $handling = P_Config_Handlings::findOrFail($request->handling_id);
+
+        // Hitung total poin verified
+        $totalPoints = $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(fn($recap) => $recap->violation->point ?? 0);
+
+        // Data untuk PDF
+        $data = [
+            'student' => $studentAcademicYear->student,
+            'class' => $studentAcademicYear->class,
+            'handling' => $handling,
+            'description' => $request->description,
+            'total_points' => $totalPoints,
+            'date' => Carbon::now()->format('d F Y'),
+            'violations' => $studentAcademicYear->recaps->where('status', 'verified')
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.handling-action', $data);
+
+        // Optional: Simpan data ke database jika perlu
+        // HandlingRecord::create([...]);
+
+        // Download PDF
+        return $pdf->download('Surat-Tindakan-' . $studentAcademicYear->student->full_name . '-' . Carbon::now()->format('YmdHis') . '.pdf');
     }
 }
