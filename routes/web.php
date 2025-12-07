@@ -20,7 +20,8 @@ Route::prefix('guru')
     ->group(function () {
         Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');
         Route::get('/recaps', [GuruController::class, 'recaps'])->name('recaps');
-        Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
+        Route::get('/recaps/{id}/detail', [GuruController::class, 'detailRecaps'])->name('recaps.detail');
+        Route::get('/student-data', [GuruController::class, 'studentData'])->name('student-data');
 
 
         Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
@@ -35,6 +36,7 @@ Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
     Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');
     Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
     Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
+    Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
     Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
 });
 

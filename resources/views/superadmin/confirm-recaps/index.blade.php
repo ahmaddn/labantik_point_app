@@ -951,60 +951,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle modal open
-            document.querySelectorAll('[data-modal-target]').forEach(button => {
-                button.addEventListener('click', function() {
-                    const modalId = this.getAttribute('data-modal-target');
-                    const modal = document.getElementById(modalId);
-                    if (modal) {
-                        modal.classList.remove('hidden');
-                        document.body.style.overflow = 'hidden';
-
-                        // Scroll modal content and table to top when modal opens
-                        const modalContent = modal.querySelector('.modal-content');
-                        if (modalContent) {
-                            modalContent.scrollTop = 0;
-                        }
-
-                        const tableWrapper = modal.querySelector('.table-scroll-wrapper');
-                        if (tableWrapper) {
-                            tableWrapper.scrollTop = 0;
-                        }
-                    }
-                });
-            });
-
-            // Handle modal close
-            document.querySelectorAll('[data-modal-close]').forEach(button => {
-                button.addEventListener('click', function() {
-                    const modalId = this.getAttribute('data-modal-close');
-                    const modal = document.getElementById(modalId);
-                    if (modal) {
-                        modal.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                    }
-                });
-            });
-
-            // Close modal when clicking outside
-            document.querySelectorAll('[modal-center]').forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                    }
-                });
-            });
-
-            // Close modal with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('[modal-center]:not(.hidden)').forEach(modal => {
-                        modal.classList.add('hidden');
-                        document.body.style.overflow = 'auto';
-                    });
-                }
-            });
 
             // Filter functionality for confirmation modal tables
             document.querySelectorAll('.category-filter').forEach(filter => {

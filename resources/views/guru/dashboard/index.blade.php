@@ -14,7 +14,7 @@
                         <a href="#!" class="dark:text-zink-200 text-slate-400">Dashboards</a>
                     </li>
                     <li class="dark:text-zink-100 text-slate-700">
-                        BK
+                        Guru
                     </li>
                 </ul>
             </div>

@@ -111,7 +111,7 @@ class BKController extends Controller
         ));
     }
 
-      public function studentData(Request $request)
+    public function studentData(Request $request)
     {
         // Ambil tahun akademik aktif
         $activeAcademicYear = P_Configs::getActiveAcademicYear();
@@ -436,5 +436,48 @@ class BKController extends Controller
             });
 
         return view('BK.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
+    }
+
+    public function detailRecaps($studentAcademicYearId)
+    {
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+            ->orderBy('handling_point', 'asc')
+            ->get();
+
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->with([
+                    'violation.category',
+                    'verifiedBy',
+                    'createdBy',
+                    'updatedBy',
+                ])->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($studentAcademicYearId);
+
+        $totalVerifiedPoints = $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(function ($recap) {
+                return $recap->violation->point ?? 0;
+            });
+
+        $applicableHandling  = null;
+        foreach ($handlingPointOptions as $handling) {
+            if ($totalVerifiedPoints >= $handling->handling_point) {
+                $applicableHandling = $handling;
+            } else {
+                break;
+            }
+        }
+
+        return view('bk.dashboard.detail', compact(
+            'studentAcademicYear',
+            'handlingPointOptions',
+            'totalVerifiedPoints',
+            'applicableHandling'
+        ));
     }
 }
