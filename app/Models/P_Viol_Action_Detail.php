@@ -26,6 +26,12 @@ class P_Viol_Action_Detail extends Model
         'time',
         'room',
         'facing',
+        'violation_count',
+        'violations',
+    ];
+
+    protected $casts = [
+        'violations' => 'array',
     ];
 
     protected static function boot()

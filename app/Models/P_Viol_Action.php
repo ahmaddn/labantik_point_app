@@ -52,6 +52,6 @@ class P_Viol_Action extends Model
 
     public function detail()
     {
-        return $this->hasMany(P_Viol_Action_Detail::class, 'p_viol_action_id');
+        return $this->hasOne(P_Viol_Action_Detail::class, 'p_viol_action_id');
     }
 }

@@ -194,25 +194,25 @@
                                                 </button>
                                                 <button data-modal-target="modal-tindakan-{{ $student->id }}"
                                                     type="button"
-                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-custom-500 bg-white p-0 text-custom-500 hover:border-custom-600 hover:bg-custom-600 hover:text-white">
+                                                    class="btn dark:bg-zink-700 border-custom-500 text-custom-500 hover:border-custom-600 hover:bg-custom-600 flex size-[37.5px] items-center justify-center rounded-full bg-white p-0 hover:text-white">
                                                     <i data-lucide="settings" class="size-4"></i>
                                                 </button>
 
                                                 <div id="modal-tindakan-{{ $student->id }}" modal-center=""
-                                                    class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
+                                                    class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
                                                     <div
-                                                        class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+                                                        class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[30rem]">
                                                         <div
-                                                            class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
+                                                            class="dark:border-zink-500 flex items-center justify-between border-b border-slate-200 p-4">
                                                             <h5 class="text-16">Tindakan -
                                                                 {{ $student->student->full_name }}</h5>
                                                             <button data-modal-close="modal-tindakan-{{ $student->id }}"
-                                                                class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+                                                                class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500 dark:hover:text-red-500">
                                                                 <i data-lucide="x" class="size-5"></i>
                                                             </button>
                                                         </div>
                                                         <div
-                                                            class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+                                                            class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-4">
                                                             <form method="POST"
                                                                 action="{{ route('superadmin.actionConfirm-Recaps', $student->id) }}">
                                                                 @csrf
@@ -221,12 +221,12 @@
 
                                                                 <div class="mb-4">
                                                                     <label for="tindakanSelect-{{ $student->id }}"
-                                                                        class="inline-block mb-2 text-base font-medium">
+                                                                        class="mb-2 inline-block text-base font-medium">
                                                                         Pilih Tindakan <span class="text-red-500">*</span>
                                                                     </label>
                                                                     <select id="tindakanSelect-{{ $student->id }}"
                                                                         name="handling_id" required
-                                                                        class="tindakan-dropdown form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                        class="tindakan-dropdown form-input dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
                                                                         data-student-id="{{ $student->id }}">
                                                                         <option value="">Pilih tindakan...</option>
                                                                         @foreach ($student->available_handlings as $item)
@@ -240,9 +240,8 @@
                                                                     </select>
                                                                 </div>
 
-
-
-                                                                <div id="handlingDetails-{{ $student->id }}" class="hidden">
+                                                                <div id="handlingDetails-{{ $student->id }}"
+                                                                    class="hidden">
                                                                     {{-- Resolve RefStudent: prefer loaded relation when it has data, otherwise try id or student_id lookups --}}
                                                                     @php
                                                                         $relStudent = $student->student ?? null;
@@ -273,124 +272,155 @@
                                                                     @endphp
                                                                     <div class="mb-4">
                                                                         <label
-                                                                            class="inline-block mb-2 text-base font-medium">Nama
+                                                                            class="mb-2 inline-block text-base font-medium">Nama
                                                                             Siswa</label>
-                                                                        <input type="text" name="student_name" readonly
-                                                                            value="{{ $refStudent->full_name ?? ($student->student->full_name ?? '') }}"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600">
+                                                                        <input type="text" name="student_name"
+                                                                            value="{{ $student->action_detail?->detail?->student_name ?? ($refStudent->full_name ?? ($student->student->full_name ?? '')) }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label
-                                                                            class="inline-block mb-2 text-base font-medium">Nama
+                                                                            class="mb-2 inline-block text-base font-medium">Nama
                                                                             Wali</label>
-                                                                        <input type="text" name="parent_name" readonly
-                                                                            value="{{ $refStudent->guardian_name ?? ($student->student->guardian_name ?? '') }}"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600">
-                                                                        @if (config('app.debug'))
-                                                                            <div class="text-xs text-red-500 mt-1">
-                                                                                Debug:
-                                                                                student_academic_year_id={{ $student->id }}
-                                                                                student_id={{ $student->student_id ?? 'null' }}
-                                                                                —
-                                                                                refGuardian={{ $refStudent->guardian_name ?? 'null' }}
-                                                                                —
-                                                                                relationGuardian={{ $student->student->guardian_name ?? 'null' }}
-                                                                            </div>
-                                                                        @endif
+                                                                        <input type="text" name="parent_name"
+                                                                            value="{{ $student->action_detail?->detail?->parent_name ?? ($refStudent->guardian_name ?? ($student->student->guardian_name ?? '')) }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label
-                                                                            class="inline-block mb-2 text-base font-medium">Tindakan
+                                                                            class="mb-2 inline-block text-base font-medium">Tindakan
                                                                             Terpilih</label>
                                                                         <input type="text"
                                                                             id="selectedAction-{{ $student->id }}"
                                                                             readonly
-                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            class="form-input dark:border-zink-500 dark:bg-zink-600 border-slate-200 bg-slate-100"
                                                                             value="">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label
-                                                                            class="inline-block mb-2 text-base font-medium">Poin
+                                                                            class="mb-2 inline-block text-base font-medium">Poin
                                                                             Tindakan</label>
                                                                         <input type="text"
                                                                             id="selectedPoint-{{ $student->id }}"
                                                                             readonly
-                                                                            class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            class="form-input dark:border-zink-500 dark:bg-zink-600 border-slate-200 bg-slate-100"
                                                                             value="">
                                                                     </div>
 
-
                                                                     <div class="mb-4">
                                                                         <label for="prey-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Titimangsa
+                                                                            class="mb-2 inline-block text-base font-medium">Titimangsa
                                                                             (prey)
                                                                         </label>
                                                                         <input type="date"
                                                                             id="prey-{{ $student->id }}" name="prey"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
+                                                                            value="{{ $student->action_detail?->detail?->prey ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label for="action_date-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Hari,
+                                                                            class="mb-2 inline-block text-base font-medium">Hari,
                                                                             Tanggal (action_date)</label>
                                                                         <input type="date"
                                                                             id="action_date-{{ $student->id }}"
                                                                             name="action_date"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
+                                                                            value="{{ $student->action_detail?->detail?->action_date ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label for="reference_number-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Nomor
+                                                                            class="mb-2 inline-block text-base font-medium">Nomor
                                                                             Surat (reference_number)</label>
                                                                         <input type="text"
                                                                             id="reference_number-{{ $student->id }}"
                                                                             name="reference_number"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            value="{{ $student->action_detail?->detail?->reference_number ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                             placeholder="Masukkan nomor surat">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label for="time-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Jam
+                                                                            class="mb-2 inline-block text-base font-medium">Jam
                                                                             (time)</label>
                                                                         <input type="text"
                                                                             id="time-{{ $student->id }}" name="time"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            value="{{ $student->action_detail?->detail?->time ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                             placeholder="08:30">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label for="room-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Ruangan
+                                                                            class="mb-2 inline-block text-base font-medium">Ruangan
                                                                             (room)</label>
                                                                         <input type="text"
                                                                             id="room-{{ $student->id }}" name="room"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            value="{{ $student->action_detail?->detail?->room ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                             placeholder="Ruang A">
                                                                     </div>
 
                                                                     <div class="mb-4">
                                                                         <label for="facing-{{ $student->id }}"
-                                                                            class="inline-block mb-2 text-base font-medium">Menghadap
+                                                                            class="mb-2 inline-block text-base font-medium">Menghadap
                                                                             Ke (facing)</label>
                                                                         <input type="text"
                                                                             id="facing-{{ $student->id }}"
                                                                             name="facing"
-                                                                            class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
+                                                                            value="{{ $student->action_detail?->detail?->facing ?? '' }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                             placeholder="Guru / Papan Tulis">
                                                                     </div>
-                                                                        <div class="mb-4">
-                                                                            <label class="inline-block mb-2 text-base font-medium">Deskripsi</label>
-                                                                            <textarea id="descDetailsTextarea-{{ $student->id }}" rows="3"
-                                                                                class="form-input border-slate-200 dark:border-zink-500 w-full"></textarea>
-                                                                        </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label for="violation_count-{{ $student->id }}"
+                                                                            class="mb-2 inline-block text-base font-medium">Jumlah
+                                                                            Pelanggaran
+                                                                        </label>
+                                                                        <input type="number" min="0"
+                                                                            max="10"
+                                                                            id="violation_count-{{ $student->id }}"
+                                                                            name="violation_count"
+                                                                            value="{{ $student->action_detail?->detail?->violation_count ?? 0 }}"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                            placeholder="0"
+                                                                            onchange="generateViolationForms(this, '{{ $student->id }}')">
+                                                                    </div>
+
+                                                                    <!-- Form Pelanggaran Dinamis -->
+                                                                    <div id="violations-container-{{ $student->id }}"
+                                                                        class="mb-4">
+                                                                        @if ($student->action_detail?->detail?->violations)
+                                                                            @foreach ($student->action_detail->detail->violations as $index => $violation)
+                                                                                <div
+                                                                                    class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
+                                                                                    <label
+                                                                                        class="mb-2 inline-block text-sm font-medium">Pelanggaran
+                                                                                        ke-{{ $index + 1 }}</label>
+                                                                                    <input type="text"
+                                                                                        name="violations[{{ $index }}]"
+                                                                                        class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                        placeholder="Masukkan pelanggaran"
+                                                                                        value="{{ $violation }}">
+                                                                                </div>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="mb-2 inline-block text-base font-medium">Deskripsi</label>
+                                                                        <textarea id="descDetailsTextarea-{{ $student->id }}" name="description" rows="3"
+                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">{{ $student->action_detail?->description ?? '' }}</textarea>
+                                                                    </div>
                                                                     <button type="submit"
-                                                                        class="dark:bg-custom-600 dark:hover:bg-custom-700 bg-custom-500 hover:bg-custom-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
+                                                                        class="dark:bg-custom-600 dark:hover:bg-custom-700 bg-custom-500 hover:bg-custom-600 rounded-md px-4 py-2 text-white transition-colors duration-200">
                                                                         Simpan Tindakan
                                                                     </button>
                                                             </form>
@@ -410,51 +440,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-
-                        <script>
-                            (function(){
-                                document.querySelectorAll('.tindakan-dropdown').forEach(function(select){
-                                    var studentId = select.getAttribute('data-student-id');
-                                    var details = document.getElementById('handlingDetails-' + studentId);
-                                    var descOnly = document.getElementById('descriptionOnly-' + studentId);
-                                    var descOnlyTextarea = document.getElementById('descOnlyTextarea-' + studentId);
-                                    var descDetailsTextarea = document.getElementById('descDetailsTextarea-' + studentId);
-                                    var selectedActionInput = document.getElementById('selectedAction-' + studentId);
-                                    var selectedPointInput = document.getElementById('selectedPoint-' + studentId);
-
-                                    function update(){
-                                        var opt = select.options[select.selectedIndex];
-                                        var action = (opt && opt.dataset && opt.dataset.action) ? opt.dataset.action.toLowerCase() : '';
-                                        var point = (opt && opt.dataset && opt.dataset.point) ? opt.dataset.point : '';
-
-                                        if(selectedActionInput) selectedActionInput.value = opt ? opt.text.replace(/ - .*$/, '') : '';
-                                        if(selectedPointInput) selectedPointInput.value = point;
-
-                                        // Show details for Kegiatan Sosial or any pemanggilan/panggilan
-                                        var wantsDetails = false;
-                                        if(action.indexOf('kegiatan sosial') !== -1) wantsDetails = true;
-                                        if(action.indexOf('panggilan') !== -1) wantsDetails = true;
-                                        if(action.indexOf('pemanggilan') !== -1) wantsDetails = true;
-
-                                        if(wantsDetails){
-                                            if(details) details.classList.remove('hidden');
-                                            if(descOnly) descOnly.classList.add('hidden');
-                                            if(descDetailsTextarea) descDetailsTextarea.name = 'description';
-                                            if(descOnlyTextarea) descOnlyTextarea.removeAttribute('name');
-                                        } else {
-                                            if(details) details.classList.add('hidden');
-                                            if(descOnly) descOnly.classList.remove('hidden');
-                                            if(descDetailsTextarea) descDetailsTextarea.removeAttribute('name');
-                                            if(descOnlyTextarea) descOnlyTextarea.name = 'description';
-                                        }
-                                    }
-
-                                    select.addEventListener('change', update);
-                                    // initialize
-                                    update();
-                                });
-                            })();
-                        </script>
 
                         <!-- Pesan jika tidak ada data setelah filter -->
                         <div id="noMainData" class="hidden py-8 text-center">
@@ -720,7 +705,7 @@
                                                                 <!-- DIBUAT OLEH -->
                                                                 <td class="px-3 py-2">
                                                                     <span
-                                                                        class="text-xs text-slate-600 dark:text-zink-300">
+                                                                        class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->createdBy->name ?? '-' }}
                                                                     </span>
                                                                 </td>
@@ -728,7 +713,7 @@
                                                                 <!-- DIVERIFIKASI OLEH -->
                                                                 <td class="px-3 py-2">
                                                                     <span
-                                                                        class="text-xs text-slate-600 dark:text-zink-300">
+                                                                        class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->verifiedBy->name ?? '-' }}
                                                                     </span>
                                                                 </td>
@@ -736,7 +721,7 @@
                                                                 <!-- DIUPDATE OLEH -->
                                                                 <td class="px-3 py-2">
                                                                     <span
-                                                                        class="text-xs text-slate-600 dark:text-zink-300">
+                                                                        class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->updatedBy->name ?? '-' }}
                                                                     </span>
                                                                 </td>
@@ -767,7 +752,6 @@
                                             </div>
                                         </div>
 
-
                                         <!-- No Data Message -->
                                         <div id="noFilteredData-{{ $student->id }}" class="hidden py-8 text-center">
                                             <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
@@ -783,8 +767,8 @@
 
                                         <!-- PAGINATION CONTROLS - TAMBAHKAN DI SINI -->
                                         <div id="paginationControls-{{ $student->id }}"
-                                            class="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 dark:border-zink-500">
-                                            <div class="text-sm text-slate-600 dark:text-zink-300">
+                                            class="dark:border-zink-500 mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
+                                            <div class="dark:text-zink-300 text-sm text-slate-600">
                                                 <span class="page-info">1-10 dari 50</span>
                                             </div>
 
@@ -813,7 +797,7 @@
                                                 </button>
 
                                                 <span
-                                                    class="current-page-number rounded bg-slate-100 px-3 py-1 text-sm font-medium dark:bg-zink-600">
+                                                    class="current-page-number dark:bg-zink-600 rounded bg-slate-100 px-3 py-1 text-sm font-medium">
                                                     Hal 1 dari 5
                                                 </span>
 
@@ -1560,6 +1544,7 @@
             filterDetailTable(studentId);
         }
     </script>
+
     <script>
         const ITEMS_PER_PAGE = 5;
         const paginationState = {};
@@ -1823,11 +1808,101 @@
                             ' Poin';
 
                         detailsDiv.classList.remove('hidden');
+
+                        // === TAMBAHAN SCRIPT BARU - DYNAMIC FORM ===
+                        // Ambil elemen-elemen form
+                        const preyField = document.getElementById(`prey-${studentId}`)?.closest(
+                            '.mb-4');
+                        const actionDateField = document.getElementById(`action_date-${studentId}`)
+                            ?.closest('.mb-4');
+                        const referenceNumberField = document.getElementById(
+                            `reference_number-${studentId}`)?.closest('.mb-4');
+                        const timeField = document.getElementById(`time-${studentId}`)?.closest(
+                            '.mb-4');
+                        const roomField = document.getElementById(`room-${studentId}`)?.closest(
+                            '.mb-4');
+                        const facingField = document.getElementById(`facing-${studentId}`)?.closest(
+                            '.mb-4');
+
+                        // Cek apakah tindakan adalah "Teguran Tertulis dan Pemanggilan Orang Tua"
+                        const isTeguranTertulisOrPemanggilan = action &&
+                            (action.toLowerCase().includes('teguran tertulis') ||
+                                action.toLowerCase().includes('pemanggilan orang tua'));
+                        const isKegiatanSosial = action &&
+                            (action.toLowerCase().includes('kegiatan sosial') ||
+                                action.toLowerCase().includes('kegiatan sosial'));
+
+                        // Tampilkan/sembunyikan field berdasarkan tindakan
+                        if (isTeguranTertulisOrPemanggilan) {
+                            // Tampilkan semua field
+                            if (preyField) preyField.classList.remove('hidden');
+                            if (actionDateField) actionDateField.classList.remove('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.remove(
+                                'hidden');
+                            if (timeField) timeField.classList.remove('hidden');
+                            if (roomField) roomField.classList.remove('hidden');
+                            if (facingField) facingField.classList.remove('hidden');
+                        } else if (isKegiatanSosial) {
+                            // Tampilkan semua field
+                            if (preyField) preyField.classList.remove('hidden');
+                            if (actionDateField) actionDateField.classList.remove('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.remove(
+                                'hidden');
+                            if (timeField) timeField.classList.remove('hidden');
+                            if (roomField) roomField.classList.remove('hidden');
+                            if (facingField) facingField.classList.remove('hidden');
+                        } else {
+                            // Sembunyikan semua field kecuali deskripsi
+                            if (preyField) preyField.classList.add('hidden');
+                            if (actionDateField) actionDateField.classList.add('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.add('hidden');
+                            if (timeField) timeField.classList.add('hidden');
+                            if (roomField) roomField.classList.add('hidden');
+                            if (facingField) facingField.classList.add('hidden');
+
+                            // Reset nilai field yang disembunyikan
+                            if (preyField) document.getElementById(`prey-${studentId}`).value = '';
+                            if (actionDateField) document.getElementById(`action_date-${studentId}`)
+                                .value = '';
+                            if (referenceNumberField) document.getElementById(
+                                `reference_number-${studentId}`).value = '';
+                            if (timeField) document.getElementById(`time-${studentId}`).value = '';
+                            if (roomField) document.getElementById(`room-${studentId}`).value = '';
+                            if (facingField) document.getElementById(`facing-${studentId}`).value =
+                                '';
+                        }
+                        // === AKHIR TAMBAHAN SCRIPT BARU ===
                     } else {
                         detailsDiv.classList.add('hidden');
                     }
                 });
             });
         });
+
+        // Generate violation forms dynamically
+        function generateViolationForms(input, studentId) {
+            const count = parseInt(input.value) || 0;
+            const container = document.getElementById(`violations-container-${studentId}`);
+
+            if (!container) return;
+
+            // Clear existing forms
+            container.innerHTML = '';
+
+            // Generate new forms based on count
+            for (let i = 0; i < count; i++) {
+                const formHtml = `
+                    <div class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
+                        <label class="mb-2 inline-block text-sm font-medium">Pelanggaran ke-${i + 1}</label>
+                        <input type="text"
+                            name="violations[${i}]"
+                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                            placeholder="Masukkan pelanggaran"
+                            value="">
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', formHtml);
+            }
+        }
     </script>
 @endsection

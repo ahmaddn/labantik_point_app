@@ -338,6 +338,12 @@ class SuperAdminController extends Controller
                     return $handling->handling_point <= $student->total_points_verified;
                 });
 
+                // Load action detail jika sudah ada
+                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                    ->with('detail')
+                    ->latest()
+                    ->first();
+
                 return $student;
             })
             ->values();
@@ -430,6 +436,8 @@ class SuperAdminController extends Controller
     {
         $request->validate([
             'handling_id' => 'required|exists:p_config_handlings,id',
+            'student_name' => 'nullable|string|max:191',
+            'parent_name' => 'nullable|string|max:191',
             'description' => 'nullable|string',
             'prey' => 'nullable|date',
             'action_date' => 'nullable|date',
@@ -437,6 +445,9 @@ class SuperAdminController extends Controller
             'time' => 'nullable|string|max:50',
             'room' => 'nullable|string|max:100',
             'facing' => 'nullable|string|max:100',
+            'violation_count' => 'nullable|integer|min:0|max:10',
+            'violations' => 'nullable|array',
+            'violations.*' => 'nullable|string|max:500',
         ]);
 
         // Ambil data student (ref_student_academic_years id)
@@ -457,18 +468,12 @@ class SuperAdminController extends Controller
         }
 
         // Pastikan data wali (guardian) tersedia
-        if (empty($student->guardian_name)) {
-            return back()->withErrors(['error' => 'Data wali siswa belum lengkap. Mohon lengkapi data wali terlebih dahulu.']);
+        if (empty($request->parent_name)) {
+            return back()->withErrors(['error' => 'Mohon isi nama wali sebelum menyimpan tindakan.']);
         }
 
         // Ambil data handling
         $handling = P_Config_Handlings::findOrFail($request->handling_id);
-
-        // Tentukan rekap yang akan dihubungkan ke tindakan
-        // Preferensi: latest verified -> latest pending -> any latest
-
-        // Fallback: jika collection recaps kosong atau id tidak tersedia, cari langsung dari tabel p_recaps
-
 
         // Mulai transaksi untuk menyimpan action dan detail
         try {
@@ -490,16 +495,21 @@ class SuperAdminController extends Controller
                 'description' => $request->description,
             ]);
 
+            // Process violations array - filter out empty values
+            $violations = array_filter($request->violations ?? [], fn($v) => !empty($v));
+
             P_Viol_Action_Detail::create([
                 'p_viol_action_id' => $action->id,
-                'parent_name' => $student->guardian_name ?? null,
-                'student_name' => $student->full_name ?? null,
+                'parent_name' => $request->parent_name,
+                'student_name' => $request->student_name,
                 'prey' => $request->prey,
                 'action_date' => $request->action_date,
                 'reference_number' => $request->reference_number,
                 'time' => $request->time,
                 'room' => $request->room,
                 'facing' => $request->facing,
+                'violation_count' => count($violations),
+                'violations' => count($violations) > 0 ? array_values($violations) : null,
             ]);
 
             DB::commit();
@@ -529,16 +539,18 @@ class SuperAdminController extends Controller
                 // Lowercase keys for blade
                 'prey' => $preyDate,
                 'reference_number' => $request->reference_number ?? '',
-                'student_name' => $student->full_name ?? '',
-                'parent_name' => $student->guardian_name ?? '',
+                'student_name' => $request->student_name ?? '',
+                'student_nis' => $student->student_number ?? '',
+                'student_nisn' => $student->national_identification_number ?? '',
+                'parent_name' => $request->parent_name ?? '',
                 'action_date' => $actionDateFormatted,
                 'time' => $request->time ?? '',
                 'room' => $request->room ?? '',
                 'facing' => $request->facing ?? '',
                 'kelas' => $kelasString,
                 'kepala_sekolah' => $kepalaSekolah,
+                'violation_list' => array_values($violations),
             ];
-
 
             // Render the panggilan view in browser so user can preview and print manually
             return view('pdf.panggilan', $data);
