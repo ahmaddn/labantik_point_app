@@ -275,7 +275,7 @@
                                                                             class="mb-2 inline-block text-base font-medium">Nama
                                                                             Siswa</label>
                                                                         <input type="text" name="student_name"
-                                                                            value="{{ $student->action_detail?->detail?->student_name ?? $refStudent->full_name ?? ($student->student->full_name ?? '') }}"
+                                                                            value="{{ $student->action_detail?->detail?->student_name ?? ($refStudent->full_name ?? ($student->student->full_name ?? '')) }}"
                                                                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
@@ -284,7 +284,7 @@
                                                                             class="mb-2 inline-block text-base font-medium">Nama
                                                                             Wali</label>
                                                                         <input type="text" name="parent_name"
-                                                                            value="{{ $student->action_detail?->detail?->parent_name ?? $refStudent->guardian_name ?? ($student->student->guardian_name ?? '') }}"
+                                                                            value="{{ $student->action_detail?->detail?->parent_name ?? ($refStudent->guardian_name ?? ($student->student->guardian_name ?? '')) }}"
                                                                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
@@ -380,10 +380,12 @@
 
                                                                     <div class="mb-4">
                                                                         <label for="violation_count-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Jumlah Pelanggaran
+                                                                            class="mb-2 inline-block text-base font-medium">Jumlah
+                                                                            Pelanggaran
                                                                         </label>
-                                                                        <input type="number" min="0" max="10"
-                                                                            id="violation_count-{{ $student->id }}" 
+                                                                        <input type="number" min="0"
+                                                                            max="10"
+                                                                            id="violation_count-{{ $student->id }}"
                                                                             name="violation_count"
                                                                             value="{{ $student->action_detail?->detail?->violation_count ?? 0 }}"
                                                                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
@@ -392,12 +394,16 @@
                                                                     </div>
 
                                                                     <!-- Form Pelanggaran Dinamis -->
-                                                                    <div id="violations-container-{{ $student->id }}" class="mb-4">
+                                                                    <div id="violations-container-{{ $student->id }}"
+                                                                        class="mb-4">
                                                                         @if ($student->action_detail?->detail?->violations)
                                                                             @foreach ($student->action_detail->detail->violations as $index => $violation)
-                                                                                <div class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
-                                                                                    <label class="mb-2 inline-block text-sm font-medium">Pelanggaran ke-{{ $index + 1 }}</label>
-                                                                                    <input type="text" 
+                                                                                <div
+                                                                                    class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
+                                                                                    <label
+                                                                                        class="mb-2 inline-block text-sm font-medium">Pelanggaran
+                                                                                        ke-{{ $index + 1 }}</label>
+                                                                                    <input type="text"
                                                                                         name="violations[{{ $index }}]"
                                                                                         class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                                         placeholder="Masukkan pelanggaran"
@@ -1877,18 +1883,18 @@
         function generateViolationForms(input, studentId) {
             const count = parseInt(input.value) || 0;
             const container = document.getElementById(`violations-container-${studentId}`);
-            
+
             if (!container) return;
-            
+
             // Clear existing forms
             container.innerHTML = '';
-            
+
             // Generate new forms based on count
             for (let i = 0; i < count; i++) {
                 const formHtml = `
                     <div class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
                         <label class="mb-2 inline-block text-sm font-medium">Pelanggaran ke-${i + 1}</label>
-                        <input type="text" 
+                        <input type="text"
                             name="violations[${i}]"
                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                             placeholder="Masukkan pelanggaran"
