@@ -338,6 +338,12 @@ class SuperAdminController extends Controller
                     return $handling->handling_point <= $student->total_points_verified;
                 });
 
+                // Load action detail jika sudah ada
+                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                    ->with('detail')
+                    ->latest()
+                    ->first();
+
                 return $student;
             })
             ->values();
@@ -530,6 +536,8 @@ class SuperAdminController extends Controller
                 'prey' => $preyDate,
                 'reference_number' => $request->reference_number ?? '',
                 'student_name' => $student->full_name ?? '',
+                'student_nis' => $student->student_number ?? '',
+                'student_nisn' => $student->national_identification_number ?? '',
                 'parent_name' => $student->guardian_name ?? '',
                 'action_date' => $actionDateFormatted,
                 'time' => $request->time ?? '',
