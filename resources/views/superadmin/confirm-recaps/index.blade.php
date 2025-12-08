@@ -275,7 +275,7 @@
                                                                             class="mb-2 inline-block text-base font-medium">Nama
                                                                             Siswa</label>
                                                                         <input type="text" name="student_name"
-                                                                            value="{{ $student->action_detail && $student->action_detail->detail ? $student->action_detail->detail->student_name : ($refStudent->full_name ?? ($student->student->full_name ?? '')) }}"
+                                                                            value="{{ $student->action_detail && $student->action_detail->detail ? $student->action_detail->detail->student_name : $refStudent->full_name ?? ($student->student->full_name ?? '') }}"
                                                                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
@@ -284,7 +284,7 @@
                                                                             class="mb-2 inline-block text-base font-medium">Nama
                                                                             Wali</label>
                                                                         <input type="text" name="parent_name"
-                                                                            value="{{ $student->action_detail && $student->action_detail->detail ? $student->action_detail->detail->parent_name : ($refStudent->guardian_name ?? ($student->student->guardian_name ?? '')) }}"
+                                                                            value="{{ $student->action_detail && $student->action_detail->detail ? $student->action_detail->detail->parent_name : $refStudent->guardian_name ?? ($student->student->guardian_name ?? '') }}"
                                                                             class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                                                     </div>
 
@@ -404,8 +404,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-
-
 
                         <!-- Pesan jika tidak ada data setelah filter -->
                         <div id="noMainData" class="hidden py-8 text-center">
@@ -1049,408 +1047,190 @@
     </style>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Main table filter functionality
-        const classFilter = document.getElementById('classFilter');
-        const genderFilter = document.getElementById('genderFilter');
-        const resetMainFilterBtn = document.getElementById('resetMainFilter');
-        const filterInfo = document.getElementById('filterInfo');
-        const noMainData = document.getElementById('noMainData');
-        const mainTable = document.getElementById('hoverableTable');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Main table filter functionality
+            const classFilter = document.getElementById('classFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const resetMainFilterBtn = document.getElementById('resetMainFilter');
+            const filterInfo = document.getElementById('filterInfo');
+            const noMainData = document.getElementById('noMainData');
+            const mainTable = document.getElementById('hoverableTable');
 
-        // Add event listeners for main table filters
-        [classFilter, genderFilter].forEach(filter => {
-            if (filter) {
-                filter.addEventListener('change', filterMainTable);
-            }
-        });
-
-        if (resetMainFilterBtn) {
-            resetMainFilterBtn.addEventListener('click', resetMainFilters);
-        }
-
-        // Initialize total count
-        updateFilterInfo();
-
-        function filterMainTable() {
-            const classValue = classFilter ? classFilter.value : '';
-            const genderValue = genderFilter ? genderFilter.value : '';
-
-            const rows = mainTable.querySelectorAll('.student-row');
-            let visibleRows = 0;
-
-            rows.forEach(row => {
-                const rowClass = row.getAttribute('data-class');
-                const rowGender = row.getAttribute('data-gender');
-
-                let showRow = true;
-
-                // Filter by class
-                if (classValue && classValue !== rowClass) {
-                    showRow = false;
-                }
-
-                // Filter by gender
-                if (genderValue && genderValue !== rowGender) {
-                    showRow = false;
-                }
-
-                if (showRow) {
-                    row.style.display = '';
-                    visibleRows++;
-                } else {
-                    row.style.display = 'none';
+            // Add event listeners for main table filters
+            [classFilter, genderFilter].forEach(filter => {
+                if (filter) {
+                    filter.addEventListener('change', filterMainTable);
                 }
             });
 
-            // Update row numbers for visible rows
-            updateRowNumbers();
-
-            // Show/hide no data message
-            const tbody = mainTable.querySelector('tbody');
-            if (visibleRows === 0) {
-                noMainData.classList.remove('hidden');
-                tbody.style.display = 'none';
-            } else {
-                noMainData.classList.add('hidden');
-                tbody.style.display = '';
+            if (resetMainFilterBtn) {
+                resetMainFilterBtn.addEventListener('click', resetMainFilters);
             }
 
-            // Update filter info
-            updateFilterInfo(visibleRows);
-        }
-
-        function updateRowNumbers() {
-            const visibleRows = mainTable.querySelectorAll('.student-row:not([style*="display: none"])');
-            visibleRows.forEach((row, index) => {
-                const rowNumberElement = row.querySelector('.row-number');
-                if (rowNumberElement) {
-                    rowNumberElement.textContent = index + 1;
-                }
-            });
-        }
-
-        function updateFilterInfo(showing = null) {
-            const totalRows = mainTable.querySelectorAll('.student-row').length;
-            const showingRows = showing !== null ? showing : totalRows;
-
-            const showingCount = document.getElementById('showingCount');
-            const totalCount = document.getElementById('totalCount');
-
-            if (showingCount && totalCount) {
-                showingCount.textContent = showingRows;
-                totalCount.textContent = totalRows;
-
-                if (showingRows < totalRows) {
-                    filterInfo.classList.remove('hidden');
-                } else {
-                    filterInfo.classList.add('hidden');
-                }
-            }
-        }
-
-        function resetMainFilters() {
-            // Reset all filter values
-            if (classFilter) classFilter.value = '';
-            if (genderFilter) genderFilter.value = '';
-
-            // Show all rows
-            const rows = mainTable.querySelectorAll('.student-row');
-            rows.forEach(row => {
-                row.style.display = '';
-            });
-
-            // Update row numbers
-            updateRowNumbers();
-
-            // Hide no data message
-            noMainData.classList.add('hidden');
-            mainTable.querySelector('tbody').style.display = '';
-
-            // Update filter info
+            // Initialize total count
             updateFilterInfo();
-        }
-    });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+            function filterMainTable() {
+                const classValue = classFilter ? classFilter.value : '';
+                const genderValue = genderFilter ? genderFilter.value : '';
 
-        // Filter functionality for confirmation modal tables
-        document.querySelectorAll('.category-filter').forEach(filter => {
-            filter.addEventListener('change', function() {
-                const studentId = this.getAttribute('data-student-id');
-                filterTable(studentId);
-            });
-        });
+                const rows = mainTable.querySelectorAll('.student-row');
+                let visibleRows = 0;
 
-        // Filter functionality for detail modal tables
-        document.querySelectorAll('.detail-category-filter').forEach(filter => {
-            filter.addEventListener('change', function() {
-                const studentId = this.getAttribute('data-student-id');
-                filterDetailTable(studentId);
-            });
-        });
+                rows.forEach(row => {
+                    const rowClass = row.getAttribute('data-class');
+                    const rowGender = row.getAttribute('data-gender');
 
-        document.querySelectorAll('.detail-status-filter').forEach(filter => {
-            filter.addEventListener('change', function() {
-                const studentId = this.getAttribute('data-student-id');
-                filterDetailTable(studentId);
-            });
-        });
+                    let showRow = true;
 
-        // Reset filter functionality for confirmation modals
-        document.querySelectorAll('.reset-filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const studentId = this.getAttribute('data-student-id');
-                clearFilters(studentId);
-            });
-        });
+                    // Filter by class
+                    if (classValue && classValue !== rowClass) {
+                        showRow = false;
+                    }
 
-        // Reset filter functionality for detail modals
-        document.querySelectorAll('.reset-detail-filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const studentId = this.getAttribute('data-student-id');
-                clearDetailFilters(studentId);
-            });
-        });
-    });
+                    // Filter by gender
+                    if (genderValue && genderValue !== rowGender) {
+                        showRow = false;
+                    }
 
-    function updateHandlingAction(studentId, verifiedPoints) {
-        const summarySection = document.getElementById(`detailSummary-${studentId}`);
-        if (!summarySection) return;
+                    if (showRow) {
+                        row.style.display = '';
+                        visibleRows++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
 
-        const handlingCard = summarySection.querySelector('.handling-action-card');
-        const statusGoodCard = summarySection.querySelector('.status-good-card');
-        if (!handlingCard || !statusGoodCard) return;
+                // Update row numbers for visible rows
+                updateRowNumbers();
 
-        // Get handling options from data attribute
-        const handlingOptionsData = handlingCard.getAttribute('data-handling-options');
-        if (!handlingOptionsData) return;
-
-        const handlingOptions = JSON.parse(handlingOptionsData);
-
-        // Find applicable handling (sort descending)
-        let applicableHandling = null;
-        for (let i = handlingOptions.length - 1; i >= 0; i--) {
-            if (verifiedPoints >= handlingOptions[i].handling_point) {
-                applicableHandling = handlingOptions[i];
-                break;
-            }
-        }
-
-        // Update display
-        if (applicableHandling) {
-            // Show warning card
-            const currentPointsEl = handlingCard.querySelector('.current-points');
-            const actionTextEl = handlingCard.querySelector('.action-text');
-            const thresholdTextEl = handlingCard.querySelector('.threshold-text');
-
-            if (currentPointsEl) currentPointsEl.textContent = verifiedPoints;
-            if (actionTextEl) actionTextEl.textContent = applicableHandling.handling_action;
-            if (thresholdTextEl) thresholdTextEl.textContent = applicableHandling.handling_point;
-
-            handlingCard.classList.remove('hidden');
-            statusGoodCard.classList.add('hidden');
-        } else {
-            // Show good status
-            handlingCard.classList.add('hidden');
-            statusGoodCard.classList.remove('hidden');
-        }
-    }
-
-    // Filter function for confirmation modal (pending violations)
-    function filterTable(studentId) {
-        const categoryFilter = document.getElementById(`categoryFilter-${studentId}`);
-
-        if (!categoryFilter) return;
-
-        const categoryValue = categoryFilter.value;
-        const table = document.getElementById(`violationsTable-${studentId}`);
-        const rows = table.querySelectorAll('.violation-row');
-        const noDataMsg = document.getElementById(`noFilteredData-${studentId}`);
-        const tableContainer = table.closest('.table-container');
-
-        let visibleRows = 0;
-        let totalPoints = 0;
-
-        rows.forEach(row => {
-            const rowCategory = row.getAttribute('data-category');
-            let showRow = true;
-
-            // Filter by category
-            if (categoryValue && categoryValue !== rowCategory) {
-                showRow = false;
-            }
-
-            if (showRow) {
-                row.style.display = '';
-                visibleRows++;
-                // Calculate points for visible rows
-                const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
-                if (pointsElement) {
-                    const pointsText = pointsElement.textContent;
-                    const pointsMatch = pointsText.match(/(\d+)/);
-                    const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
-                    totalPoints += points;
+                // Show/hide no data message
+                const tbody = mainTable.querySelector('tbody');
+                if (visibleRows === 0) {
+                    noMainData.classList.remove('hidden');
+                    tbody.style.display = 'none';
+                } else {
+                    noMainData.classList.add('hidden');
+                    tbody.style.display = '';
                 }
-            } else {
-                row.style.display = 'none';
-            }
-        });
 
-        // Update row numbers for visible rows
-        let counter = 1;
-        rows.forEach(row => {
-            if (row.style.display !== 'none') {
-                const rowNumberElement = row.querySelector('.row-number');
-                if (rowNumberElement) {
-                    rowNumberElement.textContent = counter++;
-                }
-            }
-        });
-
-        // Show/hide no data message
-        if (noDataMsg && tableContainer) {
-            if (visibleRows === 0) {
-                noDataMsg.classList.remove('hidden');
-                tableContainer.style.display = 'none';
-            } else {
-                noDataMsg.classList.add('hidden');
-                tableContainer.style.display = '';
-            }
-        }
-
-        // Update summary
-        const totalCountElement = document.getElementById(`totalCount-${studentId}`);
-        const totalPointsElement = document.getElementById(`totalPoints-${studentId}`);
-
-        if (totalCountElement) {
-            totalCountElement.textContent = visibleRows;
-        }
-        if (totalPointsElement) {
-            totalPointsElement.textContent = `${totalPoints} Poin`;
-        }
-    }
-
-    // Filter function for detail modal (all violations)
-    function filterDetailTable(studentId) {
-        const categoryFilter = document.getElementById(`detailCategoryFilter-${studentId}`);
-        const statusFilter = document.getElementById(`detailStatusFilter-${studentId}`);
-
-        if (!categoryFilter || !statusFilter) return;
-
-        const categoryValue = categoryFilter.value;
-        const statusValue = statusFilter.value;
-        const table = document.getElementById(`detailViolationsTable-${studentId}`);
-        const rows = table.querySelectorAll('.detail-violation-row');
-        const noDataMsg = document.getElementById(`noDetailFilteredData-${studentId}`);
-        const tableContainer = table.closest('.table-container');
-
-        let visibleRows = 0;
-        let totalPoints = 0;
-        let verifiedPoints = 0;
-
-        rows.forEach(row => {
-            const rowCategory = row.getAttribute('data-category');
-            const rowStatus = row.getAttribute('data-status');
-            let showRow = true;
-
-            // Filter by category
-            if (categoryValue && categoryValue !== rowCategory) {
-                showRow = false;
+                // Update filter info
+                updateFilterInfo(visibleRows);
             }
 
-            // Filter by status
-            if (statusValue && statusValue !== rowStatus) {
-                showRow = false;
+            function updateRowNumbers() {
+                const visibleRows = mainTable.querySelectorAll('.student-row:not([style*="display: none"])');
+                visibleRows.forEach((row, index) => {
+                    const rowNumberElement = row.querySelector('.row-number');
+                    if (rowNumberElement) {
+                        rowNumberElement.textContent = index + 1;
+                    }
+                });
             }
 
-            if (showRow) {
-                row.style.display = '';
-                visibleRows++;
+            function updateFilterInfo(showing = null) {
+                const totalRows = mainTable.querySelectorAll('.student-row').length;
+                const showingRows = showing !== null ? showing : totalRows;
 
-                // Calculate points for visible rows
-                const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
-                if (pointsElement) {
-                    const pointsText = pointsElement.textContent;
-                    const pointsMatch = pointsText.match(/(\d+)/);
-                    const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
-                    totalPoints += points;
+                const showingCount = document.getElementById('showingCount');
+                const totalCount = document.getElementById('totalCount');
 
-                    // Calculate verified points only
-                    if (rowStatus === 'verified') {
-                        verifiedPoints += points;
+                if (showingCount && totalCount) {
+                    showingCount.textContent = showingRows;
+                    totalCount.textContent = totalRows;
+
+                    if (showingRows < totalRows) {
+                        filterInfo.classList.remove('hidden');
+                    } else {
+                        filterInfo.classList.add('hidden');
                     }
                 }
-            } else {
-                row.style.display = 'none';
+            }
+
+            function resetMainFilters() {
+                // Reset all filter values
+                if (classFilter) classFilter.value = '';
+                if (genderFilter) genderFilter.value = '';
+
+                // Show all rows
+                const rows = mainTable.querySelectorAll('.student-row');
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+
+                // Update row numbers
+                updateRowNumbers();
+
+                // Hide no data message
+                noMainData.classList.add('hidden');
+                mainTable.querySelector('tbody').style.display = '';
+
+                // Update filter info
+                updateFilterInfo();
             }
         });
+    </script>
 
-        // Update row numbers for visible rows
-        let counter = 1;
-        rows.forEach(row => {
-            if (row.style.display !== 'none') {
-                const rowNumberElement = row.querySelector('.detail-row-number');
-                if (rowNumberElement) {
-                    rowNumberElement.textContent = counter++;
-                }
-            }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Filter functionality for confirmation modal tables
+            document.querySelectorAll('.category-filter').forEach(filter => {
+                filter.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    filterTable(studentId);
+                });
+            });
+
+            // Filter functionality for detail modal tables
+            document.querySelectorAll('.detail-category-filter').forEach(filter => {
+                filter.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    filterDetailTable(studentId);
+                });
+            });
+
+            document.querySelectorAll('.detail-status-filter').forEach(filter => {
+                filter.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    filterDetailTable(studentId);
+                });
+            });
+
+            // Reset filter functionality for confirmation modals
+            document.querySelectorAll('.reset-filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    clearFilters(studentId);
+                });
+            });
+
+            // Reset filter functionality for detail modals
+            document.querySelectorAll('.reset-detail-filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    clearDetailFilters(studentId);
+                });
+            });
         });
 
-        // Show/hide no data message
-        if (noDataMsg && tableContainer) {
-            if (visibleRows === 0) {
-                noDataMsg.classList.remove('hidden');
-                tableContainer.style.display = 'none';
-            } else {
-                noDataMsg.classList.add('hidden');
-                tableContainer.style.display = '';
-            }
-        }
+        function updateHandlingAction(studentId, verifiedPoints) {
+            const summarySection = document.getElementById(`detailSummary-${studentId}`);
+            if (!summarySection) return;
 
-        // Update summary
-        const totalCountElement = document.getElementById(`detailTotalCount-${studentId}`);
-        const totalPointsElement = document.getElementById(`detailTotalPoints-${studentId}`);
-        const verifiedPointsElement = document.getElementById(`detailVerifiedPoints-${studentId}`);
+            const handlingCard = summarySection.querySelector('.handling-action-card');
+            const statusGoodCard = summarySection.querySelector('.status-good-card');
+            if (!handlingCard || !statusGoodCard) return;
 
-        if (totalCountElement) {
-            totalCountElement.textContent = visibleRows;
-        }
-        if (totalPointsElement) {
-            totalPointsElement.textContent = `${totalPoints} Poin`;
-        }
-        if (verifiedPointsElement) {
-            verifiedPointsElement.textContent = `${verifiedPoints} Poin`;
-        }
+            // Get handling options from data attribute
+            const handlingOptionsData = handlingCard.getAttribute('data-handling-options');
+            if (!handlingOptionsData) return;
 
-        // Update handling action display dynamically
-        updateHandlingAction(studentId, verifiedPoints);
-    }
-
-    // Function to update handling action based on verified points
-    function updateHandlingAction(studentId, verifiedPoints) {
-        const summarySection = document.getElementById(`detailSummary-${studentId}`);
-        if (!summarySection) return;
-
-        const handlingCard = summarySection.querySelector('.handling-action-card');
-        const statusGoodCard = summarySection.querySelector('.status-good-card');
-        if (!handlingCard || !statusGoodCard) return;
-
-        // Get handling options from data attribute
-        const handlingOptionsData = handlingCard.getAttribute('data-handling-options');
-        if (!handlingOptionsData) return;
-
-        try {
             const handlingOptions = JSON.parse(handlingOptionsData);
 
-            // Sort by handling_point descending
-            handlingOptions.sort((a, b) => b.handling_point - a.handling_point);
-
-            // Find applicable handling
+            // Find applicable handling (sort descending)
             let applicableHandling = null;
-            for (let i = 0; i < handlingOptions.length; i++) {
+            for (let i = handlingOptions.length - 1; i >= 0; i--) {
                 if (verifiedPoints >= handlingOptions[i].handling_point) {
                     applicableHandling = handlingOptions[i];
                     break;
@@ -1475,362 +1255,592 @@
                 handlingCard.classList.add('hidden');
                 statusGoodCard.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error('Error updating handling action:', error);
-        }
-    }
-
-    // Clear filters for confirmation modal
-    function clearFilters(studentId) {
-        // Reset filter values
-        const categoryFilter = document.getElementById('categoryFilter-' + studentId);
-
-        if (categoryFilter) {
-            categoryFilter.value = '';
         }
 
-        // Call filterTable to apply the reset
-        filterTable(studentId);
-    }
+        // Filter function for confirmation modal (pending violations)
+        function filterTable(studentId) {
+            const categoryFilter = document.getElementById(`categoryFilter-${studentId}`);
 
-    // Clear filters for detail modal
-    function clearDetailFilters(studentId) {
-        // Reset filter values
-        const categoryFilter = document.getElementById('detailCategoryFilter-' + studentId);
-        const statusFilter = document.getElementById('detailStatusFilter-' + studentId);
+            if (!categoryFilter) return;
 
-        if (categoryFilter) {
-            categoryFilter.value = '';
-        }
-        if (statusFilter) {
-            statusFilter.value = '';
-        }
+            const categoryValue = categoryFilter.value;
+            const table = document.getElementById(`violationsTable-${studentId}`);
+            const rows = table.querySelectorAll('.violation-row');
+            const noDataMsg = document.getElementById(`noFilteredData-${studentId}`);
+            const tableContainer = table.closest('.table-container');
 
-        // Call filterDetailTable to apply the reset
-        filterDetailTable(studentId);
-    }
-</script>
+            let visibleRows = 0;
+            let totalPoints = 0;
 
-<script>
-    const ITEMS_PER_PAGE = 5;
-    const paginationState = {};
+            rows.forEach(row => {
+                const rowCategory = row.getAttribute('data-category');
+                let showRow = true;
 
-    function initPagination(studentId) {
-        if (!paginationState[studentId]) {
-            paginationState[studentId] = {
-                currentPage: 1,
-                itemsPerPage: ITEMS_PER_PAGE
-            };
-        }
-    }
-
-    function getVisibleRows(studentId) {
-        const table = document.getElementById(`violationsTable-${studentId}`);
-        if (!table) return [];
-
-        const rows = Array.from(table.querySelectorAll('.violation-row'));
-        return rows.filter(row => row.style.display !== 'none');
-    }
-
-    function applyPagination(studentId) {
-        initPagination(studentId);
-
-        const visibleRows = getVisibleRows(studentId);
-        const state = paginationState[studentId];
-        const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
-
-        // Hide all rows first
-        visibleRows.forEach(row => row.classList.add('hidden'));
-
-        // Show only rows for current page
-        const startIndex = (state.currentPage - 1) * state.itemsPerPage;
-        const endIndex = startIndex + state.itemsPerPage;
-        const rowsToShow = visibleRows.slice(startIndex, endIndex);
-
-        rowsToShow.forEach(row => row.classList.remove('hidden'));
-
-        // Update row numbers
-        rowsToShow.forEach((row, index) => {
-            const rowNumberElement = row.querySelector('.row-number');
-            if (rowNumberElement) {
-                rowNumberElement.textContent = startIndex + index + 1;
-            }
-        });
-
-        updatePaginationControls(studentId, totalPages, visibleRows.length);
-        updateSummaryWithPagination(studentId, visibleRows);
-    }
-
-    function updatePaginationControls(studentId, totalPages, totalItems) {
-        const state = paginationState[studentId];
-        const container = document.getElementById(`paginationControls-${studentId}`);
-
-        if (!container) return;
-
-        if (totalPages <= 1) {
-            container.classList.add('hidden');
-            return;
-        }
-
-        container.classList.remove('hidden');
-
-        const pageInfo = container.querySelector('.page-info');
-        if (pageInfo) {
-            const start = (state.currentPage - 1) * state.itemsPerPage + 1;
-            const end = Math.min(state.currentPage * state.itemsPerPage, totalItems);
-            pageInfo.textContent = `${start}-${end} dari ${totalItems}`;
-        }
-
-        const prevBtn = container.querySelector('.prev-page');
-        const nextBtn = container.querySelector('.next-page');
-        const firstBtn = container.querySelector('.first-page');
-        const lastBtn = container.querySelector('.last-page');
-
-        if (prevBtn) prevBtn.disabled = state.currentPage === 1;
-        if (nextBtn) nextBtn.disabled = state.currentPage === totalPages;
-        if (firstBtn) firstBtn.disabled = state.currentPage === 1;
-        if (lastBtn) lastBtn.disabled = state.currentPage === totalPages;
-
-        const pageNumber = container.querySelector('.current-page-number');
-        if (pageNumber) {
-            pageNumber.textContent = `Hal ${state.currentPage} dari ${totalPages}`;
-        }
-    }
-
-    function updateSummaryWithPagination(studentId, visibleRows) {
-        let totalPoints = 0;
-
-        visibleRows.forEach(row => {
-            const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
-            if (pointsElement) {
-                const pointsText = pointsElement.textContent;
-                const pointsMatch = pointsText.match(/(\d+)/);
-                const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
-                totalPoints += points;
-            }
-        });
-
-        const totalCountElement = document.getElementById(`totalCount-${studentId}`);
-        const totalPointsElement = document.getElementById(`totalPoints-${studentId}`);
-
-        if (totalCountElement) {
-            totalCountElement.textContent = visibleRows.length;
-        }
-        if (totalPointsElement) {
-            totalPointsElement.textContent = `${totalPoints} Poin`;
-        }
-    }
-
-    function goToPage(studentId, page) {
-        const state = paginationState[studentId];
-        const visibleRows = getVisibleRows(studentId);
-        const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
-
-        if (page < 1 || page > totalPages) return;
-
-        state.currentPage = page;
-        applyPagination(studentId);
-
-        const tableWrapper = document.querySelector(`#violationsTable-${studentId}`).closest('.table-scroll-wrapper');
-        if (tableWrapper) {
-            tableWrapper.scrollTop = 0;
-        }
-    }
-
-    // FILTER FUNCTION WITH PAGINATION
-    function filterTable(studentId) {
-        const categoryFilter = document.getElementById(`categoryFilter-${studentId}`);
-        if (!categoryFilter) return;
-
-        const categoryValue = categoryFilter.value;
-        const table = document.getElementById(`violationsTable-${studentId}`);
-        const rows = table.querySelectorAll('.violation-row');
-        const noDataMsg = document.getElementById(`noFilteredData-${studentId}`);
-        const tableContainer = table.closest('.table-container');
-
-        let visibleRows = 0;
-
-        rows.forEach(row => {
-            const rowCategory = row.getAttribute('data-category');
-            let showRow = true;
-
-            if (categoryValue && categoryValue !== rowCategory) {
-                showRow = false;
-            }
-
-            if (showRow) {
-                row.style.display = '';
-                visibleRows++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        if (noDataMsg && tableContainer) {
-            if (visibleRows === 0) {
-                noDataMsg.classList.remove('hidden');
-                tableContainer.style.display = 'none';
-                const paginationControls = document.getElementById(`paginationControls-${studentId}`);
-                if (paginationControls) paginationControls.classList.add('hidden');
-            } else {
-                noDataMsg.classList.add('hidden');
-                tableContainer.style.display = '';
-            }
-        }
-
-        // Reset to page 1 and apply pagination
-        if (paginationState[studentId]) {
-            paginationState[studentId].currentPage = 1;
-        }
-        applyPagination(studentId);
-    }
-
-    function clearFilters(studentId) {
-        const categoryFilter = document.getElementById('categoryFilter-' + studentId);
-        if (categoryFilter) {
-            categoryFilter.value = '';
-        }
-        filterTable(studentId);
-    }
-
-    // INITIALIZE ON PAGE LOAD
-    document.addEventListener('DOMContentLoaded', function() {
-        // Modal open handler
-        document.querySelectorAll('[data-modal-target]').forEach(button => {
-            button.addEventListener('click', function() {
-                const modalId = this.getAttribute('data-modal-target');
-                const studentId = modalId.replace('modal-', '');
-
-                initPagination(studentId);
-                paginationState[studentId].currentPage = 1;
-
-                setTimeout(() => {
-                    applyPagination(studentId);
-                }, 100);
-            });
-        });
-
-        // Filter change handler
-        document.querySelectorAll('.category-filter').forEach(filter => {
-            filter.addEventListener('change', function() {
-                const studentId = this.getAttribute('data-student-id');
-                filterTable(studentId);
-            });
-        });
-
-        // Reset filter handler
-        document.querySelectorAll('.reset-filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const studentId = this.getAttribute('data-student-id');
-                clearFilters(studentId);
-            });
-        });
-
-        // Pagination button handlers
-        document.querySelectorAll('.pagination-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const action = this.getAttribute('data-action');
-                const studentId = this.getAttribute('data-student-id');
-                const state = paginationState[studentId];
-
-                if (!state) return;
-
-                switch (action) {
-                    case 'first':
-                        goToPage(studentId, 1);
-                        break;
-                    case 'prev':
-                        goToPage(studentId, state.currentPage - 1);
-                        break;
-                    case 'next':
-                        goToPage(studentId, state.currentPage + 1);
-                        break;
-                    case 'last':
-                        const visibleRows = getVisibleRows(studentId);
-                        const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
-                        goToPage(studentId, totalPages);
-                        break;
+                // Filter by category
+                if (categoryValue && categoryValue !== rowCategory) {
+                    showRow = false;
                 }
-            });
-        });
-    });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Event listener untuk semua dropdown tindakan
-        document.querySelectorAll('.tindakan-dropdown').forEach(function(select) {
-            select.addEventListener('change', function() {
-                const studentId = this.getAttribute('data-student-id');
-                const detailsDiv = document.getElementById('handlingDetails-' + studentId);
-                const selectedOption = this.options[this.selectedIndex];
-
-                if (this.value) {
-                    const action = selectedOption.getAttribute('data-action');
-                    const point = selectedOption.getAttribute('data-point');
-
-                    document.getElementById('selectedAction-' + studentId).value = action;
-                    document.getElementById('selectedPoint-' + studentId).value = point + ' Poin';
-
-                    detailsDiv.classList.remove('hidden');
-
-                    // === TAMBAHAN SCRIPT BARU - DYNAMIC FORM ===
-                    // Ambil elemen-elemen form
-                    const preyField = document.getElementById(`prey-${studentId}`)?.closest('.mb-4');
-                    const actionDateField = document.getElementById(`action_date-${studentId}`)?.closest('.mb-4');
-                    const referenceNumberField = document.getElementById(`reference_number-${studentId}`)?.closest('.mb-4');
-                    const timeField = document.getElementById(`time-${studentId}`)?.closest('.mb-4');
-                    const roomField = document.getElementById(`room-${studentId}`)?.closest('.mb-4');
-                    const facingField = document.getElementById(`facing-${studentId}`)?.closest('.mb-4');
-
-                    // Cek apakah tindakan adalah "Teguran Tertulis dan Pemanggilan Orang Tua"
-                    const isTeguranTertulisOrPemanggilan = action &&
-                        (action.toLowerCase().includes('teguran tertulis') ||
-                         action.toLowerCase().includes('pemanggilan orang tua'));
-                         const isKegiatanSosial = action &&
-                        (action.toLowerCase().includes('kegiatan sosial') ||
-                         action.toLowerCase().includes('kegiatan sosial'));
-
-                    // Tampilkan/sembunyikan field berdasarkan tindakan
-                    if (isTeguranTertulisOrPemanggilan) {
-                        // Tampilkan semua field
-                        if (preyField) preyField.classList.remove('hidden');
-                        if (actionDateField) actionDateField.classList.remove('hidden');
-                        if (referenceNumberField) referenceNumberField.classList.remove('hidden');
-                        if (timeField) timeField.classList.remove('hidden');
-                        if (roomField) roomField.classList.remove('hidden');
-                        if (facingField) facingField.classList.remove('hidden');
-                    }else if (isKegiatanSosial) {
-                        // Tampilkan semua field
-                        if (preyField) preyField.classList.remove('hidden');
-                        if (actionDateField) actionDateField.classList.remove('hidden');
-                        if (referenceNumberField) referenceNumberField.classList.remove('hidden');
-                        if (timeField) timeField.classList.remove('hidden');
-                        if (roomField) roomField.classList.remove('hidden');
-                        if (facingField) facingField.classList.remove('hidden');
-                    } else {
-                        // Sembunyikan semua field kecuali deskripsi
-                        if (preyField) preyField.classList.add('hidden');
-                        if (actionDateField) actionDateField.classList.add('hidden');
-                        if (referenceNumberField) referenceNumberField.classList.add('hidden');
-                        if (timeField) timeField.classList.add('hidden');
-                        if (roomField) roomField.classList.add('hidden');
-                        if (facingField) facingField.classList.add('hidden');
-
-                        // Reset nilai field yang disembunyikan
-                        if (preyField) document.getElementById(`prey-${studentId}`).value = '';
-                        if (actionDateField) document.getElementById(`action_date-${studentId}`).value = '';
-                        if (referenceNumberField) document.getElementById(`reference_number-${studentId}`).value = '';
-                        if (timeField) document.getElementById(`time-${studentId}`).value = '';
-                        if (roomField) document.getElementById(`room-${studentId}`).value = '';
-                        if (facingField) document.getElementById(`facing-${studentId}`).value = '';
+                if (showRow) {
+                    row.style.display = '';
+                    visibleRows++;
+                    // Calculate points for visible rows
+                    const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
+                    if (pointsElement) {
+                        const pointsText = pointsElement.textContent;
+                        const pointsMatch = pointsText.match(/(\d+)/);
+                        const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
+                        totalPoints += points;
                     }
-                    // === AKHIR TAMBAHAN SCRIPT BARU ===
                 } else {
-                    detailsDiv.classList.add('hidden');
+                    row.style.display = 'none';
                 }
             });
+
+            // Update row numbers for visible rows
+            let counter = 1;
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const rowNumberElement = row.querySelector('.row-number');
+                    if (rowNumberElement) {
+                        rowNumberElement.textContent = counter++;
+                    }
+                }
+            });
+
+            // Show/hide no data message
+            if (noDataMsg && tableContainer) {
+                if (visibleRows === 0) {
+                    noDataMsg.classList.remove('hidden');
+                    tableContainer.style.display = 'none';
+                } else {
+                    noDataMsg.classList.add('hidden');
+                    tableContainer.style.display = '';
+                }
+            }
+
+            // Update summary
+            const totalCountElement = document.getElementById(`totalCount-${studentId}`);
+            const totalPointsElement = document.getElementById(`totalPoints-${studentId}`);
+
+            if (totalCountElement) {
+                totalCountElement.textContent = visibleRows;
+            }
+            if (totalPointsElement) {
+                totalPointsElement.textContent = `${totalPoints} Poin`;
+            }
+        }
+
+        // Filter function for detail modal (all violations)
+        function filterDetailTable(studentId) {
+            const categoryFilter = document.getElementById(`detailCategoryFilter-${studentId}`);
+            const statusFilter = document.getElementById(`detailStatusFilter-${studentId}`);
+
+            if (!categoryFilter || !statusFilter) return;
+
+            const categoryValue = categoryFilter.value;
+            const statusValue = statusFilter.value;
+            const table = document.getElementById(`detailViolationsTable-${studentId}`);
+            const rows = table.querySelectorAll('.detail-violation-row');
+            const noDataMsg = document.getElementById(`noDetailFilteredData-${studentId}`);
+            const tableContainer = table.closest('.table-container');
+
+            let visibleRows = 0;
+            let totalPoints = 0;
+            let verifiedPoints = 0;
+
+            rows.forEach(row => {
+                const rowCategory = row.getAttribute('data-category');
+                const rowStatus = row.getAttribute('data-status');
+                let showRow = true;
+
+                // Filter by category
+                if (categoryValue && categoryValue !== rowCategory) {
+                    showRow = false;
+                }
+
+                // Filter by status
+                if (statusValue && statusValue !== rowStatus) {
+                    showRow = false;
+                }
+
+                if (showRow) {
+                    row.style.display = '';
+                    visibleRows++;
+
+                    // Calculate points for visible rows
+                    const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
+                    if (pointsElement) {
+                        const pointsText = pointsElement.textContent;
+                        const pointsMatch = pointsText.match(/(\d+)/);
+                        const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
+                        totalPoints += points;
+
+                        // Calculate verified points only
+                        if (rowStatus === 'verified') {
+                            verifiedPoints += points;
+                        }
+                    }
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update row numbers for visible rows
+            let counter = 1;
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const rowNumberElement = row.querySelector('.detail-row-number');
+                    if (rowNumberElement) {
+                        rowNumberElement.textContent = counter++;
+                    }
+                }
+            });
+
+            // Show/hide no data message
+            if (noDataMsg && tableContainer) {
+                if (visibleRows === 0) {
+                    noDataMsg.classList.remove('hidden');
+                    tableContainer.style.display = 'none';
+                } else {
+                    noDataMsg.classList.add('hidden');
+                    tableContainer.style.display = '';
+                }
+            }
+
+            // Update summary
+            const totalCountElement = document.getElementById(`detailTotalCount-${studentId}`);
+            const totalPointsElement = document.getElementById(`detailTotalPoints-${studentId}`);
+            const verifiedPointsElement = document.getElementById(`detailVerifiedPoints-${studentId}`);
+
+            if (totalCountElement) {
+                totalCountElement.textContent = visibleRows;
+            }
+            if (totalPointsElement) {
+                totalPointsElement.textContent = `${totalPoints} Poin`;
+            }
+            if (verifiedPointsElement) {
+                verifiedPointsElement.textContent = `${verifiedPoints} Poin`;
+            }
+
+            // Update handling action display dynamically
+            updateHandlingAction(studentId, verifiedPoints);
+        }
+
+        // Function to update handling action based on verified points
+        function updateHandlingAction(studentId, verifiedPoints) {
+            const summarySection = document.getElementById(`detailSummary-${studentId}`);
+            if (!summarySection) return;
+
+            const handlingCard = summarySection.querySelector('.handling-action-card');
+            const statusGoodCard = summarySection.querySelector('.status-good-card');
+            if (!handlingCard || !statusGoodCard) return;
+
+            // Get handling options from data attribute
+            const handlingOptionsData = handlingCard.getAttribute('data-handling-options');
+            if (!handlingOptionsData) return;
+
+            try {
+                const handlingOptions = JSON.parse(handlingOptionsData);
+
+                // Sort by handling_point descending
+                handlingOptions.sort((a, b) => b.handling_point - a.handling_point);
+
+                // Find applicable handling
+                let applicableHandling = null;
+                for (let i = 0; i < handlingOptions.length; i++) {
+                    if (verifiedPoints >= handlingOptions[i].handling_point) {
+                        applicableHandling = handlingOptions[i];
+                        break;
+                    }
+                }
+
+                // Update display
+                if (applicableHandling) {
+                    // Show warning card
+                    const currentPointsEl = handlingCard.querySelector('.current-points');
+                    const actionTextEl = handlingCard.querySelector('.action-text');
+                    const thresholdTextEl = handlingCard.querySelector('.threshold-text');
+
+                    if (currentPointsEl) currentPointsEl.textContent = verifiedPoints;
+                    if (actionTextEl) actionTextEl.textContent = applicableHandling.handling_action;
+                    if (thresholdTextEl) thresholdTextEl.textContent = applicableHandling.handling_point;
+
+                    handlingCard.classList.remove('hidden');
+                    statusGoodCard.classList.add('hidden');
+                } else {
+                    // Show good status
+                    handlingCard.classList.add('hidden');
+                    statusGoodCard.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error updating handling action:', error);
+            }
+        }
+
+        // Clear filters for confirmation modal
+        function clearFilters(studentId) {
+            // Reset filter values
+            const categoryFilter = document.getElementById('categoryFilter-' + studentId);
+
+            if (categoryFilter) {
+                categoryFilter.value = '';
+            }
+
+            // Call filterTable to apply the reset
+            filterTable(studentId);
+        }
+
+        // Clear filters for detail modal
+        function clearDetailFilters(studentId) {
+            // Reset filter values
+            const categoryFilter = document.getElementById('detailCategoryFilter-' + studentId);
+            const statusFilter = document.getElementById('detailStatusFilter-' + studentId);
+
+            if (categoryFilter) {
+                categoryFilter.value = '';
+            }
+            if (statusFilter) {
+                statusFilter.value = '';
+            }
+
+            // Call filterDetailTable to apply the reset
+            filterDetailTable(studentId);
+        }
+    </script>
+
+    <script>
+        const ITEMS_PER_PAGE = 5;
+        const paginationState = {};
+
+        function initPagination(studentId) {
+            if (!paginationState[studentId]) {
+                paginationState[studentId] = {
+                    currentPage: 1,
+                    itemsPerPage: ITEMS_PER_PAGE
+                };
+            }
+        }
+
+        function getVisibleRows(studentId) {
+            const table = document.getElementById(`violationsTable-${studentId}`);
+            if (!table) return [];
+
+            const rows = Array.from(table.querySelectorAll('.violation-row'));
+            return rows.filter(row => row.style.display !== 'none');
+        }
+
+        function applyPagination(studentId) {
+            initPagination(studentId);
+
+            const visibleRows = getVisibleRows(studentId);
+            const state = paginationState[studentId];
+            const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
+
+            // Hide all rows first
+            visibleRows.forEach(row => row.classList.add('hidden'));
+
+            // Show only rows for current page
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            const rowsToShow = visibleRows.slice(startIndex, endIndex);
+
+            rowsToShow.forEach(row => row.classList.remove('hidden'));
+
+            // Update row numbers
+            rowsToShow.forEach((row, index) => {
+                const rowNumberElement = row.querySelector('.row-number');
+                if (rowNumberElement) {
+                    rowNumberElement.textContent = startIndex + index + 1;
+                }
+            });
+
+            updatePaginationControls(studentId, totalPages, visibleRows.length);
+            updateSummaryWithPagination(studentId, visibleRows);
+        }
+
+        function updatePaginationControls(studentId, totalPages, totalItems) {
+            const state = paginationState[studentId];
+            const container = document.getElementById(`paginationControls-${studentId}`);
+
+            if (!container) return;
+
+            if (totalPages <= 1) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+
+            const pageInfo = container.querySelector('.page-info');
+            if (pageInfo) {
+                const start = (state.currentPage - 1) * state.itemsPerPage + 1;
+                const end = Math.min(state.currentPage * state.itemsPerPage, totalItems);
+                pageInfo.textContent = `${start}-${end} dari ${totalItems}`;
+            }
+
+            const prevBtn = container.querySelector('.prev-page');
+            const nextBtn = container.querySelector('.next-page');
+            const firstBtn = container.querySelector('.first-page');
+            const lastBtn = container.querySelector('.last-page');
+
+            if (prevBtn) prevBtn.disabled = state.currentPage === 1;
+            if (nextBtn) nextBtn.disabled = state.currentPage === totalPages;
+            if (firstBtn) firstBtn.disabled = state.currentPage === 1;
+            if (lastBtn) lastBtn.disabled = state.currentPage === totalPages;
+
+            const pageNumber = container.querySelector('.current-page-number');
+            if (pageNumber) {
+                pageNumber.textContent = `Hal ${state.currentPage} dari ${totalPages}`;
+            }
+        }
+
+        function updateSummaryWithPagination(studentId, visibleRows) {
+            let totalPoints = 0;
+
+            visibleRows.forEach(row => {
+                const pointsElement = row.querySelector('.font-semibold.text-red-600, .text-red-600');
+                if (pointsElement) {
+                    const pointsText = pointsElement.textContent;
+                    const pointsMatch = pointsText.match(/(\d+)/);
+                    const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;
+                    totalPoints += points;
+                }
+            });
+
+            const totalCountElement = document.getElementById(`totalCount-${studentId}`);
+            const totalPointsElement = document.getElementById(`totalPoints-${studentId}`);
+
+            if (totalCountElement) {
+                totalCountElement.textContent = visibleRows.length;
+            }
+            if (totalPointsElement) {
+                totalPointsElement.textContent = `${totalPoints} Poin`;
+            }
+        }
+
+        function goToPage(studentId, page) {
+            const state = paginationState[studentId];
+            const visibleRows = getVisibleRows(studentId);
+            const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
+
+            if (page < 1 || page > totalPages) return;
+
+            state.currentPage = page;
+            applyPagination(studentId);
+
+            const tableWrapper = document.querySelector(`#violationsTable-${studentId}`).closest('.table-scroll-wrapper');
+            if (tableWrapper) {
+                tableWrapper.scrollTop = 0;
+            }
+        }
+
+        // FILTER FUNCTION WITH PAGINATION
+        function filterTable(studentId) {
+            const categoryFilter = document.getElementById(`categoryFilter-${studentId}`);
+            if (!categoryFilter) return;
+
+            const categoryValue = categoryFilter.value;
+            const table = document.getElementById(`violationsTable-${studentId}`);
+            const rows = table.querySelectorAll('.violation-row');
+            const noDataMsg = document.getElementById(`noFilteredData-${studentId}`);
+            const tableContainer = table.closest('.table-container');
+
+            let visibleRows = 0;
+
+            rows.forEach(row => {
+                const rowCategory = row.getAttribute('data-category');
+                let showRow = true;
+
+                if (categoryValue && categoryValue !== rowCategory) {
+                    showRow = false;
+                }
+
+                if (showRow) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (noDataMsg && tableContainer) {
+                if (visibleRows === 0) {
+                    noDataMsg.classList.remove('hidden');
+                    tableContainer.style.display = 'none';
+                    const paginationControls = document.getElementById(`paginationControls-${studentId}`);
+                    if (paginationControls) paginationControls.classList.add('hidden');
+                } else {
+                    noDataMsg.classList.add('hidden');
+                    tableContainer.style.display = '';
+                }
+            }
+
+            // Reset to page 1 and apply pagination
+            if (paginationState[studentId]) {
+                paginationState[studentId].currentPage = 1;
+            }
+            applyPagination(studentId);
+        }
+
+        function clearFilters(studentId) {
+            const categoryFilter = document.getElementById('categoryFilter-' + studentId);
+            if (categoryFilter) {
+                categoryFilter.value = '';
+            }
+            filterTable(studentId);
+        }
+
+        // INITIALIZE ON PAGE LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal open handler
+            document.querySelectorAll('[data-modal-target]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal-target');
+                    const studentId = modalId.replace('modal-', '');
+
+                    initPagination(studentId);
+                    paginationState[studentId].currentPage = 1;
+
+                    setTimeout(() => {
+                        applyPagination(studentId);
+                    }, 100);
+                });
+            });
+
+            // Filter change handler
+            document.querySelectorAll('.category-filter').forEach(filter => {
+                filter.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    filterTable(studentId);
+                });
+            });
+
+            // Reset filter handler
+            document.querySelectorAll('.reset-filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    clearFilters(studentId);
+                });
+            });
+
+            // Pagination button handlers
+            document.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    const studentId = this.getAttribute('data-student-id');
+                    const state = paginationState[studentId];
+
+                    if (!state) return;
+
+                    switch (action) {
+                        case 'first':
+                            goToPage(studentId, 1);
+                            break;
+                        case 'prev':
+                            goToPage(studentId, state.currentPage - 1);
+                            break;
+                        case 'next':
+                            goToPage(studentId, state.currentPage + 1);
+                            break;
+                        case 'last':
+                            const visibleRows = getVisibleRows(studentId);
+                            const totalPages = Math.ceil(visibleRows.length / state.itemsPerPage);
+                            goToPage(studentId, totalPages);
+                            break;
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener untuk semua dropdown tindakan
+            document.querySelectorAll('.tindakan-dropdown').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    const detailsDiv = document.getElementById('handlingDetails-' + studentId);
+                    const selectedOption = this.options[this.selectedIndex];
+
+                    if (this.value) {
+                        const action = selectedOption.getAttribute('data-action');
+                        const point = selectedOption.getAttribute('data-point');
+
+                        document.getElementById('selectedAction-' + studentId).value = action;
+                        document.getElementById('selectedPoint-' + studentId).value = point +
+                            ' Poin';
+
+                        detailsDiv.classList.remove('hidden');
+
+                        // === TAMBAHAN SCRIPT BARU - DYNAMIC FORM ===
+                        // Ambil elemen-elemen form
+                        const preyField = document.getElementById(`prey-${studentId}`)?.closest(
+                            '.mb-4');
+                        const actionDateField = document.getElementById(`action_date-${studentId}`)
+                            ?.closest('.mb-4');
+                        const referenceNumberField = document.getElementById(
+                            `reference_number-${studentId}`)?.closest('.mb-4');
+                        const timeField = document.getElementById(`time-${studentId}`)?.closest(
+                            '.mb-4');
+                        const roomField = document.getElementById(`room-${studentId}`)?.closest(
+                            '.mb-4');
+                        const facingField = document.getElementById(`facing-${studentId}`)?.closest(
+                            '.mb-4');
+
+                        // Cek apakah tindakan adalah "Teguran Tertulis dan Pemanggilan Orang Tua"
+                        const isTeguranTertulisOrPemanggilan = action &&
+                            (action.toLowerCase().includes('teguran tertulis') ||
+                                action.toLowerCase().includes('pemanggilan orang tua'));
+                        const isKegiatanSosial = action &&
+                            (action.toLowerCase().includes('kegiatan sosial') ||
+                                action.toLowerCase().includes('kegiatan sosial'));
+
+                        // Tampilkan/sembunyikan field berdasarkan tindakan
+                        if (isTeguranTertulisOrPemanggilan) {
+                            // Tampilkan semua field
+                            if (preyField) preyField.classList.remove('hidden');
+                            if (actionDateField) actionDateField.classList.remove('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.remove(
+                                'hidden');
+                            if (timeField) timeField.classList.remove('hidden');
+                            if (roomField) roomField.classList.remove('hidden');
+                            if (facingField) facingField.classList.remove('hidden');
+                        } else if (isKegiatanSosial) {
+                            // Tampilkan semua field
+                            if (preyField) preyField.classList.remove('hidden');
+                            if (actionDateField) actionDateField.classList.remove('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.remove(
+                                'hidden');
+                            if (timeField) timeField.classList.remove('hidden');
+                            if (roomField) roomField.classList.remove('hidden');
+                            if (facingField) facingField.classList.remove('hidden');
+                        } else {
+                            // Sembunyikan semua field kecuali deskripsi
+                            if (preyField) preyField.classList.add('hidden');
+                            if (actionDateField) actionDateField.classList.add('hidden');
+                            if (referenceNumberField) referenceNumberField.classList.add('hidden');
+                            if (timeField) timeField.classList.add('hidden');
+                            if (roomField) roomField.classList.add('hidden');
+                            if (facingField) facingField.classList.add('hidden');
+
+                            // Reset nilai field yang disembunyikan
+                            if (preyField) document.getElementById(`prey-${studentId}`).value = '';
+                            if (actionDateField) document.getElementById(`action_date-${studentId}`)
+                                .value = '';
+                            if (referenceNumberField) document.getElementById(
+                                `reference_number-${studentId}`).value = '';
+                            if (timeField) document.getElementById(`time-${studentId}`).value = '';
+                            if (roomField) document.getElementById(`room-${studentId}`).value = '';
+                            if (facingField) document.getElementById(`facing-${studentId}`).value =
+                                '';
+                        }
+                        // === AKHIR TAMBAHAN SCRIPT BARU ===
+                    } else {
+                        detailsDiv.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
