@@ -98,7 +98,7 @@
         style="font-family:Arial;">Yth. Orang Tua Siswa</span><span
         style="width:130.86pt; text-indent:0pt; font-family:Arial; display:inline-block;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-left:36pt; margin-bottom:0pt; text-indent:36pt; line-height:150%;"><span
-        style="font-family:Arial;">{{ $student_name ?? '' }}, ({{ $parent_name ?? '' }})</span></p>
+        style="font-family:Arial;">{{ $student_name ?? '' }}</span></p>
 <p style="margin-top:0pt; margin-left:36pt; margin-bottom:0pt; text-indent:36pt; line-height:150%;"><span
         style="font-family:Arial;">Kelas&nbsp;</span><span
         style="width:2.65pt; text-indent:0pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
