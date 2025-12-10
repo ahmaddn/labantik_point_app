@@ -60,7 +60,7 @@
         </tr>
     </tbody>
 </table>
-<p style="margin-top:0pt; margin-left:7.1pt; margin-bottom:0pt; text-align:center; font-size:8pt;"><span
+<p style="margin-top:2pt; margin-left:7.1pt; margin-bottom:0pt; text-align:center; font-size:8pt;"><span
         style="height:0pt; text-align:left; display:block; position:absolute; z-index:0;"><img
             src="https://myfiles.space/user_files/299719_c3f3ea1dab087666/1765101146_surat-panggilan-orang-tua/1765101146_surat-panggilan-orang-tua-2.png"
             width="743" height="6" alt="" style="margin: 0 0 0 auto; display: block; "></span><span
@@ -244,7 +244,7 @@
         </tr>
     </tbody>
 </table>
-<p style="margin-top:0pt; margin-bottom:0pt; font-size:11pt;"><span
+<p style="margin-top:2pt; margin-bottom:0pt; font-size:11pt;"><span
         style="height:0pt; display:block; position:absolute; z-index:0;"><img
             src="https://myfiles.space/user_files/299719_c3f3ea1dab087666/1765155912_surat-perjanjian/1765155912_surat-perjanjian-2.png"
             width="743" height="6" alt="" style="margin: 0 0 0 auto; display: block; "></span><span
