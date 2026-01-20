@@ -23,6 +23,99 @@
                     </li>
                 </ul>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-4 flex justify-between gap-2">
+                        <h6 class="text-15 mb-4">Daftar Tindakan</h6>
+                    </div>
+
+                    @if (count($actions) > 0)
+                        <table id="hoverableTable" style="width: 100%" class="hover group">
+                            <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
+                                <tr>
+                                    <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">
+                                        No
+                                    </th>
+                                    <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">
+                                        Nama Siswa
+                                    </th>
+                                    <th scope="col"
+                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
+                                        Kelas
+                                    </th>
+                                    <th scope="col"
+                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
+                                        Pelanggaran
+                                    </th>
+                                    <th scope="col"
+                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
+                                        Tindakan
+                                    </th>
+                                    <th scope="col"
+                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
+                                        Dibuat Oleh / Penanggung Jawab
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($actions as $index => $act)
+                                    <tr
+                                        class="dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50">
+                                        <td class="px-4 py-4 font-medium">
+                                            {{ $index + 1 }}
+                                        </td>
+                                        <td class="whitespace-normal px-4 py-4">
+                                            <div class="dark:text-zink-200 font-medium text-slate-700">
+                                                {{ $act->academicYear->student->full_name ?? '-' }}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-4 text-center">
+                                            <span
+                                                class="rounded-full bg-slate-50 px-3 py-1 text-sm text-slate-600 dark:bg-slate-900/30 dark:text-slate-400">
+                                                {{ $act->academicYear->class->academic_level ?? '-' }}
+                                                {{ $act->academicYear->class->name ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4 text-center">
+                                            <span class="text-sm text-slate-500 dark:text-slate-400">
+                                                @forelse($act->academicYear->pRecaps as $recap)
+                                                    <div>{{ $recap->violation->name }}
+                                                    </div>
+                                                @empty
+                                                    <div>-</div>
+                                                @endforelse
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4 text-center">
+                                            <span class="text-sm text-slate-500 dark:text-slate-400">
+                                                {{ $act->handling->handling_action ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-4 text-center">
+                                            <span class="text-sm text-slate-500 dark:text-slate-400">
+                                                {{ $act->handle->name ?? '-' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="py-8 text-center">
+                            <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" class="mb-2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                <p class="text-sm">Tidak ada template surat ditemukan</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 @endsection

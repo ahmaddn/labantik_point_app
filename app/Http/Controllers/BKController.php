@@ -535,7 +535,7 @@ class BKController extends Controller
     public function actions()
     {
         $actions = P_Viol_Action::with([
-            'recap.student',
+            'academicYear.student',
             'handling',
             'handle',
             'detail'
