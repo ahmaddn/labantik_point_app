@@ -42,6 +42,11 @@ Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
     Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
     Route::get('/actions', [BKController::class, 'actions'])->name('actions');
+
+    //Templates
+    Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+    Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+        ->name('templates.download');
 });
 
 Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(function () {
