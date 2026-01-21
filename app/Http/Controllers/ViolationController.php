@@ -10,27 +10,27 @@ class ViolationController extends Controller
 {
     public function index(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'category' => 'nullable|string',
             'min_point' => 'nullable|integer|min:0',
-            'max_point' => 'nullable|integer|min:0|gte:min_point', // max_point harus >= min_point
-        ], [
-            'max_point.gte' => 'Poin maksimum harus lebih besar atau sama dengan poin minimum.',
-            'min_point.min' => 'Poin minimum tidak boleh kurang dari 0.',
-            'max_point.min' => 'Poin maksimum tidak boleh kurang dari 0.',
+            'max_point' => 'nullable|integer|min:0|gte:min_point',
         ]);
 
-        $query = P_Violations::with('category');
+        // Optimasi: Gunakan query builder dengan select spesifik
+        $query = P_Violations::select([
+            'p_violations.id',
+            'p_violations.p_category_id',
+            'p_violations.name',
+            'p_violations.point'
+        ])
+            ->with('category:id,name');
 
-        // Filter berdasarkan kategori
         if ($request->filled('category')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('name', $request->category);
             });
         }
 
-        // Filter berdasarkan rentang poin
         if ($request->filled('min_point')) {
             $query->where('point', '>=', $request->min_point);
         }
@@ -39,15 +39,16 @@ class ViolationController extends Controller
             $query->where('point', '<=', $request->max_point);
         }
 
-        // Hitung kasus verified tanpa paginate
+        // Optimasi: Gunakan withCount untuk menghitung kasus verified
         $violations = $query->withCount([
             'recaps as verified_cases_count' => function ($q) {
                 $q->where('status', 'verified');
             }
-        ])->orderBy('point', 'asc')->get();
+        ])
+            ->orderBy('point', 'asc')
+            ->get();
 
-        // Get all categories for filter dropdown
-        $categories = P_Categories::all();
+        $categories = P_Categories::select('id', 'name')->get();
 
         return view('superadmin.violations.index', compact('violations', 'categories'));
     }
@@ -77,8 +78,7 @@ class ViolationController extends Controller
             'point' => 'required|integer|min:0|max:100',
         ]);
 
-        $violation = P_Violations::findOrFail($id);
-        $violation->update([
+        P_Violations::where('id', $id)->update([
             'p_category_id' => $request->category_id,
             'name' => $request->name,
             'point' => $request->point,
@@ -89,8 +89,7 @@ class ViolationController extends Controller
 
     public function destroy($id)
     {
-        $violation = P_Violations::findOrFail($id);
-        $violation->delete();
+        P_Violations::where('id', $id)->delete();
 
         return redirect()->route('superadmin.violations')->with('success', 'Pelanggaran berhasil dihapus.');
     }

@@ -11,18 +11,15 @@ class TemplatesController extends Controller
 {
     public function index()
     {
-        // Mendapatkan semua file di folder templates/
         $templatesPath = resource_path('views/templates');
         $files = [];
 
         if (File::exists($templatesPath)) {
-            // Ambil semua file .blade.php yang dimulai dengan 'surat'
             $allFiles = File::files($templatesPath);
 
             foreach ($allFiles as $file) {
                 $filename = $file->getFilename();
 
-                // Filter hanya file yang prefix-nya 'surat' dan berekstensi .blade.php
                 if (str_starts_with($filename, 'surat') && str_ends_with($filename, '.blade.php')) {
                     $files[] = [
                         'filename' => $filename,
@@ -33,10 +30,8 @@ class TemplatesController extends Controller
                 }
             }
 
-            // Urutkan berdasarkan nama file
             usort($files, fn($a, $b) => strcmp($a['filename'], $b['filename']));
         }
-
 
         return view('templates.index', compact('files'));
     }
@@ -51,15 +46,18 @@ class TemplatesController extends Controller
         $filePath = $templatesPath . '/' . $filename;
         $filename = str_replace('.blade.php', '', $filename);
 
-        // Validasi file exists dan nama file dimulai dengan 'surat'
         if (!File::exists($filePath) || !str_starts_with($filename, 'surat')) {
             abort(404, 'Template tidak ditemukan');
         }
 
-        $kepalaSekolah = User::with('employee')->where('email', 'kepsek@gmail.com')->first();
+        // Optimasi: Select hanya field yang diperlukan
+        $kepalaSekolah = User::select('id', 'name', 'email')
+            ->with('employee:id,user_id,full_name,employee_number')
+            ->where('email', 'kepsek@gmail.com')
+            ->first();
+
         $no_surat = $request->input('no_surat');
 
-        // View dinamis berdasarkan nama file
         return view('templates.' . $filename, compact('kepalaSekolah', 'no_surat'));
     }
 }

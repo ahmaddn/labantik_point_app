@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -34,15 +33,15 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials, $request->has('remember'))) {
-            // Update last login menggunakan query builder
+            // Optimasi: Update menggunakan query builder
             User::where('id', Auth::id())->update([
                 'last_login' => now()
             ]);
 
             $user = Auth::user();
 
-            // Get user roles and determine redirect based on app_type
-            $userRoles = $user->roles;  // PERBAIKAN: hilangkan ->with('pivot')->get()
+            // Optimasi: Eager load relationships yang diperlukan saja
+            $userRoles = $user->roles()->select('core_roles.id', 'core_roles.code')->get();
 
             if ($userRoles->isEmpty()) {
                 Auth::logout();
@@ -51,12 +50,12 @@ class UserController extends Controller
                 ])->withInput();
             }
 
-            // Check if user has employee or student data
-            $employee = $user->employee;  // PERBAIKAN: gunakan relationship
-            $student = $user->student;    // PERBAIKAN: gunakan relationship
+            // Optimasi: Load employee dan student dengan select spesifik
+            $employee = $user->employee()->select('id', 'user_id', 'full_name')->first();
+            $student = $user->student()->select('id', 'user_id', 'full_name')->first();
 
-            // Determine user type and redirect accordingly
             $redirectRoute = $this->getRedirectRoute($userRoles, $employee, $student);
+
             return redirect()->intended($redirectRoute)->with('success', 'Login berhasil!');
         }
 
@@ -68,52 +67,38 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Logout berhasil!');
     }
 
-    /**
-     * Determine redirect route based on user roles and profile
-     */
     private function getRedirectRoute($userRoles, $employee = null, $student = null)
     {
-        // Check for admin/staff roles first
         foreach ($userRoles as $role) {
-            $appType = $role->pivot->app_type ?? null;
-
             switch (strtolower($role->code)) {
                 case 'guru':
                     return '/guru/dashboard';
-
                 case 'guru-bk':
                 case 'kesiswaan':
                     return '/kesiswaan-bk/dashboard';
-
                 case 'super-admin':
                     return '/superadmin/dashboard';
-
             }
         }
     }
 
-    /**
-     * Get user profile data
-     */
     public function profile()
     {
         $user = Auth::user();
-        $employee = $user->employee;  // PERBAIKAN: gunakan relationship
-        $student = $user->student;    // PERBAIKAN: gunakan relationship
+
+        // Optimasi: Load hanya field yang diperlukan
+        $employee = $user->employee()->select('id', 'user_id', 'full_name', 'employee_number')->first();
+        $student = $user->student()->select('id', 'user_id', 'full_name', 'student_number')->first();
 
         return view('profile.index', compact('user', 'employee', 'student'));
     }
 
-    /**
-     * Update user profile
-     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -128,14 +113,13 @@ class UserController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // PERBAIKAN: Update menggunakan query builder
         $updateData = [
             'name' => $request->name,
             'email' => $request->email,
             'updated_by' => $user->id,
+            'updated_at' => now(),
         ];
 
-        // Handle avatar upload
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $updateData['avatar'] = $avatarPath;
@@ -146,9 +130,6 @@ class UserController extends Controller
         return back()->with('success', 'Profile berhasil diperbarui!');
     }
 
-    /**
-     * Change password
-     */
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -168,37 +149,33 @@ class UserController extends Controller
             ]);
         }
 
-        // PERBAIKAN: Update menggunakan query builder
         User::where('id', $user->id)->update([
             'password' => Hash::make($request->password),
             'updated_by' => $user->id,
+            'updated_at' => now(),
         ]);
 
         return back()->with('success', 'Password berhasil diubah!');
     }
 
-    /**
-     * Get user permissions for current session
-     */
     public function getUserPermissions()
     {
         $userId = Auth::id();
-        $user = User::with('roles.permissions.actions')
+
+        // Optimasi: Select hanya field yang diperlukan
+        $user = User::select('id')
+            ->with([
+                'roles:core_roles.id',
+                'roles.permissions:core_permissions.id,name',
+                'roles.permissions.actions:id,permission_id,action_name'
+            ])
             ->find($userId);
-
-        // Get all user roles with their permissions
-        $userRoles =
-            $user->roles()->with(['permissions.actions'])->get();
-
-
-
 
         if (!$user) {
             return [];
         }
 
         $permissions = [];
-
         foreach ($user->roles as $role) {
             foreach ($role->permissions as $permission) {
                 $permissionName = $permission->name;

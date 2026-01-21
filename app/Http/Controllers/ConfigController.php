@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\P_Config_Handlings;
 use App\Models\P_Configs;
-use App\Models\RefStudent;
 use App\Models\RefStudentAcademicYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,16 +14,24 @@ class ConfigController extends Controller
 {
     public function index()
     {
-        $configs = P_Configs::with(['handlings', 'createdBy'])
-            ->orderBy('created_at', 'desc')
+        // Optimasi: Select hanya field yang diperlukan dan gunakan pagination
+        $configs = P_Configs::select('id', 'academic_year', 'is_active', 'created_by', 'created_at')
+            ->with([
+                'handlings:id,p_config_id,handling_point,handling_action',
+                'createdBy:id,name'
+            ])
+            ->orderByDesc('created_at')
             ->paginate(10);
 
+        // Optimasi: Distinct dengan select spesifik
         $academicYears = RefStudentAcademicYear::select('academic_year')
             ->distinct()
-            ->orderBy('academic_year', 'desc')
+            ->orderByDesc('academic_year')
             ->get();
 
-        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        $activeAcademicYear = P_Configs::select('id', 'academic_year', 'is_active')
+            ->where('is_active', true)
+            ->first();
 
         return view('superadmin.configs.index', compact('configs', 'academicYears', 'activeAcademicYear'));
     }
@@ -40,7 +47,6 @@ class ConfigController extends Controller
         try {
             DB::beginTransaction();
 
-            // Jika diset aktif, nonaktifkan semua config lain
             if ($request->has('is_active')) {
                 P_Configs::where('is_active', true)->update(['is_active' => false]);
             }
@@ -52,22 +58,29 @@ class ConfigController extends Controller
                 'created_by'    => Auth::id(),
             ]);
 
-            // Tambah handling points jika ada
+            // Optimasi: Bulk insert untuk handlings
             if ($request->handling_points) {
+                $handlingsData = [];
                 foreach ($request->handling_points as $index => $point) {
                     if ($point && isset($request->handling_actions[$index])) {
-                        P_Config_Handlings::create([
+                        $handlingsData[] = [
                             'id' => Str::uuid(),
                             'p_config_id'    => $config->id,
                             'handling_point' => $point,
                             'handling_action' => $request->handling_actions[$index],
-                        ]);
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
                     }
+                }
+
+                if (!empty($handlingsData)) {
+                    P_Config_Handlings::insert($handlingsData);
                 }
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Konfigurasi tahun akademik berhasil ditambahkan.');
+            return redirect()->back()->with('success', 'Konfigurasi berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menambahkan konfigurasi: ' . $e->getMessage());
@@ -84,32 +97,40 @@ class ConfigController extends Controller
 
         try {
             DB::beginTransaction();
-$config = P_Configs::findOrFail
-            ($id);
 
-            $config->update([
+            P_Configs::where('id', $id)->update([
                 'academic_year' => $request->academic_year,
                 'updated_by'    => Auth::id(),
+                'updated_at'    => now(),
             ]);
 
-            // Hapus handling lama dan tambah yang baru
-            $config->handlings()->delete();
+            // Hapus handling lama
+            P_Config_Handlings::where('p_config_id', $id)->delete();
 
+            // Bulk insert handling baru
+            $handlingsData = [];
             foreach ($request->handling_points as $index => $point) {
                 if ($point && isset($request->handling_actions[$index])) {
-                    P_Config_Handlings::create([
-                        'p_config_id'    => $config->id,
+                    $handlingsData[] = [
+                        'id' => Str::uuid(),
+                        'p_config_id'    => $id,
                         'handling_point' => $point,
                         'handling_action' => $request->handling_actions[$index],
-                    ]);
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
                 }
+            }
+
+            if (!empty($handlingsData)) {
+                P_Config_Handlings::insert($handlingsData);
             }
 
             DB::commit();
             return redirect()->back()->with('success', 'Konfigurasi berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal memperbarui konfigurasi: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui: ' . $e->getMessage());
         }
     }
 
@@ -118,47 +139,47 @@ $config = P_Configs::findOrFail
         try {
             DB::beginTransaction();
 
-            // Nonaktifkan semua config
             P_Configs::where('is_active', true)->update(['is_active' => false]);
-
-            // Aktifkan config yang dipilih
-            $config = P_Configs::findOrFail($id);
-            $config->update(['is_active' => true]);
+            P_Configs::where('id', $id)->update([
+                'is_active' => true,
+                'updated_at' => now()
+            ]);
 
             DB::commit();
             return redirect()->back()->with('success', 'Konfigurasi berhasil diaktifkan.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal mengaktifkan konfigurasi: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengaktifkan: ' . $e->getMessage());
         }
     }
 
     public function deactivate($id)
     {
         try {
-            $config = P_Configs::findOrFail($id);
-            $config->update(['is_active' => false]);
+            P_Configs::where('id', $id)->update([
+                'is_active' => false,
+                'updated_at' => now()
+            ]);
 
             return redirect()->back()->with('success', 'Konfigurasi berhasil dinonaktifkan.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menonaktifkan konfigurasi: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menonaktifkan: ' . $e->getMessage());
         }
     }
 
     public function destroy($id)
     {
         try {
-            $config = P_Configs::findOrFail($id);
+            DB::beginTransaction();
 
-            // Hapus handlings terkait
-            $config->handlings()->delete();
+            P_Config_Handlings::where('p_config_id', $id)->delete();
+            P_Configs::where('id', $id)->delete();
 
-            // Hapus config
-            $config->delete();
-
+            DB::commit();
             return redirect()->back()->with('success', 'Konfigurasi berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus konfigurasi: ' . $e->getMessage());
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
     }
 }
