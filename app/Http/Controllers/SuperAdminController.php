@@ -37,7 +37,7 @@ class SuperAdminController extends Controller
 
         // Get all students in academic year
         $allStudents = RefStudentAcademicYear::where('academic_year', $academicYear)
-            ->with(['student.recaps' => function ($query) {
+            ->with(['recaps' => function ($query) {
                 $query->where('status', 'verified')->with('violation');
             }])
             ->get();
@@ -48,7 +48,7 @@ class SuperAdminController extends Controller
         $studentPoints = [];
 
         foreach ($allStudents as $studentAcademic) {
-            $verifiedRecaps = $studentAcademic->student->recaps;
+            $verifiedRecaps = $studentAcademic->recaps;
             $studentTotalPoints = $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0);
 
             if ($verifiedRecaps->count() > 0) {
