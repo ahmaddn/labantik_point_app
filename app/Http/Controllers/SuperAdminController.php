@@ -35,76 +35,100 @@ class SuperAdminController extends Controller
 
         $academicYear = str_replace('-', '/', $activeAcademicYear->academic_year);
 
-        // Optimasi: Single query dengan aggregasi
-        $stats = DB::table('ref_student_academic_years')
-            ->where('academic_year', $academicYear)
-            ->leftJoin('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
-            ->leftJoin('p_recaps', function ($join) {
-                $join->on('ref_students.id', '=', 'p_recaps.ref_student_id')
-                    ->where('p_recaps.status', '=', 'verified');
-            })
-            ->selectRaw('
-                COUNT(DISTINCT ref_student_academic_years.id) as total_students,
-                COUNT(DISTINCT CASE WHEN p_recaps.id IS NOT NULL THEN ref_students.id END) as students_with_violations,
-                COUNT(p_recaps.id) as total_violations
-            ')
-            ->first();
+        // Get all students in academic year
+        $allStudents = RefStudentAcademicYear::where('academic_year', $academicYear)
+            ->with(['student.recaps' => function ($query) {
+                $query->where('status', 'verified')->with('violation');
+            }])
+            ->get();
 
-        $totalViolations = $stats->total_violations;
-        $studentsWithoutViolations = $stats->total_students - $stats->students_with_violations;
+        $totalViolations = 0;
+        $studentsWithViolations = 0;
+        $classPoints = [];
+        $studentPoints = [];
 
-        // Optimasi: Top Class dengan single query
-        $topClass = DB::table('ref_student_academic_years')
-            ->where('ref_student_academic_years.academic_year', $academicYear)
-            ->join('ref_classes', 'ref_student_academic_years.class_id', '=', 'ref_classes.id')
-            ->join('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
-            ->leftJoin('p_recaps', function ($join) {
-                $join->on('ref_students.id', '=', 'p_recaps.ref_student_id')
-                    ->where('p_recaps.status', '=', 'verified');
-            })
-            ->leftJoin('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
-            ->select(
-                'ref_classes.name as class_name',
-                DB::raw('COALESCE(SUM(p_violations.point), 0) as total_points')
-            )
-            ->groupBy('ref_classes.id', 'ref_classes.name')
-            ->orderByDesc('total_points')
-            ->first();
+        foreach ($allStudents as $studentAcademic) {
+            $verifiedRecaps = $studentAcademic->student->recaps;
+            $studentTotalPoints = $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0);
 
-        // Optimasi: Top Student dengan single query
-        $topStudent = DB::table('ref_student_academic_years')
-            ->where('ref_student_academic_years.academic_year', $academicYear)
-            ->join('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
-            ->join('ref_classes', 'ref_student_academic_years.class_id', '=', 'ref_classes.id')
-            ->leftJoin('p_recaps', function ($join) {
-                $join->on('ref_students.id', '=', 'p_recaps.ref_student_id')
-                    ->where('p_recaps.status', '=', 'verified');
-            })
-            ->leftJoin('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
-            ->select(
-                'ref_students.full_name as student_name',
-                'ref_students.student_number as nis',
-                'ref_classes.name as class_name',
-                DB::raw('COALESCE(SUM(p_violations.point), 0) as total_points')
-            )
-            ->groupBy('ref_students.id', 'ref_students.full_name', 'ref_students.student_number', 'ref_classes.name')
-            ->orderByDesc('total_points')
-            ->first();
+            if ($verifiedRecaps->count() > 0) {
+                $studentsWithViolations++;
+                $totalViolations += $verifiedRecaps->count();
+            }
 
-        // Optimasi: Most Frequent Violation dengan single query
-        $mostFrequentViolation = DB::table('p_recaps')
-            ->where('p_recaps.status', 'verified')
-            ->join('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
-            ->join('p_categories', 'p_violations.p_category_id', '=', 'p_categories.id')
-            ->select(
-                'p_violations.name as violation_name',
-                'p_violations.point',
-                'p_categories.name as category_name',
-                DB::raw('COUNT(p_recaps.id) as violation_count')
-            )
-            ->groupBy('p_violations.id', 'p_violations.name', 'p_violations.point', 'p_categories.name')
-            ->orderByDesc('violation_count')
-            ->first();
+            // For top class
+            $className = $studentAcademic->class->name ?? 'Unknown';
+            if (!isset($classPoints[$className])) {
+                $classPoints[$className] = 0;
+            }
+            $classPoints[$className] += $studentTotalPoints;
+
+            // For top student
+            $studentPoints[] = [
+                'name' => $studentAcademic->student->full_name ?? '',
+                'nis' => $studentAcademic->student->student_number ?? '',
+                'class' => $className,
+                'points' => $studentTotalPoints
+            ];
+        }
+
+        $studentsWithoutViolations = $allStudents->count() - $studentsWithViolations;
+
+        // Top Class
+        arsort($classPoints);
+        $topClass = null;
+        if (count($classPoints) > 0) {
+            $topClassName = array_key_first($classPoints);
+            $topClass = (object)[
+                'class_name' => $topClassName,
+                'total_points' => $classPoints[$topClassName]
+            ];
+        }
+
+        // Top Student
+        usort($studentPoints, fn($a, $b) => $b['points'] <=> $a['points']);
+        $topStudent = null;
+        if (count($studentPoints) > 0 && $studentPoints[0]['points'] > 0) {
+            $topStudent = (object)[
+                'student_name' => $studentPoints[0]['name'],
+                'nis' => $studentPoints[0]['nis'],
+                'class_name' => $studentPoints[0]['class'],
+                'total_points' => $studentPoints[0]['points']
+            ];
+        }
+
+        // Most Frequent Violation
+        $violationCounts = [];
+        $allRecaps = P_Recaps::where('status', 'verified')
+            ->with(['violation.category'])
+            ->get();
+
+        foreach ($allRecaps as $recap) {
+            $violationId = $recap->violation->id ?? null;
+            if ($violationId) {
+                if (!isset($violationCounts[$violationId])) {
+                    $violationCounts[$violationId] = [
+                        'name' => $recap->violation->name,
+                        'point' => $recap->violation->point,
+                        'category' => $recap->violation->category->name ?? '',
+                        'count' => 0
+                    ];
+                }
+                $violationCounts[$violationId]['count']++;
+            }
+        }
+
+        $mostFrequentViolation = null;
+        if (count($violationCounts) > 0) {
+            uasort($violationCounts, fn($a, $b) => $b['count'] <=> $a['count']);
+            $topViolation = reset($violationCounts);
+            $mostFrequentViolation = (object)[
+                'violation_name' => $topViolation['name'],
+                'point' => $topViolation['point'],
+                'category_name' => $topViolation['category'],
+                'violation_count' => $topViolation['count']
+            ];
+        }
 
         return view('superadmin.dashboard.index', compact(
             'totalViolations',
@@ -117,40 +141,23 @@ class SuperAdminController extends Controller
 
     public function studentData(Request $request)
     {
-        $activeAcademicYear = P_Configs::select('id', 'academic_year', 'is_active')
-            ->where('is_active', true)
-            ->first();
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
-        // Optimasi: Hanya load data yang diperlukan
-        $classes = RefClass::select('id', 'name', 'academic_level')
-            ->orderBy('academic_level', 'asc')
-            ->get();
+        $classes = RefClass::orderBy('academic_level', 'asc')->get();
 
-        $vals = P_Violations::select('id', 'p_category_id', 'name', 'point')
-            ->with('category:id,name')
-            ->orderBy('point', 'asc')
-            ->get();
+        $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 
         $studentAcademicYears = collect();
         $selectedClassId = $request->input('class_id');
 
         if ($selectedClassId) {
-            // Optimasi: Gunakan lazy loading dan select spesifik
-            $studentAcademicYears = RefStudentAcademicYear::select([
-                'id',
-                'student_id',
-                'class_id',
-                'academic_year'
-            ])
-                ->activeAcademicYear()
+            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
                 ->where('class_id', $selectedClassId)
                 ->with([
-                    'student:id,full_name,student_number',
-                    'class:id,name,academic_level',
+                    'student',
+                    'class',
                     'recaps' => function ($query) {
-                        $query->select('id', 'ref_student_id', 'p_violation_id', 'status', 'created_at')
-                            ->with('violation:id,name,point')
-                            ->orderByDesc('created_at');
+                        $query->with('violation')->orderByDesc('created_at');
                     }
                 ])
                 ->get();
@@ -172,7 +179,7 @@ class SuperAdminController extends Controller
             'violations.*' => 'exists:p_violations,id',
         ]);
 
-        $activeConfig = P_Configs::select('id', 'academic_year')->getActiveAcademicYear();
+        $activeConfig = P_Configs::getActiveAcademicYear();
 
         if (!$activeConfig) {
             return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
@@ -180,10 +187,9 @@ class SuperAdminController extends Controller
 
         $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
 
-        $studentAcademicYear = RefStudentAcademicYear::select('id', 'student_id', 'academic_year')
-            ->where('id', $studentId)
+        $studentAcademicYear = RefStudentAcademicYear::where('id', $studentId)
             ->where('academic_year', $activeAcademicYear)
-            ->with('student:id,full_name')
+            ->with('student')
             ->first();
 
         if (!$studentAcademicYear) {
@@ -192,23 +198,18 @@ class SuperAdminController extends Controller
             ]);
         }
 
-        // Optimasi: Single query untuk hitung total poin
-        $points = DB::table('p_recaps')
-            ->where('ref_student_id', $studentAcademicYear->student_id)
-            ->join('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
-            ->selectRaw('
-                SUM(CASE WHEN status = "verified" THEN p_violations.point ELSE 0 END) as verified_points,
-                SUM(CASE WHEN status = "pending" THEN p_violations.point ELSE 0 END) as pending_points
-            ')
-            ->first();
+        // Hitung poin dari recaps yang ada
+        $existingRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
+            ->with('violation')
+            ->get();
 
-        $currentVerifiedPoints = $points->verified_points ?? 0;
-        $currentPendingPoints = $points->pending_points ?? 0;
+        $currentVerifiedPoints = $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+        $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
 
-        // Optimasi: Single query untuk hitung poin baru
-        $newPoints = P_Violations::whereIn('id', $request->violations)
-            ->sum('point');
+        // Hitung poin baru
+        $newViolations = P_Violations::whereIn('id', $request->violations)->get();
+        $newPoints = $newViolations->sum('point');
 
         $totalPointsAfterAdd = $currentTotalPoints + $newPoints;
 
@@ -228,38 +229,31 @@ class SuperAdminController extends Controller
         try {
             DB::beginTransaction();
 
-            // Optimasi: Bulk insert
-            $recapsData = collect($request->violations)->map(function ($violationId) use ($studentAcademicYear) {
-                return [
+            foreach ($request->violations as $violationId) {
+                P_Recaps::create([
                     'ref_student_id'  => $studentAcademicYear->student_id,
                     'p_violation_id'  => $violationId,
                     'status'          => 'pending',
                     'created_by'      => Auth::id(),
                     'updated_by'      => Auth::id(),
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
-                ];
-            })->toArray();
-
-            P_Recaps::insert($recapsData);
+                ]);
+            }
 
             DB::commit();
 
-            // Recalculate dengan query optimized
-            $updatedPoints = DB::table('p_recaps')
-                ->where('ref_student_id', $studentAcademicYear->student_id)
-                ->join('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
-                ->selectRaw('
-                    SUM(CASE WHEN status = "verified" THEN p_violations.point ELSE 0 END) as verified_points,
-                    SUM(CASE WHEN status = "pending" THEN p_violations.point ELSE 0 END) as pending_points
-                ')
-                ->first();
+            // Recalculate points
+            $updatedRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
+                ->with('violation')
+                ->get();
+
+            $verifiedPoints = $updatedRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+            $pendingPoints = $updatedRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
 
             return back()->with([
                 'success' => 'Pelanggaran berhasil ditambahkan untuk ' . $studentAcademicYear->student->full_name,
-                'verified_points' => $updatedPoints->verified_points ?? 0,
-                'pending_points' => $updatedPoints->pending_points ?? 0,
-                'total_all_points' => ($updatedPoints->verified_points ?? 0) + ($updatedPoints->pending_points ?? 0),
+                'verified_points' => $verifiedPoints,
+                'pending_points' => $pendingPoints,
+                'total_all_points' => $verifiedPoints + $pendingPoints,
                 'added_points' => $newPoints,
             ]);
         } catch (\Exception $e) {
@@ -270,58 +264,49 @@ class SuperAdminController extends Controller
 
     public function confirmRecaps()
     {
-        $activeAcademicYear = P_Configs::select('id', 'academic_year', 'is_active')
-            ->where('is_active', true)
-            ->first();
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
-        $handlingOptions = P_Config_Handlings::select('id', 'p_config_id', 'handling_point', 'handling_action')
-            ->where('p_config_id', $activeAcademicYear->id)
+        $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
             ->orderBy('handling_point', 'asc')
             ->get();
 
-        // Optimasi: Gunakan raw SQL untuk perhitungan agregat
-        $studentAcademicYears = RefStudentAcademicYear::select([
-            'ref_student_academic_years.id',
-            'ref_student_academic_years.student_id',
-            'ref_student_academic_years.class_id',
-            DB::raw('COALESCE(SUM(CASE WHEN p_recaps.status = "verified" THEN p_violations.point ELSE 0 END), 0) as total_points_verified')
-        ])
-            ->activeAcademicYear()
-            ->join('ref_students', 'ref_student_academic_years.student_id', '=', 'ref_students.id')
-            ->leftJoin('p_recaps', 'ref_students.id', '=', 'p_recaps.ref_student_id')
-            ->leftJoin('p_violations', 'p_recaps.p_violation_id', '=', 'p_violations.id')
+        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
             ->with([
-                'student:id,full_name,student_number',
-                'class:id,name,academic_level',
+                'student',
+                'class',
                 'recaps' => function ($query) {
-                    $query->select('id', 'ref_student_id', 'p_violation_id', 'status', 'created_at', 'verified_by', 'created_by', 'updated_by')
-                        ->with([
-                            'violation:id,name,point,p_category_id',
-                            'violation.category:id,name'
-                        ])
-                        ->orderBy('created_at', 'asc');
+                    $query->with([
+                        'violation.category',
+                        'createdBy',
+                        'updatedBy',
+                        'verifiedBy'
+                    ])->orderBy('created_at', 'asc');
                 }
             ])
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('p_recaps')
-                    ->whereColumn('p_recaps.ref_student_id', 'ref_students.id');
-            })
-            ->groupBy('ref_student_academic_years.id', 'ref_student_academic_years.student_id', 'ref_student_academic_years.class_id')
-            ->having('total_points_verified', '>', 0)
             ->get()
+            ->filter(function ($student) {
+                return $student->recaps->count() > 0;
+            })
             ->map(function ($student) use ($handlingOptions) {
-                $student->available_handlings = $handlingOptions->filter(function ($handling) use ($student) {
-                    return $handling->handling_point <= $student->total_points_verified;
+                $totalVerifiedPoints = $student->recaps
+                    ->whereIn('status', ['pending', 'verified'])
+                    ->sum(fn($r) => $r->violation->point ?? 0);
+
+                $student->total_points_verified = $totalVerifiedPoints;
+
+                $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
+                    return $handling->handling_point <= $totalVerifiedPoints;
                 });
 
-                $student->action_detail = P_Viol_Action::select('id', 'p_student_academic_year_id', 'handling_id', 'created_at')
-                    ->where('p_student_academic_year_id', $student->id)
-                    ->with('detail:id,p_viol_action_id,parent_name,action_date')
+                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                    ->with('detail')
                     ->latest()
                     ->first();
 
                 return $student;
+            })
+            ->filter(function ($student) {
+                return $student->total_points_verified > 0;
             });
 
         return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear'));
@@ -329,28 +314,24 @@ class SuperAdminController extends Controller
 
     public function detailConfirmRecaps($studentAcademicYearId)
     {
-        $activeAcademicYear = P_Configs::select('id', 'academic_year', 'is_active')
-            ->where('is_active', true)
-            ->first();
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
-        $handlingPointOptions = P_Config_Handlings::select('id', 'p_config_id', 'handling_point', 'handling_action')
-            ->where('p_config_id', $activeAcademicYear->id)
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
             ->orderBy('handling_point', 'asc')
             ->get();
 
-        $studentAcademicYear = RefStudentAcademicYear::select('id', 'student_id', 'class_id', 'academic_year')
-            ->with([
-                'student:id,full_name,student_number,national_identification_number',
-                'class:id,name,academic_level',
-                'recaps' => function ($query) {
-                    $query->select('id', 'ref_student_id', 'p_violation_id', 'status', 'created_at', 'verified_by', 'created_by', 'updated_by')
-                        ->with([
-                            'violation:id,name,point,p_category_id',
-                            'violation.category:id,name'
-                        ])
-                        ->orderByDesc('created_at');
-                }
-            ])
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->with([
+                    'violation.category',
+                    'createdBy',
+                    'updatedBy',
+                    'verifiedBy'
+                ])->orderByDesc('created_at');
+            }
+        ])
             ->findOrFail($studentAcademicYearId);
 
         $totalVerifiedPoints = $studentAcademicYear->recaps
@@ -381,19 +362,14 @@ class SuperAdminController extends Controller
                 'status' => 'required|in:verified,not_verified,pending'
             ]);
 
-            $updated = P_Recaps::where('id', $id)
-                ->update([
-                    'status' => $request->status,
-                    'verified_by' => Auth::id(),
-                    'updated_by' => Auth::id(),
-                    'updated_at' => now()
-                ]);
+            $recap = P_Recaps::findOrFail($id);
+            $recap->update([
+                'status' => $request->status,
+                'verified_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
 
-            if ($updated) {
-                return redirect()->back()->with('success', 'Status pelanggaran berhasil diperbarui!');
-            }
-
-            return redirect()->back()->with('error', 'Data pelanggaran tidak ditemukan!');
+            return redirect()->back()->with('success', 'Status pelanggaran berhasil diperbarui!');
         } catch (\Exception $e) {
             Log::error('updateViolationStatus error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -403,13 +379,10 @@ class SuperAdminController extends Controller
     public function destroyRecap($id)
     {
         try {
-            $deleted = P_Recaps::where('id', $id)->delete();
+            $recap = P_Recaps::findOrFail($id);
+            $recap->delete();
 
-            if ($deleted) {
-                return redirect()->back()->with('success', 'Rekap pelanggaran berhasil dihapus!');
-            }
-
-            return redirect()->back()->with('error', 'Data rekap tidak ditemukan!');
+            return redirect()->back()->with('success', 'Rekap pelanggaran berhasil dihapus!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -433,16 +406,14 @@ class SuperAdminController extends Controller
             'violations.*' => 'nullable|string|max:500',
         ]);
 
-        $studentAcademicYear = RefStudentAcademicYear::select('id', 'student_id', 'class_id')
-            ->with([
-                'student:id,full_name,student_number,national_identification_number',
-                'class:id,name,academic_level',
-                'recaps' => function ($query) {
-                    $query->where('status', 'verified')
-                        ->with('violation:id,name,point,p_category_id')
-                        ->with('violation.category:id,name');
-                }
-            ])
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->where('status', 'verified')
+                    ->with('violation.category');
+            }
+        ])
             ->find($id);
 
         if (!$studentAcademicYear || !$studentAcademicYear->student) {
@@ -453,7 +424,7 @@ class SuperAdminController extends Controller
             return back()->withErrors(['error' => 'Mohon isi nama wali.']);
         }
 
-        $handling = P_Config_Handlings::select('id', 'handling_action')->findOrFail($request->handling_id);
+        $handling = P_Config_Handlings::findOrFail($request->handling_id);
 
         try {
             DB::beginTransaction();
@@ -489,9 +460,8 @@ class SuperAdminController extends Controller
             $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->format('d F Y') : '';
             $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
 
-            $kepalaSekolah = User::select('id', 'name', 'email')
-                ->with('employee:id,user_id,full_name')
-                ->where('email', 'kepsek@gmail.com')
+            $kepalaSekolah = User::where('email', 'kepsek@gmail.com')
+                ->with('employee')
                 ->first();
 
             $data = [
@@ -527,20 +497,17 @@ class SuperAdminController extends Controller
 
     public function actions()
     {
-        $actions = P_Viol_Action::select('id', 'p_student_academic_year_id', 'handling_id', 'handled_by', 'activity', 'description', 'created_at')
-            ->with([
-                'academicYear:id,student_id,class_id',
-                'academicYear.student:id,full_name,student_number',
-                'academicYear.class:id,name,academic_level',
-                'academicYear.pRecaps' => function ($query) {
-                    $query->select('id', 'ref_student_id', 'p_violation_id', 'status')
-                        ->where('status', 'verified')
-                        ->with('violation:id,name,point');
-                },
-                'handling:id,handling_action,handling_point',
-                'handle:id,name',
-                'detail:id,p_viol_action_id,parent_name,action_date'
-            ])
+        $actions = P_Viol_Action::with([
+            'academicYear.student',
+            'academicYear.class',
+            'academicYear.pRecaps' => function ($query) {
+                $query->where('status', 'verified')
+                    ->with('violation');
+            },
+            'handling',
+            'handle',
+            'detail'
+        ])
             ->orderByDesc('created_at')
             ->paginate(20);
 
