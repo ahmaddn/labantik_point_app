@@ -235,8 +235,10 @@
                                     </td>
 
                                     <td class="row-number">{{ $loop->iteration }}</td>
-                                    <td class="text-red-500">
-                                        {{ $rec->violations_sum_point ?? 0 }} Poin
+                                    <td>
+                                        <span class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">
+                                            {{ $rec->total_points_verified }} Poin
+                                        </span>
                                     </td>
                                     <td>{{ $rec->student->full_name }}</td>
                                     <td>{{ $rec->class->academic_level }} {{ $rec->class->name }}</td>

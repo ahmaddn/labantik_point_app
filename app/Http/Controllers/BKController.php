@@ -288,28 +288,38 @@ class BKController extends Controller
                 'student',
                 'class',
                 'recaps' => function ($query) {
-                    $query->whereIn('status', ['pending', 'verified', 'not_verified'])
-                        ->with(['violation.category'])
-                        ->orderByDesc('created_at');
+                    $query->with([
+                        'violation.category',
+                        'createdBy',
+                        'updatedBy',
+                        'verifiedBy'
+                    ])->orderBy('created_at', 'asc');
                 }
             ])
             ->get()
-            ->filter(function ($studentAcademicYear) {
-                return $studentAcademicYear->recaps->count() > 0;
+            ->filter(function ($student) {
+                return $student->recaps->count() > 0;
             })
-            ->map(function ($studentAcademicYear) use ($handlingOptions) {
-                $verifiedPoints = $studentAcademicYear->recaps
+            ->map(function ($student) use ($handlingOptions) {
+                $totalVerifiedPoints = $student->recaps
                     ->whereIn('status', ['pending', 'verified'])
                     ->sum(fn($r) => $r->violation->point ?? 0);
 
-                $studentAcademicYear->violations_sum_point = $verifiedPoints;
+                $student->total_points_verified = $totalVerifiedPoints;
 
-                $studentAcademicYear->current_handling = $handlingOptions
-                    ->where('handling_point', '<=', $verifiedPoints)
-                    ->sortByDesc('handling_point')
+                $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
+                    return $handling->handling_point <= $totalVerifiedPoints;
+                });
+
+                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                    ->with('detail')
+                    ->latest()
                     ->first();
 
-                return $studentAcademicYear;
+                return $student;
+            })
+            ->filter(function ($student) {
+                return $student->total_points_verified > 0;
             });
 
         return view('BK.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
