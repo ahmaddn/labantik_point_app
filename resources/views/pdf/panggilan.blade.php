@@ -52,9 +52,9 @@
                                 style="font-family: Tahoma; font-size: 10pt; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
                         style="font-family: Tahoma; font-size: 9pt"> – Email </span><span
                         style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:admin@smkn1talaga.sch.id"
+                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:mail@smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
+                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">mail@smkn1talaga.sch.id</span></u></a>
                 </p>
             </td>
         </tr>
@@ -208,19 +208,24 @@
                     style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
                     <strong><span style="font-family: Arial">SEKOLAH MENENGAH KEJURUAN NEGERI 1 TALAGA</span></strong>
                 </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                <p
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
                     <span style="font-family: Tahoma">Bidang Keahlian: Teknologi dan Rekayasa, Teknologi Informasi dan
                         Komunikasi, Bisnis dan Manajemen</span>
                 </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan Talaga
+                <p
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan
+                        Talaga
                         Kabupaten Majalengka</span>
                 </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                <p
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
                     <span style="font-family: Tahoma">Kampus 2: Jalan Talaga-Bantarujeg Desa Mekarraharja Kecamatan
                         Talaga Kabupaten Majalengka</span>
                 </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                <p
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
                     <span style="font-family: Tahoma">Telpon </span><span style="font-family: Wingdings"></span><span
                         style="font-family: Tahoma"> (0233) 319238 FAX </span><span
                         style="font-family: Wingdings"></span><span style="font-family: Tahoma"> (0233) 319238 POS
@@ -236,9 +241,9 @@
                                 style="font-family: Tahoma; font-size: 10pt; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
                         style="font-family: Tahoma; font-size: 9pt"> – Email </span><span
                         style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:admin@smkn1talaga.sch.id"
+                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:mail@smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
+                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">mail@smkn1talaga.sch.id</span></u></a>
                 </p>
             </td>
         </tr>
@@ -253,9 +258,10 @@
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:14pt;"><strong><u><span
                 style="font-family:Arial;">SURAT PERJANJIAN</span></u></strong></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">Nomor :</span><span
-        style="font-family:Arial;">&nbsp;&nbsp;&nbsp;</span><span style="font-family:Arial;">{{ $reference_number ?? '' }}</span><span
-
-<p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">&nbsp;</span></p>
+        style="font-family:Arial;">&nbsp;&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">{{ $reference_number ?? '' }}</span><span <p
+        style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">&nbsp;</span>
+</p>
 <p style="margin-top:0pt; margin-bottom:0pt;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; line-height:150%;"><span style="font-family:Arial;">Yang bertanda tangan
         dibawah</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span style="font-family:Arial;">ini

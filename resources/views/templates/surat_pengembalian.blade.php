@@ -52,9 +52,9 @@
                                 style="font-family: Tahoma; font-size: 10pt; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
                         style="font-family: Tahoma; font-size: 9pt"> – Email </span><span
                         style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:admin@smkn1talaga.sch.id"
+                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:mail@smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
+                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">mail@smkn1talaga.sch.id</span></u></a>
                 </p>
             </td>
         </tr>

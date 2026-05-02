@@ -100,12 +100,12 @@
                         style="font-family: Tahoma; font-size: 9pt">&nbsp;&ndash; Email&nbsp;</span><span
                         style="font-family: Wingdings; font-size: 9pt"></span><span
                         style="font-family: Tahoma; font-size: 9pt">&nbsp;</span><a
-                        href="mailto:admin@smkn1talaga.sch.id" style="text-decoration: none"><u><span
+                        href="mailto:mail@smkn1talaga.sch.id" style="text-decoration: none"><u><span
                                 style="
                                     font-family: Tahoma;
                                     font-size: 9pt;
                                     color: #0000ff;
-                                ">admin@smkn1talaga.sch.id</span></u></a><span
+                                ">mail@smkn1talaga.sch.id</span></u></a><span
                         style="font-family: Tahoma; font-size: 9pt">&nbsp;</span>
                 </p>
                 <p
