@@ -33,16 +33,6 @@ Route::prefix('guru')
 
         Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
         Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
-
-        //Violations CRUD
-        Route::get('/violations', [ViolationController::class, 'index'])
-            ->name('violations');
-        Route::post('/violations/add', [ViolationController::class, 'add'])
-            ->name('violations.add');
-        Route::put('/violations/{id}/update', [ViolationController::class, 'update'])
-            ->name('violations.update');
-        Route::delete('/violations/{id}/destroy', [ViolationController::class, 'destroy'])
-            ->name('violations.destroy');
     });
 
 
@@ -51,21 +41,21 @@ Route::prefix('kesiswaan-bk')
     ->name('kesiswaan-bk.')
     ->middleware(['auth', 'role:guru-bk,kesiswaan'])
     ->group(function () {
-    Route::get('/dashboard', [BKController::class, 'index'])->name('dashboard');
-    Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
-    Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');
-    Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
-    Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
-    Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
-    Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
-    Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
-    Route::get('/actions', [BKController::class, 'actions'])->name('actions');
+        Route::get('/dashboard', [BKController::class, 'index'])->name('dashboard');
+        Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
+        Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');
+        Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
+        Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
+        Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
+        Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
+        Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
+        Route::get('/actions', [BKController::class, 'actions'])->name('actions');
 
-    //Templates
-    Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
-    Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
-        ->name('templates.download');
-});
+        //Templates
+        Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+        Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+            ->name('templates.download');
+    });
 
 Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');

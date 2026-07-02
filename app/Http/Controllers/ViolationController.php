@@ -50,8 +50,7 @@ class ViolationController extends Controller
 
         $categories = P_Categories::select('id', 'name')->get();
 
-        $viewPath = $request->is('superadmin*') ? 'superadmin.violations.index' : 'guru.violations.index';
-        return view($viewPath, compact('violations', 'categories'));
+        return view('superadmin.violations.index', compact('violations', 'categories'));
     }
 
     public function add(Request $request)
