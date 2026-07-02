@@ -41,7 +41,7 @@ class UserController extends Controller
             $user = Auth::user();
 
             // Optimasi: Eager load relationships yang diperlukan saja
-            $userRoles = $user->roles()->select('core_roles.id', 'core_roles.code')->get();
+            $userRoles = $user->roles()->select('core_roles.id', 'core_roles.code', 'core_roles.name')->get();
 
             if ($userRoles->isEmpty()) {
                 Auth::logout();
@@ -50,13 +50,18 @@ class UserController extends Controller
                 ])->withInput();
             }
 
-            // Optimasi: Load employee dan student dengan select spesifik
-            $employee = $user->employee()->select('id', 'user_id', 'full_name')->first();
-            $student = $user->student()->select('id', 'user_id', 'full_name')->first();
+            // Jika user hanya memiliki 1 peran, langsung arahkan ke dashboard
+            if ($userRoles->count() === 1) {
+                $roleCode = strtolower($userRoles->first()->code);
+                session(['active_role' => $roleCode]);
+                
+                $redirectRoute = $this->getRedirectRoute($roleCode);
+                return redirect()->intended($redirectRoute)->with('success', 'Login berhasil!');
+            }
 
-            $redirectRoute = $this->getRedirectRoute($userRoles, $employee, $student);
-
-            return redirect()->intended($redirectRoute)->with('success', 'Login berhasil!');
+            // Jika user memiliki lebih dari 1 peran, simpan di session dan arahkan ke halaman pilih peran
+            session(['user_roles' => $userRoles]);
+            return redirect()->route('role.select')->with('success', 'Silakan pilih peran Anda untuk masuk.');
         }
 
         return back()->withErrors([
@@ -73,19 +78,50 @@ class UserController extends Controller
         return redirect()->route('login')->with('success', 'Logout berhasil!');
     }
 
-    private function getRedirectRoute($userRoles, $employee = null, $student = null)
+    private function getRedirectRoute($roleCode)
     {
-        foreach ($userRoles as $role) {
-            switch (strtolower($role->code)) {
-                case 'guru':
-                    return '/guru/dashboard';
-                case 'guru-bk':
-                case 'kesiswaan':
-                    return '/kesiswaan-bk/dashboard';
-                case 'super-admin':
-                    return '/superadmin/dashboard';
-            }
+        switch (strtolower($roleCode)) {
+            case 'guru':
+                return '/guru/dashboard';
+            case 'guru-bk':
+            case 'kesiswaan':
+                return '/kesiswaan-bk/dashboard';
+            case 'super-admin':
+                return '/superadmin/dashboard';
+            default:
+                return '/';
         }
+    }
+
+    public function selectRole()
+    {
+        if (!session()->has('user_roles')) {
+            return redirect()->route('login');
+        }
+
+        $roles = session('user_roles');
+        return view('auth.select-role', compact('roles'));
+    }
+
+    public function storeActiveRole(Request $request)
+    {
+        $request->validate([
+            'role_code' => 'required|string',
+        ]);
+
+        $roleCode = $request->role_code;
+        $userRoles = session('user_roles');
+
+        // Validasi apakah role yang dikirim benar-benar dimiliki oleh user ini
+        if (!$userRoles || !$userRoles->contains('code', $roleCode)) {
+            return redirect()->back()->withErrors(['role_code' => 'Peran yang dipilih tidak valid atau Anda tidak memiliki akses.']);
+        }
+
+        // Set role aktif
+        session(['active_role' => strtolower($roleCode)]);
+        
+        $redirectRoute = $this->getRedirectRoute($roleCode);
+        return redirect()->intended($redirectRoute)->with('success', 'Peran berhasil dipilih!');
     }
 
     public function profile()
