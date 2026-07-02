@@ -270,6 +270,7 @@ class GuruController extends Controller
                 'success' => 'Pelanggaran berhasil ditambahkan',
                 'verified_points' => $verifiedPoints,
                 'pending_points' => $pendingPoints,
+                'total_all_points' => $verifiedPoints + $pendingPoints,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
