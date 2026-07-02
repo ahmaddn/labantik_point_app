@@ -37,6 +37,15 @@
 
                   <div class="flex gap-3 ms-auto">
 
+                      <div class="relative flex items-center h-header mr-1">
+                          <button type="button" data-modal-target="modal-changelog"
+                              class="inline-flex relative justify-center items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-custom-500 transition-all duration-200 ease-linear bg-custom-50 dark:bg-custom-950/30 rounded-md border border-custom-200 dark:border-custom-900/50 hover:bg-custom-100 hover:text-custom-600 focus:bg-custom-100 focus:text-custom-600 btn"
+                              title="Catatan Update">
+                              <i data-lucide="info" class="w-4 h-4"></i>
+                              <span>Catatan Update</span>
+                          </button>
+                      </div>
+
                       <div class="relative flex items-center h-header">
                           <button type="button"
                               class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
@@ -104,3 +113,57 @@
           </div>
       </div>
   </header>
+
+  <!-- Modal Catatan Update -->
+  <div id="modal-changelog" modal-center=""
+      class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
+      <div class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[45rem] max-w-[95vw]">
+          <div class="dark:border-zink-500 flex items-center justify-between border-b border-slate-200 p-4">
+              <h5 class="text-16 font-semibold flex items-center gap-2">
+                  <i data-lucide="party-popper" class="size-5 text-custom-500"></i>
+                  Catatan Update Sistem
+              </h5>
+              <button data-modal-close="modal-changelog"
+                  class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500 dark:hover:text-red-500">
+                  <i data-lucide="x" class="size-5"></i>
+              </button>
+          </div>
+          <div class="max-h-[calc(theme('height.screen')_-_180px)] overflow-y-auto p-6 text-slate-600 dark:text-zink-200">
+              <div class="space-y-6">
+                  <!-- Update Terkini -->
+                  <div class="border-b border-slate-100 dark:border-zink-500 pb-4">
+                      <div class="flex items-center gap-2 mb-2">
+                          <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-green-900/30 dark:text-green-300">Terbaru</span>
+                          <span class="text-sm text-slate-400">02 Juli 2026</span>
+                      </div>
+                      <h6 class="text-15 font-semibold mb-2">Perbaikan Tampilan Modal Rekap Tindakan</h6>
+                      <ul class="list-disc list-inside space-y-1.5 text-sm text-slate-500 dark:text-zink-300 pl-2">
+                          <li><strong>Lebar Lebih Proporsional:</strong> Ukuran modal rekap tindakan kini lebih lebar (dari 480px menjadi 768px) agar tidak terlihat terlalu sempit.</li>
+                          <li><strong>Tata Letak Grid Responsif:</strong> Form isian otomatis terbagi menjadi 2 kolom di layar PC/Tablet, dan kembali ke 1 kolom di layar HP.</li>
+                          <li><strong>Input Lebih Nyaman:</strong> Dropdown pilihan tindakan kini otomatis melebar penuh mengikuti kontainer modal.</li>
+                      </ul>
+                  </div>
+
+                  <!-- Update Sebelumnya -->
+                  <div>
+                      <div class="flex items-center gap-2 mb-2">
+                          <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-900/30 dark:text-blue-300">Fitur Utama</span>
+                          <span class="text-sm text-slate-400">02 Juli 2026</span>
+                      </div>
+                      <h6 class="text-15 font-semibold mb-2">Sistem Hak Akses Baru (Role-Based Access Control) & Modul Dashboard</h6>
+                      <ul class="list-disc list-inside space-y-1.5 text-sm text-slate-500 dark:text-zink-300 pl-2">
+                          <li><strong>Halaman Pilih Peran (Select Role):</strong> Pengguna yang memiliki banyak peran kini dapat memilih peran aktif saat masuk ke sistem.</li>
+                          <li><strong>Pembatasan Hak Akses (Middleware):</strong> Keamanan sistem ditingkatkan dengan membatasi akses URL berdasarkan peran yang aktif (Super Admin, BK, Guru).</li>
+                          <li><strong>Dashboard Terpisah & Mandiri:</strong> Tampilan utama kini disesuaikan khusus untuk tiap peran, sehingga informasi point dan rekapitulasi data siswa tampil lebih rapi dan relevan.</li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+          <div class="dark:border-zink-500 flex items-center justify-end border-t border-slate-200 p-4 gap-2">
+              <button data-modal-close="modal-changelog" type="button"
+                  class="text-slate-500 btn bg-slate-200 border-slate-200 hover:text-slate-600 hover:bg-slate-300 dark:bg-zink-600 dark:text-zink-200 dark:hover:bg-zink-500 px-4 py-2 rounded">
+                  Tutup
+              </button>
+          </div>
+      </div>
+  </div>

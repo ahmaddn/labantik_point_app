@@ -19,12 +19,16 @@ class GuruController extends Controller
         $activeAcademicYear = P_Configs::getActiveAcademicYear();
 
         if (!$activeAcademicYear) {
-            return view('superadmin.dashboard.index', [
+            return view('guru.dashboard.index', [
                 'totalViolations' => 0,
                 'studentsWithoutViolations' => 0,
                 'topClass' => null,
                 'topStudent' => null,
-                'mostFrequentViolation' => null
+                'mostFrequentViolation' => null,
+                'totalActiveStudents' => 0,
+                'pendingViolationsCount' => 0,
+                'categoryDistribution' => ['Ringan' => 0, 'Sedang' => 0, 'Berat' => 0],
+                'classesToEvaluate' => []
             ]);
         }
 
@@ -52,7 +56,7 @@ class GuruController extends Controller
             }
 
             // For top class
-            $className = $studentAcademic->class->name ?? 'Unknown';
+            $className = isset($studentAcademic->class) ? ($studentAcademic->class->academic_level . ' ' . $studentAcademic->class->name) : 'Unknown';
             if (!isset($classPoints[$className])) {
                 $classPoints[$className] = 0;
             }
@@ -80,6 +84,9 @@ class GuruController extends Controller
             ];
         }
 
+        // Classes to Evaluate (Top 5)
+        $classesToEvaluate = array_slice($classPoints, 0, 5, true);
+
         // Top Student
         usort($studentPoints, fn($a, $b) => $b['points'] <=> $a['points']);
         $topStudent = null;
@@ -98,14 +105,28 @@ class GuruController extends Controller
             ->with(['violation.category'])
             ->get();
 
+        $categoryDistribution = [
+            'Ringan' => 0,
+            'Sedang' => 0,
+            'Berat' => 0,
+        ];
+
         foreach ($allRecaps as $recap) {
             $violationId = $recap->violation->id ?? null;
+            $categoryName = $recap->violation->category->name ?? 'Lainnya';
+            
+            if (isset($categoryDistribution[$categoryName])) {
+                $categoryDistribution[$categoryName]++;
+            } else {
+                $categoryDistribution[$categoryName] = 1;
+            }
+
             if ($violationId) {
                 if (!isset($violationCounts[$violationId])) {
                     $violationCounts[$violationId] = [
                         'name' => $recap->violation->name,
                         'point' => $recap->violation->point,
-                        'category' => $recap->violation->category->name ?? '',
+                        'category' => $categoryName,
                         'count' => 0
                     ];
                 }
@@ -125,12 +146,19 @@ class GuruController extends Controller
             ];
         }
 
-        return view('superadmin.dashboard.index', compact(
+        $totalActiveStudents = $allStudents->count();
+        $pendingViolationsCount = P_Recaps::where('status', 'pending')->count();
+
+        return view('guru.dashboard.index', compact(
             'totalViolations',
             'studentsWithoutViolations',
             'topClass',
             'topStudent',
-            'mostFrequentViolation'
+            'mostFrequentViolation',
+            'totalActiveStudents',
+            'pendingViolationsCount',
+            'categoryDistribution',
+            'classesToEvaluate'
         ));
     }
 

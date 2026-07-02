@@ -145,7 +145,7 @@
                                             <div id="modal-tindakan-{{ $rec->id }}" modal-center=""
                                                 class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
                                                 <div
-                                                    class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+                                                    class="w-screen md:w-[48rem] max-w-[95vw] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
                                                     <div
                                                         class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
                                                         <h5 class="text-16">Tindakan - {{ $rec->student->full_name }}</h5>
@@ -169,7 +169,7 @@
                                                                 </label>
                                                                 <select id="tindakanSelect-{{ $rec->id }}"
                                                                     name="handling_id" required
-                                                                    class="tindakan-dropdown form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                    class="tindakan-dropdown form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
                                                                     data-student-id="{{ $rec->id }}">
                                                                     <option value="">Pilih tindakan...</option>
                                                                     @foreach ($rec->available_handlings as $item)
@@ -184,34 +184,36 @@
                                                             </div>
 
                                                             <div id="handlingDetails-{{ $rec->id }}" class="hidden">
-                                                                <div class="mb-4">
-                                                                    <label
-                                                                        class="inline-block mb-2 text-base font-medium">Tindakan
-                                                                        Terpilih</label>
-                                                                    <input type="text"
-                                                                        id="selectedAction-{{ $rec->id }}" readonly
-                                                                        class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
-                                                                        value="">
-                                                                </div>
+                                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Tindakan
+                                                                            Terpilih</label>
+                                                                        <input type="text"
+                                                                            id="selectedAction-{{ $rec->id }}" readonly
+                                                                            class="form-input w-full border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            value="">
+                                                                    </div>
 
-                                                                <div class="mb-4">
-                                                                    <label
-                                                                        class="inline-block mb-2 text-base font-medium">Poin
-                                                                        Tindakan</label>
-                                                                    <input type="text"
-                                                                        id="selectedPoint-{{ $rec->id }}" readonly
-                                                                        class="form-input border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
-                                                                        value="">
-                                                                </div>
+                                                                    <div class="mb-4">
+                                                                        <label
+                                                                            class="inline-block mb-2 text-base font-medium">Poin
+                                                                            Tindakan</label>
+                                                                        <input type="text"
+                                                                            id="selectedPoint-{{ $rec->id }}" readonly
+                                                                            class="form-input w-full border-slate-200 dark:border-zink-500 bg-slate-100 dark:bg-zink-600"
+                                                                            value="">
+                                                                    </div>
 
-                                                                <div class="mb-4">
-                                                                    <label for="keterangan-{{ $rec->id }}"
-                                                                        class="inline-block mb-2 text-base font-medium">
-                                                                        Keterangan
-                                                                    </label>
-                                                                    <textarea id="keterangan-{{ $rec->id }}" name="description" rows="4"
-                                                                        class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-                                                                        placeholder="Masukkan keterangan tindakan..."></textarea>
+                                                                    <div class="mb-4 md:col-span-2">
+                                                                        <label for="keterangan-{{ $rec->id }}"
+                                                                            class="inline-block mb-2 text-base font-medium">
+                                                                            Keterangan
+                                                                        </label>
+                                                                        <textarea id="keterangan-{{ $rec->id }}" name="description" rows="4"
+                                                                            class="form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                            placeholder="Masukkan keterangan tindakan..."></textarea>
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -230,6 +232,7 @@
                                                         </form>
                                                     </div>
                                                 </div>
+                                            </div>
                                             </div>
                                         </div>
                                     </td>
@@ -292,14 +295,14 @@
                                     <table class="w-full text-left text-sm" id="confirmTable-{{ $rec->id }}">
                                         <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
                                             <tr>
-                                                <th class="px-4 py-3">Aksi</th>
-                                                <th class="px-3 py-3">No</th>
-                                                <th class="px-4 py-3">Tanggal</th>
-                                                <th class="px-4 py-3">Pelanggaran</th>
-                                                <th class="px-4 py-3">Kategori</th>
-                                                <th class="px-4 py-3">Poin</th>
-                                                <th class="px-4 py-3">Status</th>
-                                                <th class="px-4 py-3">Dibuat oleh</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Aksi</th>
+                                                <th class="px-3 py-3 whitespace-nowrap">No</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Tanggal</th>
+                                                <th class="px-4 py-3 min-w-[200px]">Pelanggaran</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Kategori</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Poin</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Status</th>
+                                                <th class="px-4 py-3 whitespace-nowrap">Dibuat oleh</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -329,7 +332,7 @@
 
                                                                 <button type="submit" value="not_verified"
                                                                     name="status"
-                                                                    onclick="return confirm('Apakah Anda yakin ingin menolak pelanggaran ini?')"
+                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menolak pelanggaran ini?')"
                                                                     class="rounded-full p-2 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
                                                                     title="Tolak">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -349,8 +352,8 @@
                                                     <td class="whitespace-nowrap px-4 py-3">
                                                         {{ \Carbon\Carbon::parse($recapItem->created_at)->format('d/m/Y') }}
                                                     </td>
-                                                    <td class="px-4 py-3">{{ $recapItem->violation->name }}</td>
-                                                    <td class="px-4 py-3">
+                                                    <td class="px-4 py-3 min-w-[200px]">{{ $recapItem->violation->name }}</td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
                                                         <span
                                                             class="@if (($recapItem->violation->category->name ?? '') === 'Berat') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
                                                 @elseif(($recapItem->violation->category->name ?? '') === 'Sedang') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300
@@ -358,18 +361,18 @@
                                                             {{ $recapItem->violation->category->name ?? 'Tidak Diketahui' }}
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3">
+                                                    <td class="px-4 py-3 whitespace-nowrap">
                                                         <span class="font-semibold text-red-600 dark:text-red-400">
                                                             {{ $recapItem->violation->point ?? 0 }}
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3">
+                                                    <td class="px-4 py-3 whitespace-nowrap">
                                                         <span
                                                             class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
                                                             Pending
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3 text-sm">{{ $recapItem->createdBy->name ?? '-' }}
+                                                    <td class="px-4 py-3 text-sm whitespace-nowrap">{{ $recapItem->createdBy->name ?? '-' }}
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -449,7 +452,7 @@
                                 <!-- HAPUS bagian debug setelah selesai testing -->
 
                                 <!-- Summary Section - HANYA 1 INI SAJA -->
-                                <div class="dark:bg-zink-700 rounded-lg bg-slate-50 p-3">
+                                <div class="dark:bg-zink-700 rounded-lg bg-slate-50 border border-slate-200 dark:border-zink-600 shadow-sm p-3 mt-4 mb-2 mx-4">
                                     <div class="flex items-center justify-between">
                                         <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
                                             Total Pelanggaran Pending:
@@ -482,9 +485,9 @@
         /* Modal dengan ukuran tetap */
         .modal-container {
             width: 90vw;
-            max-width: 1000px;
-            height: 80vh;
-            max-height: 600px;
+            max-width: 1100px;
+            height: 85vh;
+            max-height: 800px;
             min-height: 400px;
         }
 

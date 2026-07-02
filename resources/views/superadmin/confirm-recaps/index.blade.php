@@ -201,7 +201,7 @@
                                                 <div id="modal-tindakan-{{ $student->id }}" modal-center=""
                                                     class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
                                                     <div
-                                                        class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[30rem]">
+                                                        class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[48rem] max-w-[95vw]">
                                                         <div
                                                             class="dark:border-zink-500 flex items-center justify-between border-b border-slate-200 p-4">
                                                             <h5 class="text-16">Tindakan -
@@ -226,7 +226,7 @@
                                                                     </label>
                                                                     <select id="tindakanSelect-{{ $student->id }}"
                                                                         name="handling_id" required
-                                                                        class="tindakan-dropdown form-input dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
+                                                                        class="tindakan-dropdown form-input w-full dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
                                                                         data-student-id="{{ $student->id }}">
                                                                         <option value="">Pilih tindakan...</option>
                                                                         @foreach ($student->available_handlings as $item)
@@ -270,159 +270,162 @@
                                                                             }
                                                                         }
                                                                     @endphp
-                                                                    <div class="mb-4">
-                                                                        <label
-                                                                            class="mb-2 inline-block text-base font-medium">Nama
-                                                                            Siswa</label>
-                                                                        <input type="text" name="student_name"
-                                                                            value="{{ $student->action_detail?->detail?->student_name ?? ($refStudent->full_name ?? ($student->student->full_name ?? '')) }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
-                                                                    </div>
+                                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                        <div class="mb-4">
+                                                                            <label
+                                                                                class="mb-2 inline-block text-base font-medium">Nama
+                                                                                Siswa</label>
+                                                                            <input type="text" name="student_name"
+                                                                                value="{{ $student->action_detail?->detail?->student_name ?? ($refStudent->full_name ?? ($student->student->full_name ?? '')) }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label
-                                                                            class="mb-2 inline-block text-base font-medium">Nama
-                                                                            Wali</label>
-                                                                        <input type="text" name="parent_name"
-                                                                            value="{{ $student->action_detail?->detail?->parent_name ?? ($refStudent->guardian_name ?? ($student->student->guardian_name ?? '')) }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label
+                                                                                class="mb-2 inline-block text-base font-medium">Nama
+                                                                                Wali</label>
+                                                                            <input type="text" name="parent_name"
+                                                                                value="{{ $student->action_detail?->detail?->parent_name ?? ($refStudent->guardian_name ?? ($student->student->guardian_name ?? '')) }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label
-                                                                            class="mb-2 inline-block text-base font-medium">Tindakan
-                                                                            Terpilih</label>
-                                                                        <input type="text"
-                                                                            id="selectedAction-{{ $student->id }}"
-                                                                            readonly
-                                                                            class="form-input dark:border-zink-500 dark:bg-zink-600 border-slate-200 bg-slate-100"
-                                                                            value="">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label
+                                                                                class="mb-2 inline-block text-base font-medium">Tindakan
+                                                                                Terpilih</label>
+                                                                            <input type="text"
+                                                                                id="selectedAction-{{ $student->id }}"
+                                                                                readonly
+                                                                                class="form-input dark:border-zink-500 dark:bg-zink-600 w-full border-slate-200 bg-slate-100"
+                                                                                value="">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label
-                                                                            class="mb-2 inline-block text-base font-medium">Poin
-                                                                            Tindakan</label>
-                                                                        <input type="text"
-                                                                            id="selectedPoint-{{ $student->id }}"
-                                                                            readonly
-                                                                            class="form-input dark:border-zink-500 dark:bg-zink-600 border-slate-200 bg-slate-100"
-                                                                            value="">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label
+                                                                                class="mb-2 inline-block text-base font-medium">Poin
+                                                                                Tindakan</label>
+                                                                            <input type="text"
+                                                                                id="selectedPoint-{{ $student->id }}"
+                                                                                readonly
+                                                                                class="form-input dark:border-zink-500 dark:bg-zink-600 w-full border-slate-200 bg-slate-100"
+                                                                                value="">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="prey-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Titimangsa
-                                                                            (prey)
-                                                                        </label>
-                                                                        <input type="date"
-                                                                            id="prey-{{ $student->id }}" name="prey"
-                                                                            value="{{ $student->action_detail?->detail?->prey ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="prey-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Titimangsa
+                                                                                (prey)
+                                                                            </label>
+                                                                            <input type="date"
+                                                                                id="prey-{{ $student->id }}" name="prey"
+                                                                                value="{{ $student->action_detail?->detail?->prey ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="action_date-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Hari,
-                                                                            Tanggal (action_date)</label>
-                                                                        <input type="date"
-                                                                            id="action_date-{{ $student->id }}"
-                                                                            name="action_date"
-                                                                            value="{{ $student->action_detail?->detail?->action_date ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="action_date-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Hari,
+                                                                                Tanggal (action_date)</label>
+                                                                            <input type="date"
+                                                                                id="action_date-{{ $student->id }}"
+                                                                                name="action_date"
+                                                                                value="{{ $student->action_detail?->detail?->action_date ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="reference_number-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Nomor
-                                                                            Surat (reference_number)</label>
-                                                                        <input type="text"
-                                                                            id="reference_number-{{ $student->id }}"
-                                                                            name="reference_number"
-                                                                            value="{{ $student->action_detail?->detail?->reference_number ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                            placeholder="Masukkan nomor surat">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="reference_number-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Nomor
+                                                                                Surat (reference_number)</label>
+                                                                            <input type="text"
+                                                                                id="reference_number-{{ $student->id }}"
+                                                                                name="reference_number"
+                                                                                value="{{ $student->action_detail?->detail?->reference_number ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                placeholder="Masukkan nomor surat">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="time-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Jam
-                                                                            (time)</label>
-                                                                        <input type="text"
-                                                                            id="time-{{ $student->id }}" name="time"
-                                                                            value="{{ $student->action_detail?->detail?->time ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                            placeholder="08:30">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="time-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Jam
+                                                                                (time)</label>
+                                                                            <input type="text"
+                                                                                id="time-{{ $student->id }}" name="time"
+                                                                                value="{{ $student->action_detail?->detail?->time ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                placeholder="08:30">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="room-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Ruangan
-                                                                            (room)</label>
-                                                                        <input type="text"
-                                                                            id="room-{{ $student->id }}" name="room"
-                                                                            value="{{ $student->action_detail?->detail?->room ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                            placeholder="Ruang A">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="room-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Ruangan
+                                                                                (room)</label>
+                                                                            <input type="text"
+                                                                                id="room-{{ $student->id }}" name="room"
+                                                                                value="{{ $student->action_detail?->detail?->room ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                placeholder="Ruang A">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="facing-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Menghadap
-                                                                            Ke (facing)</label>
-                                                                        <input type="text"
-                                                                            id="facing-{{ $student->id }}"
-                                                                            name="facing"
-                                                                            value="{{ $student->action_detail?->detail?->facing ?? '' }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                            placeholder="Guru / Papan Tulis">
-                                                                    </div>
+                                                                        <div class="mb-4">
+                                                                            <label for="facing-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Menghadap
+                                                                                Ke (facing)</label>
+                                                                            <input type="text"
+                                                                                id="facing-{{ $student->id }}"
+                                                                                name="facing"
+                                                                                value="{{ $student->action_detail?->detail?->facing ?? '' }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                placeholder="Guru / Papan Tulis">
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label for="violation_count-{{ $student->id }}"
-                                                                            class="mb-2 inline-block text-base font-medium">Jumlah
-                                                                            Pelanggaran
-                                                                        </label>
-                                                                        <input type="number" min="0"
-                                                                            max="10"
-                                                                            id="violation_count-{{ $student->id }}"
-                                                                            name="violation_count"
-                                                                            value="{{ $student->action_detail?->detail?->violation_count ?? 0 }}"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                            placeholder="0"
-                                                                            onchange="generateViolationForms(this, '{{ $student->id }}')">
-                                                                    </div>
+                                                                        <div class="mb-4 md:col-span-2">
+                                                                            <label for="violation_count-{{ $student->id }}"
+                                                                                class="mb-2 inline-block text-base font-medium">Jumlah
+                                                                                Pelanggaran
+                                                                            </label>
+                                                                            <input type="number" min="0"
+                                                                                max="10"
+                                                                                id="violation_count-{{ $student->id }}"
+                                                                                name="violation_count"
+                                                                                value="{{ $student->action_detail?->detail?->violation_count ?? 0 }}"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                placeholder="0"
+                                                                                onchange="generateViolationForms(this, '{{ $student->id }}')">
+                                                                        </div>
 
-                                                                    <!-- Form Pelanggaran Dinamis -->
-                                                                    <div id="violations-container-{{ $student->id }}"
-                                                                        class="mb-4">
-                                                                        @if ($student->action_detail?->detail?->violations)
-                                                                            @foreach ($student->action_detail->detail->violations as $index => $violation)
-                                                                                <div
-                                                                                    class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
-                                                                                    <label
-                                                                                        class="mb-2 inline-block text-sm font-medium">Pelanggaran
-                                                                                        ke-{{ $index + 1 }}</label>
-                                                                                    <input type="text"
-                                                                                        name="violations[{{ $index }}]"
-                                                                                        class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
-                                                                                        placeholder="Masukkan pelanggaran"
-                                                                                        value="{{ $violation }}">
-                                                                                </div>
-                                                                            @endforeach
-                                                                        @endif
-                                                                    </div>
+                                                                        <!-- Form Pelanggaran Dinamis -->
+                                                                        <div id="violations-container-{{ $student->id }}"
+                                                                            class="mb-4 md:col-span-2">
+                                                                            @if ($student->action_detail?->detail?->violations)
+                                                                                @foreach ($student->action_detail->detail->violations as $index => $violation)
+                                                                                    <div
+                                                                                        class="mb-3 border-l-4 border-orange-500 bg-orange-50 p-3 dark:bg-orange-900/20">
+                                                                                        <label
+                                                                                            class="mb-2 inline-block text-sm font-medium">Pelanggaran
+                                                                                            ke-{{ $index + 1 }}</label>
+                                                                                        <input type="text"
+                                                                                            name="violations[{{ $index }}]"
+                                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
+                                                                                            placeholder="Masukkan pelanggaran"
+                                                                                            value="{{ $violation }}">
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            @endif
+                                                                        </div>
 
-                                                                    <div class="mb-4">
-                                                                        <label
-                                                                            class="mb-2 inline-block text-base font-medium">Deskripsi</label>
-                                                                        <textarea id="descDetailsTextarea-{{ $student->id }}" name="description" rows="3"
-                                                                            class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">{{ $student->action_detail?->description ?? '' }}</textarea>
+                                                                        <div class="mb-4 md:col-span-2">
+                                                                            <label
+                                                                                class="mb-2 inline-block text-base font-medium">Deskripsi</label>
+                                                                            <textarea id="descDetailsTextarea-{{ $student->id }}" name="description" rows="3"
+                                                                                class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">{{ $student->action_detail?->description ?? '' }}</textarea>
+                                                                        </div>
                                                                     </div>
                                                                     <button type="submit"
                                                                         class="dark:bg-custom-600 dark:hover:bg-custom-700 bg-custom-500 hover:bg-custom-600 rounded-md px-4 py-2 text-white transition-colors duration-200">
                                                                         Simpan Tindakan
                                                                     </button>
+                                                                </div>
                                                             </form>
                                         </td>
 
@@ -509,26 +512,26 @@
                                                     <thead
                                                         class="dark:bg-zink-700 sticky top-0 z-10 bg-slate-50 text-xs uppercase">
                                                         <tr>
-                                                            <th class="dark:text-zink-200 w-32 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-32 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Aksi</th>
-                                                            <th class="dark:text-zink-200 w-10 px-3 py-3 font-semibold">No
+                                                            <th class="dark:text-zink-200 w-10 px-3 py-3 font-semibold whitespace-nowrap">No
                                                             </th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Tanggal</th>
                                                             <th
-                                                                class="dark:text-zink-200 min-w-[180px] px-4 py-3 font-semibold">
+                                                                class="dark:text-zink-200 min-w-[200px] px-4 py-3 font-semibold">
                                                                 Pelanggaran</th>
-                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Kategori</th>
-                                                            <th class="dark:text-zink-200 w-16 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-16 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Poin</th>
-                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Status</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Dibuat oleh</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Diverifikasi</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold">
+                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
                                                                 Diupdate</th>
                                                         </tr>
                                                     </thead>
@@ -565,7 +568,7 @@
                                                                                 </button>
                                                                                 <button type="submit"
                                                                                     value="not_verified" name="status"
-                                                                                    onclick="return confirm('Apakah Anda yakin ingin menolak pelanggaran ini?')"
+                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menolak pelanggaran ini?')"
                                                                                     class="rounded-full p-1.5 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
                                                                                     title="Tolak">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -586,7 +589,7 @@
                                                                             @else
                                                                                 <button type="submit" value="pending"
                                                                                     name="status"
-                                                                                    onclick="return confirm('Apakah Anda yakin ingin memverifikasi ulang pelanggaran ini?')"
+                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin memverifikasi ulang pelanggaran ini?')"
                                                                                     class="rounded-full p-1.5 text-orange-600 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-700"
                                                                                     title="Verifikasi Ulang">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -615,7 +618,7 @@
                                                                                 @csrf
                                                                                 @method('DELETE')
                                                                                 <button type="submit"
-                                                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggaran ini?')"
+                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menghapus pelanggaran ini?')"
                                                                                     class="rounded-full p-1.5 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
                                                                                     title="Hapus">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -640,16 +643,16 @@
                                                                 </td>
 
                                                                 <!-- NO -->
-                                                                <td class="row-number px-3 py-2 text-center font-medium">
+                                                                <td class="row-number px-3 py-2 text-center font-medium whitespace-nowrap">
                                                                     {{ $counter++ }}</td>
 
                                                                 <!-- TANGGAL -->
-                                                                <td class="whitespace-nowrap px-3 py-2">
+                                                                <td class="px-3 py-2 whitespace-nowrap">
                                                                     {{ \Carbon\Carbon::parse($recap->created_at)->format('d/m/Y') }}
                                                                 </td>
 
                                                                 <!-- PELANGGARAN -->
-                                                                <td class="px-3 py-2">
+                                                                <td class="px-3 py-2 min-w-[200px]">
                                                                     <div class="violation-name">
                                                                         {{ $recap->violation->name }}</div>
                                                                 </td>
@@ -683,7 +686,7 @@
                                                                 </td>
 
                                                                 <!-- STATUS -->
-                                                                <td class="px-3 py-2 text-center">
+                                                                <td class="px-3 py-2 text-center whitespace-nowrap">
                                                                     @if ($recap->status === 'verified')
                                                                         <span
                                                                             class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
@@ -703,7 +706,7 @@
                                                                 </td>
 
                                                                 <!-- DIBUAT OLEH -->
-                                                                <td class="px-3 py-2">
+                                                                <td class="px-3 py-2 whitespace-nowrap">
                                                                     <span
                                                                         class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->createdBy->name ?? '-' }}
@@ -711,7 +714,7 @@
                                                                 </td>
 
                                                                 <!-- DIVERIFIKASI OLEH -->
-                                                                <td class="px-3 py-2">
+                                                                <td class="px-3 py-2 whitespace-nowrap">
                                                                     <span
                                                                         class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->verifiedBy->name ?? '-' }}
@@ -719,7 +722,7 @@
                                                                 </td>
 
                                                                 <!-- DIUPDATE OLEH -->
-                                                                <td class="px-3 py-2">
+                                                                <td class="px-3 py-2 whitespace-nowrap">
                                                                     <span
                                                                         class="dark:text-zink-300 text-xs text-slate-600">
                                                                         {{ $recap->updatedBy->name ?? '-' }}
@@ -828,7 +831,7 @@
 
                                         <!-- Summary Section -->
                                         @if ($student->recaps->count() > 0)
-                                            <div class="summary-section dark:bg-zink-700 mt-4 flex-shrink-0 rounded-lg bg-slate-50 p-3"
+                                            <div class="summary-section dark:bg-zink-700 mt-4 flex-shrink-0 rounded-lg bg-slate-50 border border-slate-200 dark:border-zink-600 shadow-sm p-3 mb-2 mx-4"
                                                 id="summary-{{ $student->id }}">
                                                 <div class="flex items-center justify-between">
                                                     <span
@@ -867,9 +870,9 @@
         /* Modal dengan ukuran tetap */
         .modal-container {
             width: 90vw;
-            max-width: 1200px;
-            height: 90vh;
-            max-height: 850px;
+            max-width: 1100px;
+            height: 85vh;
+            max-height: 800px;
             min-height: 600px;
         }
 

@@ -30,33 +30,23 @@
             </div>
 
             <!-- Student Info Card -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="flex items-center justify-between">
+            <div class="card mb-4 shadow-sm relative overflow-hidden">
+                <div class="card-body p-5">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                         <div>
-                            <h6 class="text-15 mb-2 font-semibold">{{ $studentAcademicYear->student->full_name }}</h6>
-                            <div class="flex gap-4 text-sm">
-                                <span class="dark:text-zink-300 text-slate-600">
-                                    <strong>NIS:</strong> {{ $studentAcademicYear->student->student_number }}
-                                </span>
-                                <span class="dark:text-zink-300 text-slate-600">
-                                    <strong>Kelas:</strong>
-                                    {{ $studentAcademicYear->class->academic_level }}
-                                    {{ $studentAcademicYear->class->name }}
-                                </span>
-                                <span class="dark:text-zink-300 text-slate-600">
-                                    <strong>Jenis Kelamin:</strong> {{ $studentAcademicYear->student->gender }}
-                                </span>
+                            <h5 class="text-xl font-bold text-slate-800 dark:text-zink-50 mb-2">{{ $studentAcademicYear->student->full_name }}</h5>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-600 dark:text-zink-300">
+                                <div><span class="font-semibold text-slate-700 dark:text-zink-200">NIS:</span> {{ $studentAcademicYear->student->student_number }}</div>
+                                <div class="hidden sm:block text-slate-300 dark:text-zink-500">•</div>
+                                <div><span class="font-semibold text-slate-700 dark:text-zink-200">Kelas:</span> {{ $studentAcademicYear->class->academic_level }} {{ $studentAcademicYear->class->name }}</div>
+                                <div class="hidden sm:block text-slate-300 dark:text-zink-500">•</div>
+                                <div><span class="font-semibold text-slate-700 dark:text-zink-200">Jenis Kelamin:</span> {{ $studentAcademicYear->student->gender }}</div>
                             </div>
                         </div>
                         <a href="{{ route('superadmin.confirm-recaps') }}"
-                            class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 dark:hover:bg-zink-700 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:bg-slate-50">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="mr-1 inline-block">
-                                <path d="m15 18-6-6 6-6" />
-                            </svg>
-                            Kembali
+                            class="shrink-0 flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:shadow-sm dark:bg-zink-700 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-600">
+                            <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                            <span class="ml-1">Kembali</span>
                         </a>
                     </div>
                 </div>
@@ -223,93 +213,90 @@
 
             <!-- Summary Section -->
             @if ($studentAcademicYear->pRecaps->count() > 0)
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="text-15 mb-4">Ringkasan</h6>
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body p-5">
+                        <div class="mb-5 flex items-center gap-2 border-b border-slate-200 pb-3 dark:border-zink-500">
+                            <i data-lucide="pie-chart" class="h-5 w-5 text-custom-500"></i>
+                            <h6 class="mb-0 text-16 font-semibold">Ringkasan Pelanggaran</h6>
+                        </div>
 
-                        <div class="space-y-3" id="detailSummary">
+                        <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3" id="detailSummary">
                             <!-- Total Pelanggaran Card -->
-                            <div class="dark:bg-zink-700 rounded-lg bg-slate-50 p-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
-                                        Total Pelanggaran:
-                                    </span>
-                                    <span class="text-sm font-bold" id="detailTotalCount">
+                            <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md dark:border-zink-600 dark:bg-zink-700">
+                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 dark:bg-blue-500/20">
+                                    <i data-lucide="file-text" class="h-6 w-6"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-sm text-slate-500 dark:text-slate-400">Total Pelanggaran</p>
+                                    <h5 class="mb-0 text-xl font-bold" id="detailTotalCount">
                                         {{ $studentAcademicYear->pRecaps->count() }}
-                                    </span>
-                                </div>
-                                <div class="mt-1 flex items-center justify-between">
-                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
-                                        Total Poin (Semua):
-                                    </span>
-                                    <span class="text-sm font-bold text-slate-600 dark:text-slate-400"
-                                        id="detailTotalPoints">
-                                        {{ $studentAcademicYear->pRecaps->sum(function ($pRecap) {
-                                            return $pRecap->violation->point ?? 0;
-                                        }) }}
-                                        Poin
-                                    </span>
-                                </div>
-                                <div
-                                    class="dark:border-zink-600 mt-1 flex items-center justify-between border-t border-slate-200 pt-2">
-                                    <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
-                                        Total Poin Terverifikasi:
-                                    </span>
-                                    <span class="text-sm font-bold text-red-600 dark:text-red-400"
-                                        id="detailVerifiedPoints">
-                                        {{ $totalVerifiedPoints }} Poin
-                                    </span>
+                                    </h5>
                                 </div>
                             </div>
 
+                            <!-- Total Poin Semua -->
+                            <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md dark:border-zink-600 dark:bg-zink-700">
+                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-500 dark:bg-orange-500/20">
+                                    <i data-lucide="hash" class="h-6 w-6"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-sm text-slate-500 dark:text-slate-400">Total Poin (Semua)</p>
+                                    <h5 class="mb-0 text-xl font-bold text-slate-700 dark:text-slate-200" id="detailTotalPoints">
+                                        {{ $studentAcademicYear->pRecaps->sum(function ($pRecap) {
+                                            return $pRecap->violation->point ?? 0;
+                                        }) }}
+                                        <span class="text-sm font-normal text-slate-400">Poin</span>
+                                    </h5>
+                                </div>
+                            </div>
+
+                            <!-- Total Poin Terverifikasi -->
+                            <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md dark:border-zink-600 dark:bg-zink-700">
+                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-500/20">
+                                    <i data-lucide="shield-alert" class="h-6 w-6"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-sm text-slate-500 dark:text-slate-400">Poin Terverifikasi</p>
+                                    <h5 class="mb-0 text-xl font-bold text-red-500" id="detailVerifiedPoints">
+                                        {{ $totalVerifiedPoints }}
+                                        <span class="text-sm font-normal text-red-300">Poin</span>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
                             <!-- Handling Action Card (jika ada) -->
-                            <div class="handling-action-card {{ $applicableHandling ? '' : 'hidden' }} rounded-lg border-l-4 border-orange-500 bg-gradient-to-r from-orange-50 to-red-50 p-4 dark:from-orange-900/20 dark:to-red-900/20"
+                            <div class="handling-action-card {{ $applicableHandling ? '' : 'hidden' }} relative overflow-hidden rounded-xl border border-orange-200 bg-orange-50/50 p-5 dark:border-orange-500/30 dark:bg-orange-500/10"
                                 data-handling-options='@json($handlingPointOptions)'>
-                                <div class="flex items-start gap-3">
-                                    <div class="mt-0.5 flex-shrink-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="text-orange-600 dark:text-orange-400">
-                                            <path
-                                                d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                                            <path d="M12 9v4" />
-                                            <path d="M12 17h.01" />
-                                        </svg>
+                                <div class="pointer-events-none absolute right-0 top-0 opacity-10">
+                                    <i data-lucide="alert-triangle" class="-mr-6 -mt-6 h-32 w-32 text-orange-500"></i>
+                                </div>
+                                <div class="relative z-10 flex items-start gap-4">
+                                    <div class="mt-1 flex-shrink-0">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white shadow-sm">
+                                            <i data-lucide="alert-triangle" class="h-5 w-5"></i>
+                                        </div>
                                     </div>
                                     <div class="flex-1">
-                                        <h6 class="mb-1 text-sm font-semibold text-orange-800 dark:text-orange-300">
-                                            ⚠️ Tindakan Diperlukan
+                                        <h6 class="mb-1 text-base font-bold text-orange-800 dark:text-orange-400">
+                                            Tindakan Diperlukan
                                         </h6>
-                                        <p class="mb-2 text-xs text-slate-600 dark:text-slate-400">
-                                            Siswa telah mencapai <span
-                                                class="current-points font-bold text-orange-700 dark:text-orange-400">{{ $totalVerifiedPoints }}</span>
-                                            poin pelanggaran terverifikasi
+                                        <p class="mb-3 text-sm text-orange-700/80 dark:text-orange-300">
+                                            Siswa telah mencapai <span class="current-points font-bold text-orange-700 dark:text-orange-400">{{ $totalVerifiedPoints }}</span> poin pelanggaran terverifikasi.
                                         </p>
-                                        <div
-                                            class="dark:bg-zink-800 rounded-md border border-orange-200 bg-white p-3 dark:border-orange-800">
-                                            <div class="flex items-start gap-2">
-                                                <span
-                                                    class="whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">
-                                                    Tindakan:
-                                                </span>
-                                                <span
-                                                    class="action-text text-sm font-semibold text-orange-700 dark:text-orange-300">
+                                        <div class="inline-block w-full min-w-[300px] rounded-lg border border-orange-200 bg-white p-3 md:w-auto dark:border-orange-500/30 dark:bg-zink-800">
+                                            <div class="mb-2 flex items-center justify-between border-b border-orange-100 pb-2 dark:border-orange-500/20">
+                                                <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Tindakan Khusus:</span>
+                                                <span class="action-text text-sm font-bold text-orange-700 dark:text-orange-400">
                                                     {{ $applicableHandling->handling_action ?? '' }}
                                                 </span>
                                             </div>
-                                            <div
-                                                class="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10" />
-                                                    <path d="M12 6v6l4 2" />
-                                                </svg>
-                                                <span>Threshold:
-                                                    ≥<span
-                                                        class="threshold-text">{{ $applicableHandling->handling_point ?? '' }}</span>
-                                                    poin</span>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-slate-500 dark:text-slate-400">Threshold Pelanggaran:</span>
+                                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                                                    ≥<span class="threshold-text">{{ $applicableHandling->handling_point ?? '' }}</span> poin
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -317,22 +304,22 @@
                             </div>
 
                             <!-- Status Aman Card -->
-                            <div
-                                class="status-good-card {{ $applicableHandling ? 'hidden' : '' }} rounded-lg border-l-4 border-green-500 bg-green-50 p-3 dark:bg-green-900/20">
-                                <div class="flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="text-green-600 dark:text-green-400">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                        <polyline points="22 4 12 14.01 9 11.01" />
-                                    </svg>
+                            <div class="status-good-card {{ $applicableHandling ? 'hidden' : '' }} relative overflow-hidden rounded-xl border border-green-200 bg-green-50/50 p-5 dark:border-green-500/30 dark:bg-green-500/10">
+                                <div class="pointer-events-none absolute right-0 top-0 opacity-10">
+                                    <i data-lucide="check-circle" class="-mr-6 -mt-6 h-32 w-32 text-green-500"></i>
+                                </div>
+                                <div class="relative z-10 flex items-center gap-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white shadow-sm">
+                                            <i data-lucide="check-circle" class="h-5 w-5"></i>
+                                        </div>
+                                    </div>
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-green-800 dark:text-green-300">
+                                        <h6 class="mb-1 text-base font-bold text-green-800 dark:text-green-400">
                                             Status Baik
-                                        </p>
-                                        <p class="text-xs text-green-600 dark:text-green-400">
-                                            Belum mencapai threshold tindakan
+                                        </h6>
+                                        <p class="text-sm text-green-700/80 dark:text-green-300">
+                                            Belum mencapai threshold tindakan pendisiplinan.
                                         </p>
                                     </div>
                                 </div>
@@ -340,38 +327,34 @@
 
                             <!-- Info Handling Options -->
                             @if ($handlingPointOptions->count() > 0)
-                                <div class="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+                                <div class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-zink-600 dark:bg-zink-700">
                                     <details class="group">
-                                        <summary
-                                            class="flex cursor-pointer items-center justify-between text-sm font-medium text-blue-800 dark:text-blue-300">
-                                            <span class="flex items-center gap-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10" />
-                                                    <path d="M12 16v-4" />
-                                                    <path d="M12 8h.01" />
-                                                </svg>
-                                                Daftar Tindakan Berdasarkan Poin
-                                            </span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                class="transition-transform group-open:rotate-180">
-                                                <polyline points="6 9 12 15 18 9" />
-                                            </svg>
+                                        <summary class="list-none [&::-webkit-details-marker]:hidden flex cursor-pointer items-center justify-between bg-slate-50 p-4 transition-colors hover:bg-slate-100 dark:bg-zink-700 dark:hover:bg-zink-600">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex h-8 w-8 items-center justify-center rounded bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                                                    <i data-lucide="info" class="h-4 w-4"></i>
+                                                </div>
+                                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                                    Daftar Tindakan Berdasarkan Poin
+                                                </span>
+                                            </div>
+                                            <div class="transition-transform duration-300 group-open:rotate-180 text-slate-400">
+                                                <i data-lucide="chevron-down" class="h-5 w-5"></i>
+                                            </div>
                                         </summary>
-                                        <div class="mt-3 space-y-2">
+                                        <div class="space-y-3 border-t border-slate-200 p-4 dark:border-zink-600">
                                             @foreach ($handlingPointOptions->sortBy('handling_point') as $handling)
-                                                <div
-                                                    class="dark:bg-zink-800 flex items-start gap-2 rounded border border-blue-100 bg-white p-2 text-xs dark:border-blue-800">
-                                                    <span
-                                                        class="whitespace-nowrap font-semibold text-blue-700 dark:text-blue-400">
-                                                        ≥{{ $handling->handling_point }} poin:
-                                                    </span>
-                                                    <span class="text-slate-600 dark:text-slate-400">
-                                                        {{ $handling->handling_action }}
-                                                    </span>
+                                                <div class="flex items-center rounded-lg border border-slate-100 bg-slate-50/50 p-3 transition hover:border-blue-200 dark:border-zink-600/50 dark:bg-zink-800/50 dark:hover:border-blue-500/30">
+                                                    <div class="mr-3 w-20 flex-shrink-0 border-r border-slate-200 pr-3 text-right dark:border-zink-600">
+                                                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">
+                                                            ≥ {{ $handling->handling_point }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                            {{ $handling->handling_action }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>

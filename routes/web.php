@@ -15,10 +15,15 @@ Route::get('/', [UserController::class, 'login'])->name('login');
 Route::post('/login', [UserController::class, 'authenticate'])->name('login.authenticate');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/select-role', [UserController::class, 'selectRole'])->name('role.select');
+    Route::post('/select-role', [UserController::class, 'storeActiveRole'])->name('role.store');
+});
+
 // guru Routes
 Route::prefix('guru')
     ->name('guru.')
-    // ✅ tambahin middleware auth
+    ->middleware(['auth', 'role:guru'])
     ->group(function () {
         Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');
         Route::get('/recaps', [GuruController::class, 'recaps'])->name('recaps');
@@ -32,7 +37,10 @@ Route::prefix('guru')
 
 
 // BK Routes
-Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
+Route::prefix('kesiswaan-bk')
+    ->name('kesiswaan-bk.')
+    ->middleware(['auth', 'role:guru-bk,kesiswaan'])
+    ->group(function () {
     Route::get('/dashboard', [BKController::class, 'index'])->name('dashboard');
     Route::get('/student-data', [BKController::class, 'studentData'])->name('student-data');
     Route::post('/violations/store/{student}', [BKController::class, 'store'])->name('violations.store');
@@ -49,7 +57,7 @@ Route::prefix('kesiswaan-bk')->name('kesiswaan-bk.')->group(function () {
         ->name('templates.download');
 });
 
-Route::prefix('superadmin')->middleware('auth')->name('superadmin.')->group(function () {
+Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
     Route::get('/student-data', [SuperAdminController::class, 'studentData'])->name('student-data');
     Route::get('/-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
