@@ -201,7 +201,7 @@
                                                 <div id="modal-tindakan-{{ $student->id }}" modal-center=""
                                                     class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
                                                     <div
-                                                        class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[48rem] max-w-[95vw]">
+                                                        class="dark:bg-zink-600 flex h-full w-screen flex-col rounded-md bg-white shadow md:w-[40rem]">
                                                         <div
                                                             class="dark:border-zink-500 flex items-center justify-between border-b border-slate-200 p-4">
                                                             <h5 class="text-16">Tindakan -
