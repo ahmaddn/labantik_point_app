@@ -171,7 +171,8 @@ if (count($segments) > 0 && in_array($segments[0], ['guru', 'kesiswaan-bk', 'sup
                                 class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
                                 data-key="t-recaps">Rekap & Verifikasi</span>
                         </a>
-                    </li>
+                @endif
+                @if ($routePrefix === 'superadmin.' || $routePrefix === 'guru.')
                     <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
                         <a href="{{ route($routePrefix . 'violations') }}"
                             class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'violations') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
@@ -187,6 +188,8 @@ if (count($segments) > 0 && in_array($segments[0], ['guru', 'kesiswaan-bk', 'sup
                                 data-key="t-violations">Pelanggaran</span>
                         </a>
                     </li>
+                @endif
+                @if ($routePrefix === 'superadmin.')
                     <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
                         <a href="{{ route($routePrefix . 'configs') }}"
                             class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'configs') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">

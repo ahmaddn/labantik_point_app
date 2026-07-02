@@ -48,7 +48,7 @@
 <div style="border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin-top: 5px; margin-bottom: 15px; width: 100%;"></div>
 <p style="margin:0pt 24pt 0pt 252pt;"><span style="font-family:'Bookman Old Style';">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-right:9.65pt; margin-bottom:0pt; text-align:right;"><span
-        style="font-family:Arial;">Talaga </span> <span style="font-family:Arial;">{{ $prey ?? '' }}</span></p>
+        style="font-family:Arial;">Talaga, </span> <span style="font-family:Arial;">{{ $prey ?? '' }}</span></p>
 <p style="margin-top:0pt; margin-right:24pt; margin-bottom:0pt;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-right:24pt; margin-bottom:0pt;"><span style="font-family:Arial;">Nomor</span><span
         style="width:35.99pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
@@ -158,8 +158,7 @@
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><strong><u><span
                 style="font-family:Arial;">{{ $kepala_sekolah->name ?? '' }}</span></u></strong></p>
-<p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><span
-        style="font-family:Arial;">Pembina Tk. I, IV/b</span></p>
+
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><span
         style="font-family:Arial;">{{ $kepala_sekolah->nip ?? '' }}</span></p>
 <div style="page-break-after:always;"></div>

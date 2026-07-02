@@ -88,7 +88,7 @@
     <span style="font-family: Arial">Pangkat, Gol/Ruang</span><span
         style="width: 35.93pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span
-        style="font-family: Arial">Pembina Tk.I , IV/b</span>
+        style="font-family: Arial">-</span>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
     <span style="font-family: Arial">Jabatan</span><span
@@ -184,9 +184,7 @@
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
     <strong><u><span style="font-family: Arial">{{ $kepalaSekolah->employee->namess ?? '' }}</span></u></strong>
 </p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">Pembina Tk.I , IV/b </span>
-</p>
+
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
     <span style="font-family: Arial">NIP.
         {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}

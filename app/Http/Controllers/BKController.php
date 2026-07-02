@@ -118,7 +118,7 @@ class BKController extends Controller
         foreach ($allRecaps as $recap) {
             $violationId = $recap->violation->id ?? null;
             $categoryName = $recap->violation->category->name ?? 'Lainnya';
-            
+
             if (isset($categoryDistribution[$categoryName])) {
                 $categoryDistribution[$categoryName]++;
             } else {
@@ -359,7 +359,7 @@ class BKController extends Controller
             $recaps = collect();
         }
 
-        return view('BK.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
+        return view('bk.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
     }
 
     public function detailRecaps($studentAcademicYearId)
@@ -432,7 +432,7 @@ class BKController extends Controller
             'handling' => $handling,
             'description' => $request->description,
             'total_points' => $totalPoints,
-            'date' => Carbon::now()->locale('id')->translatedFormat('d F Y'),
+            'date' => Carbon::now()->locale('id')->translatedFormat('j F Y'),
             'violations' => $studentAcademicYear->recaps
         ];
 

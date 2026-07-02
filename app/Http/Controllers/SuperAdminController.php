@@ -500,8 +500,8 @@ class SuperAdminController extends Controller
             DB::commit();
 
             $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
-            $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('d F Y') : Carbon::now()->locale('id')->translatedFormat('d F Y');
-            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('d F Y') : '';
+            $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
+            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('j F Y') : '';
             $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
 
             if ($request->filled('kepala_sekolah_id')) {
