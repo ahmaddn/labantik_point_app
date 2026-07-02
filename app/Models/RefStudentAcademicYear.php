@@ -34,9 +34,13 @@ class RefStudentAcademicYear extends Model
         $activeConfig = P_Configs::where('is_active', true)->first();
 
         if (!$activeConfig) {
-            return $query->whereNull('id'); // Return empty query jika tidak ada config aktif
+            $activeConfig = P_Configs::first();
         }
-
+ 
+        if (!$activeConfig) {
+            return $query;
+        }
+ 
         return $query->where('academic_year', $activeConfig->academic_year);
     }
     public function scopeAcademicYear(Builder $builder, string $academicYear)

@@ -33,6 +33,16 @@ Route::prefix('guru')
 
         Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
         Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
+
+        //Violations CRUD
+        Route::get('/violations', [ViolationController::class, 'index'])
+            ->name('violations');
+        Route::post('/violations/add', [ViolationController::class, 'add'])
+            ->name('violations.add');
+        Route::put('/violations/{id}/update', [ViolationController::class, 'update'])
+            ->name('violations.update');
+        Route::delete('/violations/{id}/destroy', [ViolationController::class, 'destroy'])
+            ->name('violations.destroy');
     });
 
 

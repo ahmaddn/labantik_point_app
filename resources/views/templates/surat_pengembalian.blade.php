@@ -13,10 +13,6 @@
                     <strong><span style="font-family: Arial">PEMERINTAH DAERAH PROVINSI JAWA BARAT</span></strong>
                 </p>
                 <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
-                    <strong><span style="font-family: Arial">DINAS PENDIDIKAN</span></strong>
-                </p>
-                <p
                     style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 18pt;">
                     <strong><span style="font-family: Arial">CABANG DINAS PENDIDIKAN WILAYAH IX</span></strong>
                 </p>
@@ -25,47 +21,31 @@
                     <strong><span style="font-family: Arial">SEKOLAH MENENGAH KEJURUAN NEGERI 1 TALAGA</span></strong>
                 </p>
                 <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Bidang Keahlian: Teknologi dan Rekayasa, Teknologi Informasi dan
-                        Komunikasi, Bisnis dan Manajemen</span>
+                    <span style="font-family: Tahoma">Bidang Keahlian: Teknologi dan Rekayasa, Teknologi Informasi komunikasi, Bisnis dan Manajemen</span>
                 </p>
                 <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan Talaga
-                        Kabupaten Majalengka</span>
+                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan Talaga Kabupaten Majalengka</span>
                 </p>
                 <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Kampus 2: Jalan Talaga-Bantarujeg Desa Mekarraharja Kecamatan
-                        Talaga Kabupaten Majalengka</span>
+                    <span style="font-family: Tahoma">Kampus 2: Jalan Talaga-Bantarujeg Desa Mekarrahaja Kecamatan Talaga Kabupaten Majalengka</span>
                 </p>
                 <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Telpon </span><span style="font-family: Wingdings"></span><span
-                        style="font-family: Tahoma"> (0233) 319238 FAX </span><span
-                        style="font-family: Wingdings"></span><span style="font-family: Tahoma"> (0233) 319238 POS
-                    </span><span style="font-family: Wingdings"></span><span style="font-family: Tahoma"> 45463 NPSN:
-                        20213872</span>
+                    <span style="font-family: Tahoma">Telpon <span style="font-family: Wingdings"></span> (0233) 319238 FAX <span style="font-family: Wingdings"></span> (0233) 319238 POS <span style="font-family: Wingdings"></span> 45463 NPSN: 20213872</span>
                 </p>
                 <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 12pt;">
-                    <span style="font-family: Tahoma; font-size: 9pt">Website </span><span
-                        style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="http://www.smkn1talaga.sch.id"
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Website <span style="font-family: Wingdings"></span> </span><a href="http://www.smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; font-size: 10pt; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
-                        style="font-family: Tahoma; font-size: 9pt"> – Email </span><span
-                        style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt"> </span><a href="mailto:mail@smkn1talaga.sch.id"
+                                style="font-family: Tahoma; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
+                        style="font-family: Tahoma"> – Email <span style="font-family: Wingdings"></span> </span><a href="mailto:admin@smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; font-size: 9pt; color: #0000ff;">mail@smkn1talaga.sch.id</span></u></a>
+                                style="font-family: Tahoma; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
                 </p>
             </td>
         </tr>
     </tbody>
 </table>
-<p style="margin-top: 0pt; margin-bottom: 0pt; font-size: 11pt">
-    <span style="height: 0pt; display: block; position: absolute; z-index: 0"><img
-            src="https://myfiles.space/user_files/299716_91ccf3f1225f79bf/1765093798_surat-perjanjian/1765093798_surat-perjanjian-2.png"
-            width="auto" height="6" alt="" style="margin: 0 0 0 auto; display: block" /></span><span
-        style="font-family: Tahoma">&nbsp;</span>
-</p>
+<div style="border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin-top: 5px; margin-bottom: 15px; width: 100%;"></div>
 <p style="margin-top: 0pt; margin-bottom: 0pt">&nbsp;</p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
     <strong><u><span style="font-family: Arial">SURAT PERNYATAAN</span></u></strong>
@@ -108,7 +88,7 @@
     <span style="font-family: Arial">Pangkat, Gol/Ruang</span><span
         style="width: 35.93pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span
-        style="font-family: Arial">Pembina Tk.I , IV/b</span>
+        style="font-family: Arial">-</span>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
     <span style="font-family: Arial">Jabatan</span><span
@@ -204,9 +184,7 @@
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
     <strong><u><span style="font-family: Arial">{{ $kepalaSekolah->employee->namess ?? '' }}</span></u></strong>
 </p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">Pembina Tk.I , IV/b </span>
-</p>
+
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
     <span style="font-family: Arial">NIP.
         {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}

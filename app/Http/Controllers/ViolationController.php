@@ -50,7 +50,8 @@ class ViolationController extends Controller
 
         $categories = P_Categories::select('id', 'name')->get();
 
-        return view('superadmin.violations.index', compact('violations', 'categories'));
+        $viewPath = $request->is('superadmin*') ? 'superadmin.violations.index' : 'guru.violations.index';
+        return view($viewPath, compact('violations', 'categories'));
     }
 
     public function add(Request $request)
@@ -67,7 +68,8 @@ class ViolationController extends Controller
             'point' => $request->point,
         ]);
 
-        return redirect()->route('superadmin.violations')->with('success', 'Pelanggaran berhasil ditambahkan.');
+        $routePrefix = $request->is('superadmin*') ? 'superadmin' : 'guru';
+        return redirect()->route($routePrefix . '.violations')->with('success', 'Pelanggaran berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -84,13 +86,15 @@ class ViolationController extends Controller
             'point' => $request->point,
         ]);
 
-        return redirect()->route('superadmin.violations')->with('success', 'Pelanggaran berhasil diperbarui.');
+        $routePrefix = $request->is('superadmin*') ? 'superadmin' : 'guru';
+        return redirect()->route($routePrefix . '.violations')->with('success', 'Pelanggaran berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         P_Violations::where('id', $id)->delete();
 
-        return redirect()->route('superadmin.violations')->with('success', 'Pelanggaran berhasil dihapus.');
+        $routePrefix = $request->is('superadmin*') ? 'superadmin' : 'guru';
+        return redirect()->route($routePrefix . '.violations')->with('success', 'Pelanggaran berhasil dihapus.');
     }
 }

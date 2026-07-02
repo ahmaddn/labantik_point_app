@@ -1,135 +1,51 @@
 <table cellspacing="0" cellpadding="0" style="width: 559.95pt; border-collapse: collapse">
     <tbody>
         <tr style="height: 1pt">
-            <td
-                style="
-                    width: 72pt;
-                    padding-right: 5.4pt;
-                    padding-left: 5.4pt;
-                    vertical-align: top;
-                ">
-                <p
-                    style="
-                        margin-top: 0pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 8pt;
-                    ">
+            <td style="width: 72pt; padding-right: 5.4pt; padding-left: 5.4pt; vertical-align: top;">
+                <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center; font-size: 8pt;">
                     <img src="{{ asset('assets/images/pemprov.png') }}" width="96" height="114"
                         alt="Logo Pemprov Jabar.png" />
                 </p>
             </td>
-            <td
-                style="
-                    width: 466.35pt;
-                    padding-right: 5.4pt;
-                    padding-left: 5.4pt;
-                    vertical-align: top;
-                ">
+            <td style="width: 466.35pt; padding-right: 5.4pt; padding-left: 5.4pt; vertical-align: top;">
                 <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 14pt;
-                    ">
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
                     <strong><span style="font-family: Arial">PEMERINTAH DAERAH PROVINSI JAWA BARAT</span></strong>
                 </p>
                 <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 14pt;
-                    ">
-                    <strong><span style="font-family: Arial">DINAS PENDIDIKAN</span></strong>
-                </p>
-                <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 18pt;
-                    ">
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 18pt;">
                     <strong><span style="font-family: Arial">CABANG DINAS PENDIDIKAN WILAYAH IX</span></strong>
                 </p>
                 <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 14pt;
-                    ">
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
                     <strong><span style="font-family: Arial">SEKOLAH MENENGAH KEJURUAN NEGERI 1 TALAGA</span></strong>
                 </p>
-                <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 9pt;
-                    ">
-                    <span style="font-family: Tahoma">Jalan Sekolah Nomor 20 Telpon&nbsp;</span><span
-                        style="font-family: Wingdings"></span><span style="font-family: Tahoma">&nbsp;(0233)
-                        319238&nbsp;</span>
+                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Bidang Keahlian: Teknologi dan Rekayasa, Teknologi Informasi komunikasi, Bisnis dan Manajemen</span>
+                </p>
+                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan Talaga Kabupaten Majalengka</span>
+                </p>
+                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Kampus 2: Jalan Talaga-Bantarujeg Desa Mekarrahaja Kecamatan Talaga Kabupaten Majalengka</span>
+                </p>
+                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Telpon <span style="font-family: Wingdings"></span> (0233) 319238 FAX <span style="font-family: Wingdings"></span> (0233) 319238 POS <span style="font-family: Wingdings"></span> 45463 NPSN: 20213872</span>
                 </p>
                 <p
-                    style="
-                        margin-top: 0pt;
-                        margin-left: 7.1pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 12pt;
-                    ">
-                    <span style="font-family: Tahoma; font-size: 9pt">FAX&nbsp;</span><span
-                        style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt">&nbsp;(0233) 319238 Website&nbsp;</span><span
-                        style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt">&nbsp;</span><a href="http://www.smkn1talaga.sch.id"
+                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
+                    <span style="font-family: Tahoma">Website <span style="font-family: Wingdings"></span> </span><a href="http://www.smkn1talaga.sch.id"
                         style="text-decoration: none"><u><span
-                                style="
-                                    font-family: Tahoma;
-                                    font-size: 10pt;
-                                    color: #0000ff;
-                                ">www.smkn1talaga.sch.id</span></u></a><span
-                        style="font-family: Tahoma; font-size: 9pt">&nbsp;&ndash; Email&nbsp;</span><span
-                        style="font-family: Wingdings; font-size: 9pt"></span><span
-                        style="font-family: Tahoma; font-size: 9pt">&nbsp;</span><a
-                        href="mailto:mail@smkn1talaga.sch.id" style="text-decoration: none"><u><span
-                                style="
-                                    font-family: Tahoma;
-                                    font-size: 9pt;
-                                    color: #0000ff;
-                                ">mail@smkn1talaga.sch.id</span></u></a><span
-                        style="font-family: Tahoma; font-size: 9pt">&nbsp;</span>
-                </p>
-                <p
-                    style="
-                        margin-top: 0pt;
-                        margin-bottom: 0pt;
-                        text-align: center;
-                        font-size: 9pt;
-                    ">
-                    <span style="font-family: Tahoma">Desa Talagakulon Kecamatan Talaga Kabupaten
-                        Majalengka&nbsp;</span><span style="font-family: Wingdings"></span><span
-                        style="font-family: Tahoma">&nbsp;</span><span style="font-family: Tahoma">&nbsp;</span><span
-                        style="font-family: Tahoma">45463</span>
+                                style="font-family: Tahoma; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
+                        style="font-family: Tahoma"> – Email <span style="font-family: Wingdings"></span> </span><a href="mailto:admin@smkn1talaga.sch.id"
+                        style="text-decoration: none"><u><span
+                                style="font-family: Tahoma; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
                 </p>
             </td>
         </tr>
     </tbody>
 </table>
-<p style="margin-top: 0pt; margin-bottom: 0pt; font-size: 11pt">
-    <span style="height: 0pt; display: block; position: absolute; z-index: 0"><img
-            src="https://myfiles.space/user_files/299716_91ccf3f1225f79bf/1765093798_surat-perjanjian/1765093798_surat-perjanjian-2.png"
-            width="auto" height="6" alt="" style="margin: 0 0 0 auto; display: block" /></span><span
-        style="font-family: Tahoma">&nbsp;</span>
-</p>
+<div style="border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin-top: 5px; margin-bottom: 15px; width: 100%;"></div>
 <p style="margin-top: 0pt; margin-bottom: 0pt">&nbsp;</p>
 <p
     style="

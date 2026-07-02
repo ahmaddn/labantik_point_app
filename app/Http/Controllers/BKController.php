@@ -118,7 +118,7 @@ class BKController extends Controller
         foreach ($allRecaps as $recap) {
             $violationId = $recap->violation->id ?? null;
             $categoryName = $recap->violation->category->name ?? 'Lainnya';
-            
+
             if (isset($categoryDistribution[$categoryName])) {
                 $categoryDistribution[$categoryName]++;
             } else {
@@ -307,50 +307,59 @@ class BKController extends Controller
     {
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
-        $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
-            ->orderBy('handling_point', 'asc')
-            ->get();
+        if (!$activeAcademicYear) {
+            $activeAcademicYear = P_Configs::first();
+        }
 
-        $recaps = RefStudentAcademicYear::activeAcademicYear()
-            ->with([
-                'student',
-                'class',
-                'recaps' => function ($query) {
-                    $query->with([
-                        'violation.category',
-                        'createdBy',
-                        'updatedBy',
-                        'verifiedBy'
-                    ])->orderBy('created_at', 'asc');
-                }
-            ])
-            ->get()
-            ->filter(function ($student) {
-                return $student->recaps->count() > 0;
-            })
-            ->map(function ($student) use ($handlingOptions) {
-                $totalVerifiedPoints = $student->recaps
-                    ->whereIn('status', ['pending', 'verified'])
-                    ->sum(fn($r) => $r->violation->point ?? 0);
+        if ($activeAcademicYear) {
+            $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+                ->orderBy('handling_point', 'asc')
+                ->get();
 
-                $student->total_points_verified = $totalVerifiedPoints;
+            $recaps = RefStudentAcademicYear::activeAcademicYear()
+                ->with([
+                    'student',
+                    'class',
+                    'recaps' => function ($query) {
+                        $query->with([
+                            'violation.category',
+                            'createdBy',
+                            'updatedBy',
+                            'verifiedBy'
+                        ])->orderBy('created_at', 'asc');
+                    }
+                ])
+                ->get()
+                ->filter(function ($student) {
+                    return $student->recaps->count() > 0;
+                })
+                ->map(function ($student) use ($handlingOptions) {
+                    $totalVerifiedPoints = $student->recaps
+                        ->whereIn('status', ['pending', 'verified'])
+                        ->sum(fn($r) => $r->violation->point ?? 0);
 
-                $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
-                    return $handling->handling_point <= $totalVerifiedPoints;
+                    $student->total_points_verified = $totalVerifiedPoints;
+
+                    $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
+                        return $handling->handling_point <= $totalVerifiedPoints;
+                    });
+
+                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                        ->with('detail')
+                        ->latest()
+                        ->first();
+
+                    return $student;
+                })
+                ->filter(function ($student) {
+                    return $student->total_points_verified > 0;
                 });
+        } else {
+            $handlingOptions = collect();
+            $recaps = collect();
+        }
 
-                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
-                    ->with('detail')
-                    ->latest()
-                    ->first();
-
-                return $student;
-            })
-            ->filter(function ($student) {
-                return $student->total_points_verified > 0;
-            });
-
-        return view('BK.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
+        return view('bk.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
     }
 
     public function detailRecaps($studentAcademicYearId)
@@ -423,7 +432,7 @@ class BKController extends Controller
             'handling' => $handling,
             'description' => $request->description,
             'total_points' => $totalPoints,
-            'date' => Carbon::now()->format('d F Y'),
+            'date' => Carbon::now()->locale('id')->translatedFormat('j F Y'),
             'violations' => $studentAcademicYear->recaps
         ];
 

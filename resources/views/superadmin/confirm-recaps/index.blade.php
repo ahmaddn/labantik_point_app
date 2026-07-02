@@ -240,6 +240,20 @@
                                                                     </select>
                                                                 </div>
 
+                                                                <div class="mb-4">
+                                                                    <label for="kepsek-{{ $student->id }}"
+                                                                        class="mb-2 inline-block text-base font-medium">Pilih Kepala Sekolah <span class="text-red-500">*</span></label>
+                                                                    <select id="kepsek-{{ $student->id }}" name="kepala_sekolah_id" required
+                                                                        class="form-input w-full dark:border-zink-500 focus:border-custom-500 border-slate-200 focus:outline-none">
+                                                                        <option value="">Pilih Kepala Sekolah...</option>
+                                                                        @foreach ($kepalaSekolahList as $kepsekOption)
+                                                                            <option value="{{ $kepsekOption->id }}" {{ ($student->action_detail?->detail?->kepala_sekolah_id ?? '') == $kepsekOption->id ? 'selected' : '' }}>
+                                                                                {{ $kepsekOption->employee->full_name ?? $kepsekOption->name }} (NIP. {{ $kepsekOption->employee->nip ?? '-' }})
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+
                                                                 <div id="handlingDetails-{{ $student->id }}"
                                                                     class="hidden">
                                                                     {{-- Resolve RefStudent: prefer loaded relation when it has data, otherwise try id or student_id lookups --}}
@@ -378,6 +392,8 @@
                                                                                 class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                                                                 placeholder="Guru / Papan Tulis">
                                                                         </div>
+
+
 
                                                                         <div class="mb-4 md:col-span-2">
                                                                             <label for="violation_count-{{ $student->id }}"
