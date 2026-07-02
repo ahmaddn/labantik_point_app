@@ -21,88 +21,93 @@
 
             {{-- Alert untuk error --}}
             @if ($errors->has('error'))
-                <div
-                    class="relative mb-4 rounded-md border border-transparent bg-red-50 p-3 pr-12 text-sm text-red-500 dark:bg-red-400/20">
-                    <button
-                        class="absolute bottom-0 right-0 top-0 p-3 text-red-200 transition hover:text-red-500 dark:text-red-400/50 dark:hover:text-red-500"
-                        onclick="this.parentElement.style.display='none'">
-                        <i data-lucide="x" class="h-5"></i>
-                    </button>
-                    <div>
-                        <span class="font-bold">⚠️ Peringatan!</span>
-                        {{ $errors->first('error') }}
+                <div class="relative mb-4 flex gap-3 rounded-md border border-red-200 bg-red-50 p-4 pr-12 text-sm text-red-700 dark:border-red-900/30 dark:bg-red-500/10 dark:text-red-400 shadow-sm transition-all duration-300">
+                    <div class="shrink-0 flex items-center justify-center size-8 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400">
+                        <i data-lucide="alert-triangle" class="size-5"></i>
+                    </div>
+                    <div class="grow">
+                        <h6 class="font-semibold text-15 mb-0.5">Peringatan!</h6>
+                        <p class="text-red-600 dark:text-red-400/90 leading-relaxed">{{ $errors->first('error') }}</p>
 
                         {{-- Tampilkan detail poin jika ada --}}
                         @if (session('current_total_points') !== null)
-                            <div class="mt-2 rounded border-l-4 border-red-300 bg-red-100 p-2 text-xs dark:bg-red-500/10">
-                                <div class="mb-1 font-semibold">📊 Detail Poin:</div>
-
-                                {{-- Poin saat ini --}}
-                                <div class="mb-1">
-                                    • <strong>Total poin saat ini:</strong>
-                                    {{ session('current_total_points') }} poin
-                                    <div class="ml-4 text-xs opacity-75">
-                                        - Terverifikasi:
-                                        {{ session('current_verified_points') ?? 0 }}
-                                        poin<br>
-                                        - Pending:
-                                        {{ session('current_pending_points') ?? 0 }} poin
+                            <div class="mt-3 border-t border-red-200/50 dark:border-red-800/30 pt-3">
+                                <h6 class="font-semibold text-xs text-red-800 dark:text-red-400 mb-2 flex items-center gap-1.5">
+                                    <i data-lucide="bar-chart-2" class="size-3.5"></i> Detail Poin
+                                </h6>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                                    <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-red-100 dark:border-red-900/20">
+                                        <span class="block text-xs text-slate-500 dark:text-zink-200">Total Poin Saat Ini</span>
+                                        <span class="text-sm font-bold text-red-600 dark:text-red-400">
+                                            {{ session('current_total_points') }} poin
+                                            <span class="block text-[10px] font-normal text-slate-400">
+                                                (Verif: {{ session('current_verified_points') ?? 0 }} | Pend: {{ session('current_pending_points') ?? 0 }})
+                                            </span>
+                                        </span>
                                     </div>
+                                    @if (session('new_points') > 0)
+                                        <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-red-100 dark:border-red-900/20">
+                                            <span class="block text-xs text-slate-500 dark:text-zink-200">Poin Akan Ditambah</span>
+                                            <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ session('new_points') }} poin</span>
+                                        </div>
+                                    @endif
+                                    @if (session('total_points_after'))
+                                        <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-red-100 dark:border-red-900/20">
+                                            <span class="block text-xs text-slate-500 dark:text-zink-200">Total Setelah Ditambah</span>
+                                            <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ session('total_points_after') }} poin</span>
+                                        </div>
+                                    @endif
+                                    @if (session('excess_points'))
+                                        <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-red-100 dark:border-red-900/20">
+                                            <span class="block text-xs text-slate-500 dark:text-zink-200">Kelebihan Poin</span>
+                                            <span class="text-sm font-bold text-red-600 dark:text-red-400">{{ session('excess_points') }} poin</span>
+                                        </div>
+                                    @endif
                                 </div>
-
-                                {{-- Poin yang akan ditambah --}}
-                                @if (session('new_points') > 0)
-                                    <div class="mb-1">
-                                        • <strong>Poin yang akan ditambah:</strong>
-                                        {{ session('new_points') }} poin
-                                    </div>
-                                @endif
-
-                                {{-- Total setelah penambahan (jika ada) --}}
-                                @if (session('total_points_after'))
-                                    <div class="mb-1">
-                                        • <strong>Total setelah penambahan:</strong>
-                                        {{ session('total_points_after') }} poin
-                                    </div>
-                                @endif
-
-                                {{-- Kelebihan poin (jika ada) --}}
-                                @if (session('excess_points'))
-                                    <div class="font-semibold text-red-600">
-                                        • <strong>Kelebihan:</strong>
-                                        {{ session('excess_points') }} poin dari batas
-                                        maksimal
-                                    </div>
-                                @endif
-
-                                <div class="mt-2 border-t border-red-200 pt-1 text-xs opacity-80 dark:border-red-400/30">
-                                    <strong>Batas maksimal:</strong> 100 poin
+                                <div class="mt-2 text-[11px] text-red-500/80 flex items-center gap-1">
+                                    <i data-lucide="info" class="size-3.5"></i>
+                                    <span>Batas maksimal: 100 poin</span>
                                 </div>
                             </div>
                         @endif
                     </div>
+                    <button class="absolute top-4 right-4 text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors duration-150"
+                        onclick="this.parentElement.style.display='none'">
+                        <i data-lucide="x" class="size-4"></i>
+                    </button>
                 </div>
             @endif
 
             {{-- Alert untuk success --}}
             @if (session('success') && !$errors->has('error'))
-                <div
-                    class="relative mb-4 rounded-md border border-transparent bg-green-50 p-3 pr-12 text-sm text-green-500 dark:bg-green-400/20">
-                    <button
-                        class="absolute bottom-0 right-0 top-0 p-3 text-green-200 transition hover:text-green-500 dark:text-green-400/50 dark:hover:text-green-500"
-                        onclick="this.parentElement.style.display='none'">
-                        <i data-lucide="x" class="h-5"></i>
-                    </button>
-                    <div>
-                        <span class="font-bold">✅ Berhasil!</span> {{ session('success') }}
+                <div class="relative mb-4 flex gap-3 rounded-md border border-green-200 bg-green-50 p-4 pr-12 text-sm text-green-700 dark:border-green-900/30 dark:bg-green-500/10 dark:text-green-400 shadow-sm transition-all duration-300">
+                    <div class="shrink-0 flex items-center justify-center size-8 rounded-full bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
+                        <i data-lucide="check-circle" class="size-5"></i>
+                    </div>
+                    <div class="grow">
+                        <h6 class="font-semibold text-15 mb-0.5">Berhasil!</h6>
+                        <p class="text-green-600 dark:text-green-400/90 leading-relaxed">{{ session('success') }}</p>
                         @if (session('verified_points') !== null && session('pending_points') !== null)
-                            <div class="mt-2 text-xs">
-                                • Poin verified: {{ session('verified_points') }}<br>
-                                • Poin pending: {{ session('pending_points') }}<br>
-                                • Total semua poin: {{ session('total_all_points') }}
+                            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 border-t border-green-200/50 dark:border-green-800/30 pt-3">
+                                <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-green-100 dark:border-green-900/20">
+                                    <span class="block text-xs text-slate-500 dark:text-zink-200">Poin Terverifikasi</span>
+                                    <span class="text-base font-bold text-green-600 dark:text-green-400">{{ session('verified_points') }}</span>
+                                </div>
+                                <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-green-100 dark:border-green-900/20">
+                                    <span class="block text-xs text-slate-500 dark:text-zink-200">Poin Pending</span>
+                                    <span class="text-base font-bold text-amber-500 dark:text-amber-400">{{ session('pending_points') }}</span>
+                                </div>
+                                <div class="p-2 rounded bg-white/50 dark:bg-zink-700/50 border border-green-100 dark:border-green-900/20">
+                                    <span class="block text-xs text-slate-500 dark:text-zink-200">Total Semua Poin</span>
+                                    <span class="text-base font-bold text-slate-700 dark:text-zink-50">{{ session('total_all_points') }}</span>
+                                </div>
                             </div>
                         @endif
                     </div>
+                    <button class="absolute top-4 right-4 text-green-400 hover:text-green-600 dark:hover:text-green-300 transition-colors duration-150"
+                        onclick="this.parentElement.style.display='none'">
+                        <i data-lucide="x" class="size-4"></i>
+                    </button>
                 </div>
             @endif
 

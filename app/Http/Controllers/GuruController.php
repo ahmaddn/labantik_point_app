@@ -211,7 +211,7 @@ class GuruController extends Controller
         $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
 
         // PERBAIKAN: studentId adalah ID dari ref_student (bukan ref_student_academic_years)
-        $studentAcademicYear = RefStudentAcademicYear::where('student_id', $studentId)
+        $studentAcademicYear = RefStudentAcademicYear::where('id', $studentId)
             ->where('academic_year', $activeAcademicYear)
             ->with('student')
             ->first();
@@ -270,6 +270,7 @@ class GuruController extends Controller
                 'success' => 'Pelanggaran berhasil ditambahkan',
                 'verified_points' => $verifiedPoints,
                 'pending_points' => $pendingPoints,
+                'total_all_points' => $verifiedPoints + $pendingPoints,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

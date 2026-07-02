@@ -136,6 +136,23 @@
                           <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-green-900/30 dark:text-green-300">Terbaru</span>
                           <span class="text-sm text-slate-400">02 Juli 2026</span>
                       </div>
+                      <h6 class="text-15 font-semibold mb-2">Optimalisasi Surat PDF, Notifikasi Alert & Form Guru</h6>
+                      <ul class="list-disc list-inside space-y-1.5 text-sm text-slate-500 dark:text-zink-300 pl-2">
+                          <li><strong>Format Tanggal & Lokasi:</strong> Menambahkan koma setelah "Talaga" dan menghapus angka 0 di depan tanggal (misal: "Talaga, 2 Juli 2026") pada seluruh dokumen PDF.</li>
+                          <li><strong>Pilihan Kepala Sekolah Dinamis:</strong> Memindahkan dropdown pilihan Kepala Sekolah agar selalu terlihat langsung di bawah pilihan tindakan, serta meloloskan data Kepala Sekolah secara dinamis ke halaman cetak/download PDF tindakan.</li>
+                          <li><strong>Garis Ganda Kop Surat & Tab Baru:</strong> Mengganti gambar divider kop surat yang rusak dengan border ganda native CSS dan mengatur agar unduhan PDF otomatis terbuka di tab baru (`target="_blank"`).</li>
+                          <li><strong>Hapus Pangkat Statis:</strong> Menghapus teks pangkat/golongan statis "Pembina Tk. I, IV/b" pada template surat perjanjian, surat pengembalian, dan surat panggilan.</li>
+                          <li><strong>Pembaruan Tampilan Alert:</strong> Mendesain ulang alert notifikasi Berhasil (Success) dan Peringatan (Error) pada data siswa (Super Admin, BK, Guru) agar lebih premium dengan ikon Lucide dan grid info poin.</li>
+                          <li><strong>Perbaikan Form Pelanggaran Guru:</strong> Memperbaiki target submit form tambah pelanggaran di panel Guru agar mengarah ke route Guru (`guru.violations.store.student`), mengeliminasi error 403 (Akses Ditolak).</li>
+                      </ul>
+                  </div>
+
+                  <!-- Update Sebelumnya -->
+                  <div class="border-b border-slate-100 dark:border-zink-500 pb-4">
+                      <div class="flex items-center gap-2 mb-2">
+                          <span class="bg-slate-100 text-slate-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-zink-500/30 dark:text-zink-300">Pembaruan</span>
+                          <span class="text-sm text-slate-400">02 Juli 2026</span>
+                      </div>
                       <h6 class="text-15 font-semibold mb-2">Perbaikan Tampilan Modal Rekap Tindakan</h6>
                       <ul class="list-disc list-inside space-y-1.5 text-sm text-slate-500 dark:text-zink-300 pl-2">
                           <li><strong>Lebar Lebih Proporsional:</strong> Ukuran modal rekap tindakan kini lebih lebar (dari 480px menjadi 768px) agar tidak terlihat terlalu sempit.</li>
