@@ -156,7 +156,7 @@
                                                     </div>
                                                     <div
                                                         class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
-                                                        <form method="POST"
+                                                        <form method="POST" target="_blank"
                                                             action="{{ route('kesiswaan-bk.actionConfirm-Recaps', $rec->id) }}">
                                                             @csrf
                                                             <input type="hidden" name="student_academic_year_id"

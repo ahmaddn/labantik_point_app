@@ -294,50 +294,65 @@ class SuperAdminController extends Controller
     {
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
-        $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
-            ->orderBy('handling_point', 'asc')
+        if (!$activeAcademicYear) {
+            $activeAcademicYear = P_Configs::first();
+        }
+
+        if ($activeAcademicYear) {
+            $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+                ->orderBy('handling_point', 'asc')
+                ->get();
+
+            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+                ->with([
+                    'student',
+                    'class',
+                    'recaps' => function ($query) {
+                        $query->with([
+                            'violation.category',
+                            'createdBy',
+                            'updatedBy',
+                            'verifiedBy'
+                        ])->orderBy('created_at', 'asc');
+                    }
+                ])
+                ->get()
+                ->filter(function ($student) {
+                    return $student->recaps->count() > 0;
+                })
+                ->map(function ($student) use ($handlingOptions) {
+                    $totalVerifiedPoints = $student->recaps
+                        ->whereIn('status', ['pending', 'verified'])
+                        ->sum(fn($r) => $r->violation->point ?? 0);
+
+                    $student->total_points_verified = $totalVerifiedPoints;
+
+                    $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
+                        return $handling->handling_point <= $totalVerifiedPoints;
+                    });
+
+                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                        ->with('detail')
+                        ->latest()
+                        ->first();
+
+                    return $student;
+                })
+                ->filter(function ($student) {
+                    return $student->total_points_verified > 0;
+                });
+        } else {
+            $handlingOptions = collect();
+            $studentAcademicYears = collect();
+        }
+
+        $kepalaSekolahList = User::whereHas('roles', function($query) {
+                $query->where('code', 'kepala-sekolah');
+            })
+            ->with('employee')
             ->get();
 
-        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
-            ->with([
-                'student',
-                'class',
-                'recaps' => function ($query) {
-                    $query->with([
-                        'violation.category',
-                        'createdBy',
-                        'updatedBy',
-                        'verifiedBy'
-                    ])->orderBy('created_at', 'asc');
-                }
-            ])
-            ->get()
-            ->filter(function ($student) {
-                return $student->recaps->count() > 0;
-            })
-            ->map(function ($student) use ($handlingOptions) {
-                $totalVerifiedPoints = $student->recaps
-                    ->whereIn('status', ['pending', 'verified'])
-                    ->sum(fn($r) => $r->violation->point ?? 0);
-
-                $student->total_points_verified = $totalVerifiedPoints;
-
-                $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
-                    return $handling->handling_point <= $totalVerifiedPoints;
-                });
-
-                $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
-                    ->with('detail')
-                    ->latest()
-                    ->first();
-
-                return $student;
-            })
-            ->filter(function ($student) {
-                return $student->total_points_verified > 0;
-            });
-
-        return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear'));
+        return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear', 'kepalaSekolahList'));
     }
 
     public function detailConfirmRecaps($studentAcademicYearId)
@@ -432,6 +447,7 @@ class SuperAdminController extends Controller
             'violation_count' => 'nullable|integer|min:0|max:10',
             'violations' => 'nullable|array',
             'violations.*' => 'nullable|string|max:500',
+            'kepala_sekolah_id' => 'nullable|exists:core_users,id',
         ]);
 
         $studentAcademicYear = RefStudentAcademicYear::with([
@@ -484,13 +500,32 @@ class SuperAdminController extends Controller
             DB::commit();
 
             $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
-            $preyDate = $request->prey ? Carbon::parse($request->prey)->format('d F Y') : Carbon::now()->format('d F Y');
-            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->format('d F Y') : '';
+            $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('d F Y') : Carbon::now()->locale('id')->translatedFormat('d F Y');
+            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('d F Y') : '';
             $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
 
-            $kepalaSekolah = User::where('email', 'kepsek@gmail.com')
-                ->with('employee')
-                ->first();
+            if ($request->filled('kepala_sekolah_id')) {
+                $kepalaSekolah = User::where('id', $request->kepala_sekolah_id)
+                    ->with('employee')
+                    ->first();
+            } else {
+                $kepalaSekolah = User::whereHas('roles', function($query) {
+                        $query->where('code', 'kepala-sekolah');
+                    })
+                    ->with('employee')
+                    ->first();
+            }
+
+            if (!$kepalaSekolah) {
+                $kepalaSekolah = User::where('email', 'kepsek@gmail.com')
+                    ->with('employee')
+                    ->first();
+            }
+
+            if ($kepalaSekolah && $kepalaSekolah->employee) {
+                $kepalaSekolah->name = $kepalaSekolah->employee->full_name ?? $kepalaSekolah->name;
+                $kepalaSekolah->nip = 'NIP. ' . ($kepalaSekolah->employee->nip ?? '-');
+            }
 
             $data = [
                 'student' => $studentAcademicYear->student,

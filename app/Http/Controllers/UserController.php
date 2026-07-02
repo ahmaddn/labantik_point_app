@@ -129,7 +129,7 @@ class UserController extends Controller
         $user = Auth::user();
 
         // Optimasi: Load hanya field yang diperlukan
-        $employee = $user->employee()->select('id', 'user_id', 'full_name', 'employee_number')->first();
+        $employee = $user->employee()->select('id', 'user_id', 'full_name', 'nip')->first();
         $student = $user->student()->select('id', 'user_id', 'full_name', 'student_number')->first();
 
         return view('profile.index', compact('user', 'employee', 'student'));

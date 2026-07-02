@@ -85,32 +85,33 @@
                                                     title="Download">
                                                     <i data-lucide="download" class="size-4"></i>
                                                 </button>
+                                                @php
+                                                    $routePrefix = request()->is('superadmin*') ? 'superadmin' : 'kesiswaan-bk';
+                                                @endphp
                                                 <div id="modal-download{{ $index }}" modal-center=""
-                                                    class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
-                                                    <div
-                                                        class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
-                                                        <div
-                                                            class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
-                                                            <h5 class="text-16">Tindakan -
-                                                                {{ ucwords($file['name']) }}</h5>
-                                                            <button data-modal-close="modal-download{{ $index }}"
-                                                                class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
-                                                                <i data-lucide="x" class="size-5"></i>
-                                                            </button>
-                                                        </div>
-                                                        <div
-                                                            class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
-                                                            <form method="POST" target="_blank"
-                                                                action="{{ route('superadmin.templates.download', $file['filename']) }}">
-                                                                @csrf
-                                                                <div class="mb-4">
-                                                                    <label for="tindakanSelect-"
-                                                                        class="inline-block mb-2 text-base font-medium">
-                                                                        Nomor Surat <span class="text-red-500">*</span>
-                                                                    </label>
-                                                                    <input type="text" name="no_surat"
-                                                                        class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
-                                                                </div>
+                                                     class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
+                                                     <div
+                                                         class="w-screen md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+                                                         <div
+                                                             class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
+                                                             <h5 class="text-16">Download Surat</h5>
+                                                             <button data-modal-close="modal-download{{ $index }}"
+                                                                 class="transition-all duration-200 ease-linear text-slate-500 hover:text-red-500 dark:text-zink-200 dark:hover:text-red-500">
+                                                                 <i data-lucide="x" class="size-5"></i>
+                                                             </button>
+                                                         </div>
+                                                         <div
+                                                             class="max-h-[calc(theme('height.screen')_-_180px)] p-4 overflow-y-auto">
+                                                             <form method="POST" target="_blank"
+                                                                 action="{{ route($routePrefix . '.templates.download', $file['filename']) }}">
+                                                                 @csrf
+                                                                 <div class="mb-4">
+                                                                     <label class="inline-block mb-2 text-base font-medium">
+                                                                         Nomor Surat <span class="text-red-500">*</span>
+                                                                     </label>
+                                                                     <input type="text" name="no_surat" required
+                                                                         class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
+                                                                 </div>
                                                                 @error('no_surat')
                                                                     <div class="text-sm text-red-500 mb-4">
                                                                         {{ $message }}
