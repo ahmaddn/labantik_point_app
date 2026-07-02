@@ -145,7 +145,7 @@
                                             <div id="modal-tindakan-{{ $rec->id }}" modal-center=""
                                                 class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">
                                                 <div
-                                                    class="w-screen md:w-[48rem] max-w-[95vw] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
+                                                    class="w-screen md:w-[40rem] bg-white shadow rounded-md dark:bg-zink-600 flex flex-col h-full">
                                                     <div
                                                         class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-zink-500">
                                                         <h5 class="text-16">Tindakan - {{ $rec->student->full_name }}</h5>
