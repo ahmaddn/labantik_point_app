@@ -54,4 +54,12 @@ class RefClass extends Model
     {
         return $this->belongsTo(CoreExpertiseConcentration::class, 'expertise_concentration_id');
     }
+
+    /**
+     * Get academic years for this class.
+     */
+    public function academicYears(): HasMany
+    {
+        return $this->hasMany(RefClassAcademicYear::class, 'classes_id');
+    }
 }

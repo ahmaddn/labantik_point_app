@@ -6,6 +6,7 @@ use App\Models\P_Config_Handlings;
 use App\Models\P_Configs;
 use App\Models\P_Violations;
 use App\Models\RefClass;
+use App\Models\RefClassAcademicYear;
 use Illuminate\Http\Request;
 use App\Models\RefStudentAcademicYear;
 use App\Models\P_Recaps;
@@ -171,15 +172,21 @@ class BKController extends Controller
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
         $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
 
-        $classes = RefClass::when($academicYear, function ($q) use ($academicYear) {
-                return $q->whereIn('id', function($query) use ($academicYear) {
-                    $query->select('classes_id')
-                        ->from('ref_classes_academic_years')
-                        ->where('academic_year', $academicYear);
-                });
+        $classes = RefClassAcademicYear::with('class')
+            ->when($academicYear, function ($q) use ($academicYear) {
+                return $q->where('academic_year', $academicYear);
             })
-            ->orderBy('academic_level', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($cay) {
+                if ($cay->class) {
+                    $cay->class->academic_year = $cay->academic_year;
+                    return $cay->class;
+                }
+                return null;
+            })
+            ->filter()
+            ->sortBy('academic_level')
+            ->values();
 
         $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 

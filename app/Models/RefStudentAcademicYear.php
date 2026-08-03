@@ -71,6 +71,15 @@ class RefStudentAcademicYear extends Model
         return $this->belongsTo(RefClass::class, 'class_id');
     }
 
+    /**
+     * Get the class academic year relation.
+     */
+    public function classAcademicYear(): BelongsTo
+    {
+        return $this->belongsTo(RefClassAcademicYear::class, 'class_id', 'classes_id')
+            ->where('academic_year', $this->academic_year);
+    }
+
     public function recaps()
     {
         return $this->hasMany(P_Recaps::class, 'ref_student_id', 'student_id');
