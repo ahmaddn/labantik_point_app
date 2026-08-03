@@ -24,6 +24,13 @@ class RefStudentAcademicYear extends Model
         'updated_by',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (\Illuminate\Database\Eloquent\Builder $builder) {
+            $builder->whereIn('status', ['Active', 'Naik Kelas']);
+        });
+    }
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -62,6 +69,15 @@ class RefStudentAcademicYear extends Model
     public function class(): BelongsTo
     {
         return $this->belongsTo(RefClass::class, 'class_id');
+    }
+
+    /**
+     * Get the class academic year relation.
+     */
+    public function classAcademicYear(): BelongsTo
+    {
+        return $this->belongsTo(RefClassAcademicYear::class, 'class_id', 'classes_id')
+            ->where('academic_year', $this->academic_year);
     }
 
     public function recaps()

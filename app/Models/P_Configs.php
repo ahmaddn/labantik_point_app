@@ -47,12 +47,19 @@ class P_Configs extends Model
 
     public static function getActiveAcademicYear()
     {
+        $activeConfig = self::where('is_active', true)->first();
+        if ($activeConfig) {
+            return $activeConfig;
+        }
+
         $currentYear = now()->year; // contoh: 2026
 
         return self::all()->first(function ($config) use ($currentYear) {
-            [$startYear, $endYear] = explode('/', $config->academic_year);
-
-            return $currentYear >= intval($startYear) && $currentYear <= intval($endYear);
+            if (str_contains($config->academic_year, '/')) {
+                [$startYear, $endYear] = explode('/', $config->academic_year);
+                return $currentYear >= intval($startYear) && $currentYear <= intval($endYear);
+            }
+            return false;
         });
     }
 

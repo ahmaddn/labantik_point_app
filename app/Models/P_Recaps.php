@@ -45,7 +45,7 @@ class P_Recaps extends Model
 
         if ($activeYear) {
             return $query->whereHas('studentAcademicYear', function ($q) use ($activeYear) {
-                $q->where('academic_year', $activeYear);
+                $q->where('academic_year', $activeYear->academic_year);
             });
         }
 

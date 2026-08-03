@@ -9,6 +9,7 @@ use App\Models\RefStudentAcademicYear;
 use App\Models\P_Violations;
 use App\Models\P_Recaps;
 use App\Models\RefClass;
+use App\Models\RefClassAcademicYear;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -165,8 +166,23 @@ class GuruController extends Controller
     public function studentData(Request $request)
     {
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
 
-        $classes = RefClass::orderBy('academic_level', 'asc')->get();
+        $classes = RefClassAcademicYear::with('class')
+            ->when($academicYear, function ($q) use ($academicYear) {
+                return $q->where('academic_year', $academicYear);
+            })
+            ->get()
+            ->map(function ($cay) {
+                if ($cay->class) {
+                    $cay->class->academic_year = $cay->academic_year;
+                    return $cay->class;
+                }
+                return null;
+            })
+            ->filter()
+            ->sortBy('academic_level')
+            ->values();
 
         $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 
