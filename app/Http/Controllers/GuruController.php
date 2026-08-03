@@ -168,7 +168,11 @@ class GuruController extends Controller
         $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
 
         $classes = RefClass::when($academicYear, function ($q) use ($academicYear) {
-                return $q->where('academic_year', $academicYear);
+                return $q->whereIn('id', function($query) use ($academicYear) {
+                    $query->select('classes_id')
+                        ->from('ref_classes_academic_years')
+                        ->where('academic_year', $academicYear);
+                });
             })
             ->orderBy('academic_level', 'asc')
             ->get();
