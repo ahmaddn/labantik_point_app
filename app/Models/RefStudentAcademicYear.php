@@ -24,6 +24,13 @@ class RefStudentAcademicYear extends Model
         'updated_by',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (\Illuminate\Database\Eloquent\Builder $builder) {
+            $builder->whereIn('status', ['Active', 'Naik Kelas']);
+        });
+    }
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

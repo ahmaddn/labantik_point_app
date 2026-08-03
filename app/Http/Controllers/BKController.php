@@ -169,8 +169,13 @@ class BKController extends Controller
     public function studentData(Request $request)
     {
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
 
-        $classes = RefClass::orderBy('academic_level', 'asc')->get();
+        $classes = RefClass::when($academicYear, function ($q) use ($academicYear) {
+                return $q->where('academic_year', $academicYear);
+            })
+            ->orderBy('academic_level', 'asc')
+            ->get();
 
         $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 
