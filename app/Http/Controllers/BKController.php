@@ -392,11 +392,11 @@ class BKController extends Controller
 
             $activeStudents = $allStudents->filter(function ($student) {
                 return $student->has_new_violations;
-            });
+            })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
 
             $historyStudents = $allStudents->filter(function ($student) {
                 return $student->action_detail && !$student->has_new_violations;
-            });
+            })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
         } else {
             $handlingOptions = collect();
             $activeStudents = collect();
@@ -608,7 +608,9 @@ class BKController extends Controller
             ->map(function($student) {
                 $student->total_points_verified = $student->recaps->sum(fn($r) => $r->violation->point ?? 0);
                 return $student;
-            });
+            })
+            ->sortBy(fn($student) => $student->student->full_name ?? '')
+            ->values();
 
         return view('bk.actions.class', compact('class', 'students'));
     }

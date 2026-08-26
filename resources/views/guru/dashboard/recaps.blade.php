@@ -113,7 +113,6 @@
                         <table id="hoverableTable" style="width: 100%" class="hover group">
                             <thead>
                                 <tr>
-                                    <th>No</th>
                                     <th>Total Poin Terverifikasi</th>
                                     <th>Nama Lengkap</th>
                                     <th>NIS</th>
@@ -126,7 +125,6 @@
                                 <tr class="student-row" data-class="{{ $rec->class->name }}"
                                     data-gender="{{ $rec->student->gender }}"
                                     data-points="{{ $rec->violations_sum_point ?? 0 }}">
-                                    <td class="row-number">{{ $loop->iteration }}</td>
                                     <td>
                                         <a href="{{ route('guru.recaps.detail', $rec->id) }}"
                                             class="inline-flex items-center gap-2 px-3 py-2 cursor-pointer font-semibold text-red-600 bg-red-50 border border-red-200 rounded-lg transition-colors duration-200 hover:bg-red-100 hover:text-red-800 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/30 dark:hover:text-red-200">
@@ -155,7 +153,6 @@
                             <table id="historyTable" style="width: 100%" class="hover group">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
                                         <th>Nama Lengkap</th>
                                         <th>NIS</th>
                                         <th>Kelas</th>
@@ -170,7 +167,6 @@
                                     @foreach ($historyStudents as $student)
                                         <tr class="student-row" data-class="{{ $student->class->name }}"
                                             data-gender="{{ $student->student->gender }}">
-                                            <td>{{ $loop->iteration }}</td>
                                             <td>{{ $student->student->full_name ?? '-' }}</td>
                                             <td>{{ $student->student->student_number ?? '-' }}</td>
                                             <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>

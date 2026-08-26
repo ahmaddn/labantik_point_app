@@ -71,7 +71,6 @@
                         <table id="hoverableTable" style="width: 100%" class="hover group">
                             <thead>
                                 <tr>
-                                    <th>No</th>
                                     <th>Total Poin Terverifikasi</th>
                                     <th>Nama Lengkap</th>
                                     <th>NIS</th>
@@ -82,7 +81,6 @@
                             <tbody>
                                 @foreach ($activeStudents as $rec)
                                 <tr class="student-row" data-gender="{{ $rec->student->gender }}" data-points="{{ $rec->violations_sum_point ?? 0 }}">
-                                    <td class="row-number">{{ $loop->iteration }}</td>
                                     <td>
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 font-semibold text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">
                                             {{ $rec->violations_sum_point ?? 0 }} Poin
@@ -108,7 +106,6 @@
                             <table id="historyTable" style="width: 100%" class="hover group">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
                                         <th>Nama Lengkap</th>
                                         <th>NIS</th>
                                         <th>Total Poin Terverifikasi</th>
@@ -122,7 +119,6 @@
                                     @foreach ($historyStudents as $student)
                                         <tr class="student-row"
                                             data-gender="{{ $student->student->gender }}">
-                                            <td>{{ $loop->iteration }}</td>
                                             <td>{{ $student->student->full_name ?? '-' }}</td>
                                             <td>{{ $student->student->student_number ?? '-' }}</td>
                                             <td>

@@ -40,7 +40,6 @@
                             <table id="hoverableTable" style="width: 100%" class="hover group">
                                 <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
                                     <tr>
-                                        <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">No</th>
                                         <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">Nama Siswa</th>
                                         <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">NIS</th>
                                         <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700 text-center">Total Poin Terverifikasi</th>
@@ -49,9 +48,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($students as $index => $student)
+                                    @foreach ($students as $student)
                                         <tr class="dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50">
-                                            <td class="px-4 py-4 font-medium">{{ $index + 1 }}</td>
                                             <td class="whitespace-normal px-4 py-4 font-bold text-slate-800 dark:text-slate-100">
                                                 {{ $student->student->full_name ?? '-' }}
                                             </td>
