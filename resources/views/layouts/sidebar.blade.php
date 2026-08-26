@@ -4,7 +4,7 @@ $currentPath = request()->path();
 $segments = explode('/', $currentPath);
 $routePrefix = '';
 
-if (count($segments) > 0 && in_array($segments[0], ['guru', 'kesiswaan-bk', 'superadmin'])) {
+if (count($segments) > 0 && in_array($segments[0], ['guru', 'kesiswaan-bk', 'superadmin', 'siswa'])) {
     $routePrefix = $segments[0] . '.';
 }
 ?>
@@ -223,6 +223,86 @@ if (count($segments) > 0 && in_array($segments[0], ['guru', 'kesiswaan-bk', 'sup
                         </a>
                     </li>
                 @endif
+                @if ($routePrefix === 'siswa.')
+                    <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
+                        <a href="{{ route($routePrefix . 'violations') }}"
+                            class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'violations') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
+
+                            <span
+                                class="inline-block min-w-[1.75rem] text-start text-[16px] group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:h-[1.75rem] group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="book-open"
+                                    class="group-hover/menu-link:animate-icons group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern h-4 fill-slate-100 transition group-hover/menu-link:fill-blue-200 group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2 group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5"></i>
+                            </span>
+
+                            <span
+                                class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
+                                data-key="t-violations">Riwayat Pelanggaran</span>
+                        </a>
+                    </li>
+                    <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
+                        <a href="{{ route($routePrefix . 'actions') }}"
+                            class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'actions') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
+
+                            <span
+                                class="inline-block min-w-[1.75rem] text-start text-[16px] group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:h-[1.75rem] group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="shield-alert"
+                                    class="group-hover/menu-link:animate-icons group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern h-4 fill-slate-100 transition group-hover/menu-link:fill-blue-200 group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2 group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5"></i>
+                            </span>
+
+                            <span
+                                class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
+                                data-key="t-actions">Tindakan & Penanganan</span>
+                        </a>
+                    </li>
+                @endif
+                @if ($routePrefix === 'wakel.')
+                    <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
+                        <a href="{{ route($routePrefix . 'student-data') }}"
+                            class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'student-data') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
+
+                            <span
+                                class="inline-block min-w-[1.75rem] text-start text-[16px] group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:h-[1.75rem] group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="users-round"
+                                    class="group-hover/menu-link:animate-icons group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern h-4 fill-slate-100 transition group-hover/menu-link:fill-blue-200 group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2 group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5"></i>
+                            </span>
+
+                            <span
+                                class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
+                                data-key="t-student-data">Data Siswa Kelas</span>
+                        </a>
+                    </li>
+                    <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
+                        <a href="{{ route($routePrefix . 'recaps') }}"
+                            class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'recaps') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
+
+                            <span
+                                class="inline-block min-w-[1.75rem] text-start text-[16px] group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:h-[1.75rem] group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="file"
+                                    class="group-hover/menu-link:animate-icons group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern h-4 fill-slate-100 transition group-hover/menu-link:fill-blue-200 group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2 group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5"></i>
+                            </span>
+
+                            <span
+                                class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
+                                data-key="t-recaps">Rekap Pelanggaran</span>
+                        </a>
+                    </li>
+                    <li class="group/sm relative group-data-[layout=horizontal]:shrink-0">
+                        <a href="{{ route($routePrefix . 'actions') }}"
+                            class="group/menu-link text-vertical-menu-item-font-size text-vertical-menu-item hover:text-vertical-menu-item-hover hover:bg-vertical-menu-item-bg-hover [&.active]:text-vertical-menu-item-active [&.active]:bg-vertical-menu-item-bg-active group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=dark]:hover:text-vertical-menu-item-hover-dark group-data-[sidebar=dark]:dark:hover:text-custom-500 group-data-[layout=horizontal]:dark:hover:text-custom-500 group-data-[sidebar=dark]:hover:bg-vertical-menu-item-bg-hover-dark group-data-[sidebar=dark]:dark:hover:bg-zink-600 group-data-[sidebar=dark]:[&.active]:text-vertical-menu-item-active-dark group-data-[sidebar=dark]:[&.active]:bg-vertical-menu-item-bg-active-dark {{ request()->routeIs($routePrefix . 'actions') ? 'active' : '' }} relative mx-3 my-1 flex items-center rounded-md py-2.5 font-normal transition-all duration-75 ease-linear ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3">
+
+                            <span
+                                class="inline-block min-w-[1.75rem] text-start text-[16px] group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:flex group-data-[sidebar-size=sm]:h-[1.75rem] group-data-[sidebar-size=sm]:items-center">
+                                <i data-lucide="wand"
+                                    class="group-hover/menu-link:animate-icons group-data-[sidebar=dark]:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:dark:fill-zink-600 group-data-[layout=horizontal]:dark:fill-zink-600 group-data-[sidebar=brand]:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:fill-vertical-menu-item-bg-active-modern group-data-[sidebar=dark]:group-hover/menu-link:fill-vertical-menu-item-bg-active-dark group-data-[sidebar=dark]:group-hover/menu-link:dark:fill-custom-500/20 group-data-[layout=horizontal]:dark:group-hover/menu-link:fill-custom-500/20 group-data-[sidebar=brand]:group-hover/menu-link:fill-vertical-menu-item-bg-active-brand group-data-[sidebar=modern]:group-hover/menu-link:fill-vertical-menu-item-bg-active-modern h-4 fill-slate-100 transition group-hover/menu-link:fill-blue-200 group-data-[sidebar-size=md]:mx-auto group-data-[sidebar-size=md]:mb-2 group-data-[sidebar-size=md]:block group-data-[sidebar-size=sm]:h-5 group-data-[sidebar-size=sm]:w-5"></i>
+                            </span>
+
+                            <span
+                                class="align-middle group-data-[sidebar-size=sm]:hidden group-data-[sidebar-size=sm]:group-hover/sm:block group-data-[sidebar-size=sm]:ltr:pl-10 group-data-[sidebar-size=sm]:rtl:pr-10"
+                                data-key="t-actions">Tindakan Siswa</span>
+                        </a>
+                    </li>
+                @endif
+
             </ul>
         </div>
         <!-- Sidebar -->

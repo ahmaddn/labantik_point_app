@@ -1,3 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak Surat Perjanjian</title>
+    <style>
+        .print-btn-container {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .print-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+        .print-btn:hover {
+            background-color: #2563eb;
+        }
+        @media print {
+            .print-btn-container {
+                display: none !important;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="print-btn-container">
+        <button class="print-btn" onclick="window.print()">Cetak Surat</button>
+    </div>
 <table cellspacing="0" cellpadding="0" style="width: 559.95pt; border-collapse: collapse">
     <tbody>
         <tr style="height: 1pt">
@@ -377,3 +428,5 @@
     <span style="font-family: Arial">NIP.
         {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}
 </p>
+</body>
+</html>

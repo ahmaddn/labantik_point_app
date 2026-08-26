@@ -34,7 +34,7 @@
                                 <option value="">Semua Kelas</option>
 
                                 @php
-                                    $groupedClasses = $recaps
+                                    $groupedClasses = $activeStudents->concat($historyStudents)
                                         ->groupBy('class.academic_level') // Grup berdasarkan tingkat (10, 11, 12)
                                         ->sortKeys() // Urutkan berdasarkan academic_level
                                         ->map(function ($classes) {
@@ -79,25 +79,38 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-15 mb-4">Datatable Rekap Pelanggaran</h6>
-
-                    <!-- Info hasil filter -->
-                    <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
-                        <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
+                    <!-- Navigation Tabs -->
+                    <div class="mb-5 flex border-b border-slate-200 dark:border-zink-500 print:hidden">
+                        <button type="button" id="tabActiveBtn" onclick="switchTab('active')"
+                            class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-custom-500 text-custom-500 dark:text-custom-400 dark:border-custom-400">
+                            Perlu Tindakan / Aktif ({{ $activeStudents->count() }})
+                        </button>
+                        <button type="button" id="tabHistoryBtn" onclick="switchTab('history')"
+                            class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
+                            Riwayat Tindakan ({{ $historyStudents->count() }})
+                        </button>
                     </div>
 
-                    <table id="hoverableTable" style="width: 100%" class="hover group">
-                        <thead>
-                            <tr>
-                                <th>Aksi</th> <!-- TAMBAHAN BARU -->
-                                <th>No</th>
-                                <th>Total Poin Pelanggaran</th>
-                                <th>Nama Lengkap</th>
-                                <th>Kelas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recaps as $rec)
+                    <div id="tabActiveContent" class="tab-pane">
+                        <h6 class="text-15 mb-4">Daftar Pelanggaran Aktif</h6>
+
+                        <!-- Info hasil filter -->
+                        <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
+                            <span id="showingCount">0</span> dari <span id="totalCount">0</span> data displayed
+                        </div>
+
+                        <table id="hoverableTable" style="width: 100%" class="hover group">
+                            <thead>
+                                <tr>
+                                    <th>Aksi</th>
+                                    <th>No</th>
+                                    <th>Total Poin Terverifikasi</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Kelas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($activeStudents as $rec)
                                 <tr class="student-row" data-class="{{ $rec->class->name }}"
                                     data-gender="{{ $rec->student->gender }}"
                                     data-points="{{ $rec->violations_sum_point ?? 0 }}">
@@ -118,13 +131,9 @@
                                                 </svg>
                                             </a>
 
-                                            <!-- Tombol Konfirmasi (check-check) - HANYA MUNCUL JIKA ADA PENDING -->
-                                            @php
-                                                $hasPending = $rec->recaps->where('status', 'pending')->count() > 0;
-                                            @endphp
-                                            @if ($hasPending)
-                                                <button data-modal-target="modal-confirm-{{ $rec->id }}" type="button"
-                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white focus:border-green-600 focus:bg-green-600 focus:text-white focus:ring focus:ring-green-100 active:border-green-600 active:bg-green-600 active:text-white active:ring active:ring-green-100 dark:ring-green-400/20 dark:hover:bg-green-500 dark:focus:bg-green-500"
+                                            @if ($rec->recaps->where('status', 'pending')->count() > 0)
+                                                <a href="{{ route('kesiswaan-bk.recaps.approve', $rec->id) }}" target="_blank"
+                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white"
                                                     title="Konfirmasi Pelanggaran">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -132,10 +141,8 @@
                                                         <path d="M18 6 7 17l-5-5" />
                                                         <path d="m22 10-7.5 7.5L13 16" />
                                                     </svg>
-                                                </button>
-                                            @endif
-
-                                            <!-- TAMBAHKAN TOMBOL INI SETELAH TOMBOL KONFIRMASI -->
+                                                </a>
+                                            @endif                                            <!-- TAMBAHKAN TOMBOL INI SETELAH TOMBOL KONFIRMASI -->
                                             <button data-modal-target="modal-tindakan-{{ $rec->id }}" type="button"
                                                 class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-custom-500 bg-white p-0 text-custom-500 hover:border-custom-600 hover:bg-custom-600 hover:text-white">
                                                 <i data-lucide="settings" class="size-4"></i>
@@ -167,15 +174,19 @@
                                                                     class="inline-block mb-2 text-base font-medium">
                                                                     Pilih Tindakan <span class="text-red-500">*</span>
                                                                 </label>
+                                                                @php
+                                                                    $applicableHandling = $handlingOptions->where('handling_point', '<=', $rec->total_points_verified)->sortByDesc('handling_point')->first();
+                                                                @endphp
                                                                 <select id="tindakanSelect-{{ $rec->id }}"
                                                                     name="handling_id" required
-                                                                    class="tindakan-dropdown form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+                                                                    class="tindakan-dropdown form-input w-full border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400"
                                                                     data-student-id="{{ $rec->id }}">
                                                                     <option value="">Pilih tindakan...</option>
-                                                                    @foreach ($rec->available_handlings as $item)
+                                                                    @foreach ($handlingOptions as $item)
                                                                         <option value="{{ $item->id }}"
                                                                             data-action="{{ e($item->handling_action) }}"
-                                                                            data-point="{{ e($item->handling_point) }}">
+                                                                            data-point="{{ e($item->handling_point) }}"
+                                                                            {{ (!$applicableHandling || $item->id !== $applicableHandling->id) ? 'disabled' : '' }}>
                                                                             {{ $item->handling_action }} -
                                                                             {{ $item->handling_point }} Poin
                                                                         </option>
@@ -249,6 +260,67 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div> <!-- End tabActiveContent -->
+
+                    <div id="tabHistoryContent" class="tab-pane hidden">
+                        <h6 class="text-15 mb-4">Daftar Riwayat Tindakan</h6>
+                        <div class="table-wrapper">
+                            <table id="historyTable" style="width: 100%" class="hover group">
+                                <thead>
+                                    <tr>
+                                        <th>Aksi</th>
+                                        <th>No</th>
+                                        <th>NIS</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>Kelas</th>
+                                        <th>Total Poin Terverifikasi</th>
+                                        <th>Tindakan Terakhir</th>
+                                        <th>Diberikan Oleh</th>
+                                        <th>Tanggal Penindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historyStudents as $student)
+                                        <tr class="student-row"
+                                            data-class="{{ $student->class->name }}"
+                                            data-gender="{{ $student->student->gender }}">
+                                            <td>
+                                                <div class="flex gap-2">
+                                                    <a href="{{ route('kesiswaan-bk.recaps.detail', $student->id) }}"
+                                                        class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-slate-500 bg-white p-0 text-slate-500 hover:border-slate-600 hover:bg-slate-600 hover:text-white"
+                                                        title="Lihat Detail">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path
+                                                                d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                                                            <circle cx="12" cy="12" r="3" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $student->student->student_number ?? '-' }}</td>
+                                            <td>{{ $student->student->full_name ?? '-' }}</td>
+                                            <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>
+                                            <td>
+                                                <span class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">
+                                                    {{ $student->total_points_verified ?? 0 }} Poin
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                                    {{ $student->action_detail->handling->handling_action ?? $student->action_detail->handling->handling_name ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $student->action_detail->handle->name ?? '-' }}</td>
+                                            <td>{{ $student->action_detail->created_at->format('d M Y') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- End tabHistoryContent -->
 
                     <!-- Pesan jika tidak ada data -->
                     <div id="noMainData" class="hidden py-8 text-center">
@@ -265,218 +337,7 @@
                 </div>
             </div><!--end card-->
 
-            @foreach ($recaps as $rec)
-                @php
-                    $pendingRecaps = $rec->recaps->where('status', 'pending'); // ✅ BENAR! Gunakan nama berbeda
-                @endphp
 
-                @if ($pendingRecaps->count() > 0)
-                    <!-- Modal Konfirmasi -->
-                    <div id="modal-confirm-{{ $rec->id }}" modal-center=""
-                        class="z-drawer show fixed left-2/4 top-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
-                        <!-- Modal dengan ukuran yang lebih besar -->
-                        <div class="modal-container dark:bg-zink-600 flex flex-col rounded-md bg-white shadow">
-                            <!-- Header Modal - Fixed -->
-                            <div
-                                class="modal-header dark:border-zink-500 flex flex-shrink-0 items-center justify-between border-b border-slate-200 p-4">
-                                <h5 class="text-16 font-semibold">
-                                    Konfirmasi Pelanggaran - {{ $rec->student->full_name }}
-                                </h5>
-                                <button data-modal-close="modal-confirm-{{ $rec->id }}"
-                                    class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500 dark:hover:text-red-500">
-                                    ✕
-                                </button>
-                            </div>
-
-                            <!-- Modal Content - Scrollable -->
-                            <div class="overflow-y-auto p-4" style="max-height: 70vh">
-                                <!-- Table Container -->
-                                <div class="mb-4 overflow-x-auto">
-                                    <table class="w-full text-left text-sm" id="confirmTable-{{ $rec->id }}">
-                                        <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
-                                            <tr>
-                                                <th class="px-4 py-3 whitespace-nowrap">Aksi</th>
-                                                <th class="px-3 py-3 whitespace-nowrap">No</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Tanggal</th>
-                                                <th class="px-4 py-3 min-w-[200px]">Pelanggaran</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Kategori</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Poin</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Status</th>
-                                                <th class="px-4 py-3 whitespace-nowrap">Dibuat oleh</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php $confirmCounter = 1; @endphp
-                                            @foreach ($pendingRecaps as $recapItem)
-                                                <tr
-                                                    class="dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50">
-                                                    <td class="px-4 py-4">
-                                                        <div class="flex gap-2">
-                                                            <!-- Form untuk verifikasi -->
-                                                            <form method="POST"
-                                                                action="{{ route('kesiswaan-bk.violation-status.update', $recapItem->id) }}"
-                                                                class="inline-block">
-                                                                @csrf
-                                                                @method('PUT')
-
-                                                                <button type="submit" value="verified" name="status"
-                                                                    class="rounded-full p-2 text-green-600 transition-colors duration-200 hover:bg-green-50 hover:text-green-700"
-                                                                    title="Verifikasi">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                        height="16" viewBox="0 0 24 24" fill="none"
-                                                                        stroke="currentColor" stroke-width="2"
-                                                                        stroke-linecap="round" stroke-linejoin="round">
-                                                                        <polyline points="20,6 9,17 4,12"></polyline>
-                                                                    </svg>
-                                                                </button>
-
-                                                                <button type="submit" value="not_verified"
-                                                                    name="status"
-                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menolak pelanggaran ini?')"
-                                                                    class="rounded-full p-2 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
-                                                                    title="Tolak">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                        height="16" viewBox="0 0 24 24" fill="none"
-                                                                        stroke="currentColor" stroke-width="2"
-                                                                        stroke-linecap="round" stroke-linejoin="round">
-                                                                        <line x1="18" y1="6"
-                                                                            x2="6" y2="18"></line>
-                                                                        <line x1="6" y1="6"
-                                                                            x2="18" y2="18"></line>
-                                                                    </svg>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                    <td class="px-3 py-3">{{ $confirmCounter++ }}</td>
-                                                    <td class="whitespace-nowrap px-4 py-3">
-                                                        {{ \Carbon\Carbon::parse($recapItem->created_at)->format('d/m/Y') }}
-                                                    </td>
-                                                    <td class="px-4 py-3 min-w-[200px]">{{ $recapItem->violation->name }}</td>
-                                                    <td class="px-4 py-3 whitespace-nowrap">
-                                                        <span
-                                                            class="@if (($recapItem->violation->category->name ?? '') === 'Berat') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
-                                                @elseif(($recapItem->violation->category->name ?? '') === 'Sedang') bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300
-                                                @else bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 @endif rounded-full px-2 py-1 text-xs font-medium">
-                                                            {{ $recapItem->violation->category->name ?? 'Tidak Diketahui' }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-4 py-3 whitespace-nowrap">
-                                                        <span class="font-semibold text-red-600 dark:text-red-400">
-                                                            {{ $recapItem->violation->point ?? 0 }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-4 py-3 whitespace-nowrap">
-                                                        <span
-                                                            class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
-                                                            Pending
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-4 py-3 text-sm whitespace-nowrap">{{ $recapItem->createdBy->name ?? '-' }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                    <!-- PAGINATION CONTROLS -->
-                                    <div id="paginationControls-{{ $rec->id }}"
-                                        class="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 dark:border-zink-500">
-                                        <div class="text-sm text-slate-600 dark:text-zink-300">
-                                            <span class="page-info">1-5 dari {{ $pendingRecaps->count() }}</span>
-                                        </div>
-
-                                        <div class="flex items-center gap-2">
-                                            <button
-                                                class="pagination-btn first-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                data-action="first" data-student-id="{{ $rec->id }}"
-                                                title="Halaman Pertama">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <polyline points="11 17 6 12 11 7"></polyline>
-                                                    <polyline points="18 17 13 12 18 7"></polyline>
-                                                </svg>
-                                            </button>
-
-                                            <button
-                                                class="pagination-btn prev-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                data-action="prev" data-student-id="{{ $rec->id }}"
-                                                title="Sebelumnya">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <polyline points="15 18 9 12 15 6"></polyline>
-                                                </svg>
-                                            </button>
-
-                                            <span
-                                                class="current-page-number rounded bg-slate-100 px-3 py-1 text-sm font-medium dark:bg-zink-600">
-                                                Hal 1 dari 1
-                                            </span>
-
-                                            <button
-                                                class="pagination-btn next-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                data-action="next" data-student-id="{{ $rec->id }}"
-                                                title="Selanjutnya">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                                </svg>
-                                            </button>
-
-                                            <button
-                                                class="pagination-btn last-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                data-action="last" data-student-id="{{ $rec->id }}"
-                                                title="Halaman Terakhir">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <polyline points="13 17 18 12 13 7"></polyline>
-                                                    <polyline points="6 17 11 12 6 7"></polyline>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- DEBUG: Tambahkan sebelum summary section -->
-                                @php
-                                    $totalPendingPoints = 0;
-                                    foreach ($pendingRecaps as $item) {
-                                        if ($item->violation && $item->violation->point) {
-                                            $totalPendingPoints += $item->violation->point;
-                                        }
-                                    }
-                                @endphp
-
-                                <!-- HAPUS bagian debug setelah selesai testing -->
-
-                                <!-- Summary Section - HANYA 1 INI SAJA -->
-                                <div class="dark:bg-zink-700 rounded-lg bg-slate-50 border border-slate-200 dark:border-zink-600 shadow-sm p-3 mt-4 mb-2 mx-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
-                                            Total Pelanggaran Pending:
-                                        </span>
-                                        <span class="text-sm font-bold" id="totalCountPending-{{ $rec->id }}">
-                                            {{ $pendingRecaps->count() }}
-                                        </span>
-                                    </div>
-                                    <div class="mt-1 flex items-center justify-between">
-                                        <span class="dark:text-zink-300 text-sm font-medium text-slate-600">
-                                            Total Poin Pending:
-                                        </span>
-                                        <span class="text-sm font-bold text-orange-600 dark:text-orange-400"
-                                            id="totalPointsPending-{{ $rec->id }}">
-                                            {{ $totalPendingPoints }}
-                                            Poin
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
         </div>
         <!-- container-fluid -->
     </div>
@@ -1053,6 +914,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (typeof DataTable !== 'undefined') {
+                new DataTable('#historyTable');
+            }
+
             // Event listener untuk semua dropdown tindakan
             document.querySelectorAll('.tindakan-dropdown').forEach(function(select) {
                 select.addEventListener('change', function() {
@@ -1069,11 +934,45 @@
                             ' Poin';
 
                         detailsDiv.classList.remove('hidden');
+
+                        const isLisan = action && action.toLowerCase().includes('lisan');
+                        if (isLisan) {
+                            select.closest('form').target = '_self';
+                        } else {
+                            select.closest('form').target = '_blank';
+                        }
                     } else {
                         detailsDiv.classList.add('hidden');
                     }
                 });
             });
         });
+
+        function switchTab(tab) {
+            const activeBtn = document.getElementById('tabActiveBtn');
+            const historyBtn = document.getElementById('tabHistoryBtn');
+            const activeContent = document.getElementById('tabActiveContent');
+            const historyContent = document.getElementById('tabHistoryContent');
+
+            if (tab === 'active') {
+                activeBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                historyBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.add('border-transparent', 'text-slate-500');
+
+                activeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+            } else {
+                historyBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                activeBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.add('border-transparent', 'text-slate-500');
+
+                historyContent.classList.remove('hidden');
+                activeContent.classList.add('hidden');
+            }
+        }
     </script>
 @endsection

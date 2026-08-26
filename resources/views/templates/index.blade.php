@@ -107,9 +107,9 @@
                                                                  @csrf
                                                                  <div class="mb-4">
                                                                      <label class="inline-block mb-2 text-base font-medium">
-                                                                         Nomor Surat <span class="text-red-500">*</span>
+                                                                         Nomor Surat
                                                                      </label>
-                                                                     <input type="text" name="no_surat" required
+                                                                     <input type="text" name="no_surat"
                                                                          class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
                                                                  </div>
                                                                 @error('no_surat')

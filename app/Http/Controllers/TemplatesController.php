@@ -39,7 +39,7 @@ class TemplatesController extends Controller
     public function download(Request $request, $filename)
     {
         $request->validate([
-            'no_surat' => 'required|string',
+            'no_surat' => 'nullable|string',
         ]);
 
         $templatesPath = resource_path('views/templates');

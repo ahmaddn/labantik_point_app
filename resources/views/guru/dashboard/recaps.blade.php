@@ -34,7 +34,7 @@
                                 <option value="">Semua Kelas</option>
 
                                 @php
-                                    $groupedClasses = $recaps
+                                    $groupedClasses = $activeStudents->concat($historyStudents)
                                         ->groupBy('class.academic_level') // Grup berdasarkan tingkat (10, 11, 12)
                                         ->sortKeys() // Urutkan berdasarkan academic_level
                                         ->map(function ($classes) {
@@ -91,26 +91,38 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h6 class="text-15 mb-4">Datatable Rekap Pelanggaran</h6>
-
-                    <!-- Info hasil filter -->
-                    <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
-                        <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
+                    <!-- Navigation Tabs -->
+                    <div class="mb-5 flex border-b border-slate-200 dark:border-zink-500 print:hidden">
+                        <button type="button" id="tabActiveBtn" onclick="switchTab('active')"
+                            class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-custom-500 text-custom-500 dark:text-custom-400 dark:border-custom-400">
+                            Perlu Tindakan / Aktif ({{ $activeStudents->count() }})
+                        </button>
+                        <button type="button" id="tabHistoryBtn" onclick="switchTab('history')"
+                            class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
+                            Riwayat Tindakan ({{ $historyStudents->count() }})
+                        </button>
                     </div>
 
-                    <table id="hoverableTable" style="width: 100%" class="hover group">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Total Poin Pelanggaran</th>
-                                <th>Nama Lengkap</th>
-                                <th>NIS</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Kelas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recaps as $rec)
+                    <div id="tabActiveContent" class="tab-pane">
+                        <h6 class="text-15 mb-4 font-semibold text-slate-800 dark:text-zink-50">Daftar Pelanggaran Aktif</h6>
+
+                        <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
+                            <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
+                        </div>
+
+                        <table id="hoverableTable" style="width: 100%" class="hover group">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Total Poin Terverifikasi</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>NIS</th>
+                                    <th>Jenis Kelamin</th>
+                                    <th>Kelas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($activeStudents as $rec)
                                 <tr class="student-row" data-class="{{ $rec->class->name }}"
                                     data-gender="{{ $rec->student->gender }}"
                                     data-points="{{ $rec->violations_sum_point ?? 0 }}">
@@ -135,6 +147,56 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div> <!-- End tabActiveContent -->
+
+                    <div id="tabHistoryContent" class="tab-pane hidden">
+                        <h6 class="text-15 mb-4 font-semibold text-slate-800 dark:text-zink-50">Daftar Riwayat Tindakan</h6>
+                        <div class="table-wrapper">
+                            <table id="historyTable" style="width: 100%" class="hover group">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>NIS</th>
+                                        <th>Kelas</th>
+                                        <th>Total Poin Terverifikasi</th>
+                                        <th>Tindakan Terakhir</th>
+                                        <th>Diberikan Oleh</th>
+                                        <th>Tanggal Penindakan</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($historyStudents as $student)
+                                        <tr class="student-row" data-class="{{ $student->class->name }}"
+                                            data-gender="{{ $student->student->gender }}">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $student->student->full_name ?? '-' }}</td>
+                                            <td>{{ $student->student->student_number ?? '-' }}</td>
+                                            <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>
+                                            <td>
+                                                <span class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">
+                                                    {{ $student->violations_sum_point ?? 0 }} Poin
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                                    {{ $student->action_detail->handling->handling_action ?? $student->action_detail->handling->handling_name ?? '-' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $student->action_detail->handle->name ?? '-' }}</td>
+                                            <td>{{ $student->action_detail->created_at->format('d M Y') }}</td>
+                                            <td>
+                                                <a href="{{ route('guru.recaps.detail', $student->id) }}" class="btn bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-zink-600 dark:hover:bg-zink-500 dark:text-zink-50 text-12 font-medium px-3 py-1.5 rounded">
+                                                    Detail
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- End tabHistoryContent -->
 
                     <!-- Pesan jika tidak ada data -->
                     <div id="noMainData" class="hidden py-8 text-center">
@@ -305,6 +367,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (typeof DataTable !== 'undefined') {
+                new DataTable('#historyTable');
+            }
+
             // Main table filter functionality
             const classFilter = document.getElementById('classFilter');
             const genderFilter = document.getElementById('genderFilter');
@@ -457,5 +523,32 @@
                 updateFilterInfo();
             }
         });
+
+        function switchTab(tab) {
+            const activeBtn = document.getElementById('tabActiveBtn');
+            const historyBtn = document.getElementById('tabHistoryBtn');
+            const activeContent = document.getElementById('tabActiveContent');
+            const historyContent = document.getElementById('tabHistoryContent');
+
+            if (tab === 'active') {
+                activeBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                historyBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.add('border-transparent', 'text-slate-500');
+
+                activeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+            } else {
+                historyBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                activeBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.add('border-transparent', 'text-slate-500');
+
+                historyContent.classList.remove('hidden');
+                activeContent.classList.add('hidden');
+            }
+        }
     </script>
 @endsection

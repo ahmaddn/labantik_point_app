@@ -23,7 +23,7 @@
                 </ul>
             </div>
 
-            @if ($studentAcademicYears->isEmpty())
+            @if ($activeStudents->isEmpty() && $historyStudents->isEmpty())
                 <!-- Card Empty State -->
                 <div class="card">
                     <div class="card-body">
@@ -82,7 +82,7 @@
                                     class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                                     <option value="">Semua Kelas</option>
                                     @php
-                                        $groupedClasses = $studentAcademicYears
+                                        $groupedClasses = $activeStudents->concat($historyStudents)
                                             ->pluck('class')
                                             ->unique('id')
                                             ->groupBy('academic_level')
@@ -121,11 +121,16 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="text-15 mb-4">Datatable Konfirmasi Pelanggaran</h6>
-
-                        <!-- Info hasil filter -->
-                        <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
-                            <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
+                        <!-- Navigation Tabs -->
+                        <div class="mb-5 flex border-b border-slate-200 dark:border-zink-500 print:hidden">
+                            <button type="button" id="tabActiveBtn" onclick="switchTab('active')"
+                                class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-custom-500 text-custom-500 dark:text-custom-400 dark:border-custom-400">
+                                Perlu Tindakan / Aktif ({{ $activeStudents->count() }})
+                            </button>
+                            <button type="button" id="tabHistoryBtn" onclick="switchTab('history')"
+                                class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
+                                Riwayat Tindakan ({{ $historyStudents->count() }})
+                            </button>
                         </div>
 
                         {{-- Validation / flash messages for the table area --}}
@@ -154,27 +159,36 @@
                             @endif
                         </div>
 
-                        <table id="hoverableTable" style="width: 100%" class="hover group">
-                            <thead>
-                                <tr>
-                                    <th>Aksi</th>
-                                    <th>No</th>
-                                    <th>NIS</th>
-                                    <th>Nama Lengkap</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Kelas</th>
-                                    <th>Total Poin</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($studentAcademicYears as $student)
-                                    <tr class="student-row"
+                        <div id="tabActiveContent" class="tab-pane">
+                            <h6 class="text-15 mb-4">Daftar Pelanggaran Aktif</h6>
+
+                            <!-- Info hasil filter -->
+                            <div id="filterInfo" class="dark:text-zink-300 mb-3 hidden text-sm text-slate-600">
+                                <span id="showingCount">0</span> dari <span id="totalCount">0</span> data ditampilkan
+                            </div>
+
+                            <table id="hoverableTable" style="width: 100%" class="hover group">
+                                <thead>
+                                    <tr>
+                                        <th>Aksi</th>
+                                        <th>No</th>
+                                        <th>NIS</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>Jenis Kelamin</th>
+                                        <th>Kelas</th>
+                                        <th>Total Poin Terverifikasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($activeStudents as $student)
+                                        <tr class="student-row"
                                         data-class="{{ $student->class->academic_level }} {{ $student->class->name }}"
                                         data-gender="{{ $student->student->gender }}">
                                         <td>
                                             <div class="flex gap-2">
                                                 <a href="{{ route('superadmin.detailConfirm-Recaps', $student->id) }}"
-                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-slate-500 bg-white p-0 text-slate-500 hover:border-slate-600 hover:bg-slate-600 hover:text-white">
+                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-slate-500 bg-white p-0 text-slate-500 hover:border-slate-600 hover:bg-slate-600 hover:text-white"
+                                                    title="Lihat Detail">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -183,20 +197,25 @@
                                                         <circle cx="12" cy="12" r="3" />
                                                     </svg>
                                                 </a>
-                                                <button data-modal-target="modal-{{ $student->id }}" type="button"
-                                                    class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M18 6 7 17l-5-5" />
-                                                        <path d="m22 10-7.5 7.5L13 16" />
-                                                    </svg>
-                                                </button>
+                                                @if ($student->recaps->where('status', 'pending')->count() > 0)
+                                                    <a href="{{ route('superadmin.confirm-recaps.approve', $student->id) }}" target="_blank"
+                                                        class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white"
+                                                        title="Konfirmasi Pelanggaran">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M18 6 7 17l-5-5" />
+                                                            <path d="m22 10-7.5 7.5L13 16" />
+                                                        </svg>
+                                                    </a>
+                                                @endif
                                                 <button data-modal-target="modal-tindakan-{{ $student->id }}"
                                                     type="button"
-                                                    class="btn dark:bg-zink-700 border-custom-500 text-custom-500 hover:border-custom-600 hover:bg-custom-600 flex size-[37.5px] items-center justify-center rounded-full bg-white p-0 hover:text-white">
+                                                    class="btn dark:bg-zink-700 border-custom-500 text-custom-500 hover:border-custom-600 hover:bg-custom-600 flex size-[37.5px] items-center justify-center rounded-full bg-white p-0 hover:text-white"
+                                                    title="Tindakan">
                                                     <i data-lucide="settings" class="size-4"></i>
                                                 </button>
+
 
                                                 <div id="modal-tindakan-{{ $student->id }}" modal-center=""
                                                     class="z-drawer show fixed left-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
@@ -224,15 +243,19 @@
                                                                         class="mb-2 inline-block text-base font-medium">
                                                                         Pilih Tindakan <span class="text-red-500">*</span>
                                                                     </label>
+                                                                    @php
+                                                                        $applicableHandling = $handlingOptions->where('handling_point', '<=', $student->total_points_verified)->sortByDesc('handling_point')->first();
+                                                                    @endphp
                                                                     <select id="tindakanSelect-{{ $student->id }}"
                                                                         name="handling_id" required
-                                                                        class="tindakan-dropdown form-input w-full dark:border-zink-500 focus:border-custom-500 dark:disabled:bg-zink-600 dark:disabled:border-zink-500 dark:disabled:text-zink-200 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-500"
+                                                                        class="tindakan-dropdown form-input w-full dark:border-zink-500 focus:border-custom-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 dark:placeholder:text-zink-200 border-slate-200 placeholder:text-slate-400 focus:outline-none"
                                                                         data-student-id="{{ $student->id }}">
                                                                         <option value="">Pilih tindakan...</option>
-                                                                        @foreach ($student->available_handlings as $item)
+                                                                        @foreach ($handlingOptions as $item)
                                                                             <option value="{{ $item->id }}"
                                                                                 data-action="{{ e($item->handling_action) }}"
-                                                                                data-point="{{ e($item->handling_point) }}">
+                                                                                data-point="{{ e($item->handling_point) }}"
+                                                                                {{ (!$applicableHandling || $item->id !== $applicableHandling->id) ? 'disabled' : '' }}>
                                                                                 {{ $item->handling_action }} -
                                                                                 {{ $item->handling_point }} Poin
                                                                             </option>
@@ -240,7 +263,7 @@
                                                                     </select>
                                                                 </div>
 
-                                                                <div class="mb-4">
+                                                                <div class="mb-4" id="kepsek-container-{{ $student->id }}">
                                                                     <label for="kepsek-{{ $student->id }}"
                                                                         class="mb-2 inline-block text-base font-medium">Pilih Kepala Sekolah <span class="text-red-500">*</span></label>
                                                                     <select id="kepsek-{{ $student->id }}" name="kepala_sekolah_id" required
@@ -350,7 +373,7 @@
                                                                         <div class="mb-4">
                                                                             <label for="reference_number-{{ $student->id }}"
                                                                                 class="mb-2 inline-block text-base font-medium">Nomor
-                                                                                Surat (reference_number)</label>
+                                                                                Surat <span id="ref-asterisk-{{ $student->id }}" class="text-red-500 hidden">*</span></label>
                                                                             <input type="text"
                                                                                 id="reference_number-{{ $student->id }}"
                                                                                 name="reference_number"
@@ -456,9 +479,76 @@
                                             </span>
                                         </td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div> <!-- End tabActiveContent -->
+
+                        <div id="tabHistoryContent" class="tab-pane hidden">
+                            <h6 class="text-15 mb-4">Daftar Riwayat Tindakan</h6>
+                            <div class="table-wrapper">
+                                <table id="historyTable" style="width: 100%" class="hover group">
+                                    <thead>
+                                        <tr>
+                                            <th>Aksi</th>
+                                            <th>No</th>
+                                            <th>NIS</th>
+                                            <th>Nama Lengkap</th>
+                                            <th>Kelas</th>
+                                            <th>Total Poin Terverifikasi</th>
+                                            <th>Tindakan Terakhir</th>
+                                            <th>Diberikan Oleh</th>
+                                            <th>Tanggal Penindakan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($historyStudents as $student)
+                                            <tr class="student-row"
+                                                data-class="{{ $student->class->academic_level }} {{ $student->class->name }}"
+                                                data-gender="{{ $student->student->gender }}">
+                                                <td>
+                                                    <div class="flex gap-2">
+                                                        <a href="{{ route('superadmin.detailConfirm-Recaps', $student->id) }}"
+                                                            class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-slate-500 bg-white p-0 text-slate-500 hover:border-slate-600 hover:bg-slate-600 hover:text-white"
+                                                            title="Lihat Detail">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path
+                                                                    d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                                                                <circle cx="12" cy="12" r="3" />
+                                                            </svg>
+                                                        </a>
+                                                        <form method="POST" action="{{ route('superadmin.confirm-recaps.reset', $student->id) }}" class="inline-block" onsubmit="confirmReset(event, this)">
+                                                            @csrf
+                                                            <button type="submit" class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-red-500 bg-white p-0 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white" title="Reset Poin ke 0 (Tobat)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $student->student->student_number ?? '-' }}</td>
+                                                <td>{{ $student->student->full_name ?? '-' }}</td>
+                                                <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>
+                                                <td>
+                                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                                        {{ $student->total_points_verified ?? 0 }} Poin
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                                        {{ $student->action_detail->handling->handling_action ?? $student->action_detail->handling->handling_name ?? '-' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $student->action_detail->handle->name ?? '-' }}</td>
+                                                <td>{{ $student->action_detail->created_at->format('d M Y') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- End tabHistoryContent -->
 
                         <!-- Pesan jika tidak ada data setelah filter -->
                         <div id="noMainData" class="hidden py-8 text-center">
@@ -475,407 +565,6 @@
                     </div>
                 </div>
 
-                <!-- Modal untuk setiap siswa (Konfirmasi) -->
-                @foreach ($studentAcademicYears as $student)
-                    @if ($student->recaps->count() > 0)
-                        <!-- Modal Container -->
-                        <div id="modal-{{ $student->id }}" modal-center=""
-                            class="z-drawer show fixed left-2/4 top-2/4 flex hidden -translate-x-2/4 -translate-y-2/4 flex-col transition-all duration-300 ease-in-out">
-                            <div class="modal-container dark:bg-zink-600 flex flex-col rounded-md bg-white shadow">
-
-                                <!-- Header Modal -->
-                                <div
-                                    class="modal-header dark:border-zink-500 flex flex-shrink-0 items-center justify-between border-b border-slate-200 p-4">
-                                    <h5 class="text-16 font-semibold">Daftar Pelanggaran -
-                                        {{ $student->student->full_name }}</h5>
-                                    <button data-modal-close="modal-{{ $student->id }}"
-                                        class="dark:text-zink-200 text-slate-500 transition-all duration-200 ease-linear hover:text-red-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <!-- Content Modal -->
-                                <div class="modal-content flex-1 overflow-hidden">
-                                    <div class="flex h-full flex-col p-4">
-
-                                        <!-- Filter Section (opsional - jika ada) -->
-                                        <div class="filter-section mb-3 flex gap-2">
-                                            <select id="categoryFilter-{{ $student->id }}"
-                                                class="category-filter rounded border px-3 py-2"
-                                                data-student-id="{{ $student->id }}">
-                                                <option value="">Semua Kategori</option>
-                                                <option value="Ringan">Ringan</option>
-                                                <option value="Sedang">Sedang</option>
-                                                <option value="Berat">Berat</option>
-                                            </select>
-
-                                            <button
-                                                class="reset-filter-btn rounded bg-slate-200 px-4 py-2 hover:bg-slate-300"
-                                                data-student-id="{{ $student->id }}">
-                                                Reset Filter
-                                            </button>
-                                        </div>
-
-                                        <div
-                                            class="table-container dark:border-zink-500 flex-1 overflow-hidden rounded-lg border border-slate-200">
-                                            <div class="table-scroll-wrapper h-full overflow-auto">
-                                                <table class="table-violations w-full text-left text-sm"
-                                                    id="violationsTable-{{ $student->id }}">
-                                                    <thead
-                                                        class="dark:bg-zink-700 sticky top-0 z-10 bg-slate-50 text-xs uppercase">
-                                                        <tr>
-                                                            <th class="dark:text-zink-200 w-32 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Aksi</th>
-                                                            <th class="dark:text-zink-200 w-10 px-3 py-3 font-semibold whitespace-nowrap">No
-                                                            </th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Tanggal</th>
-                                                            <th
-                                                                class="dark:text-zink-200 min-w-[200px] px-4 py-3 font-semibold">
-                                                                Pelanggaran</th>
-                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Kategori</th>
-                                                            <th class="dark:text-zink-200 w-16 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Poin</th>
-                                                            <th class="dark:text-zink-200 w-20 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Status</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Dibuat oleh</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Diverifikasi</th>
-                                                            <th class="dark:text-zink-200 w-24 px-4 py-3 font-semibold whitespace-nowrap">
-                                                                Diupdate</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @php $counter = 1; @endphp
-                                                        @forelse ($student->recaps->whereIn('status', ['pending', 'verified']) as $recap)
-                                                            <tr class="violation-row dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50"
-                                                                data-category="{{ $recap->violation->category->name ?? '' }}">
-
-                                                                <!-- KOLOM AKSI -->
-                                                                <td class="px-3 py-2">
-                                                                    <div class="flex gap-1">
-                                                                        <!-- Form untuk verifikasi -->
-                                                                        <form method="POST"
-                                                                            action="{{ route('superadmin.violation-status.update', $recap->id) }}"
-                                                                            class="inline-block">
-                                                                            @csrf
-                                                                            @method('PUT')
-                                                                            @if ($recap->status == 'pending')
-                                                                                <button type="submit" value="verified"
-                                                                                    name="status"
-                                                                                    class="rounded-full p-1.5 text-green-600 transition-colors duration-200 hover:bg-green-50 hover:text-green-700"
-                                                                                    title="Verifikasi">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="14" height="14"
-                                                                                        viewBox="0 0 24 24" fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2"
-                                                                                        stroke-linecap="round"
-                                                                                        stroke-linejoin="round">
-                                                                                        <polyline points="20,6 9,17 4,12">
-                                                                                        </polyline>
-                                                                                    </svg>
-                                                                                </button>
-                                                                                <button type="submit"
-                                                                                    value="not_verified" name="status"
-                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menolak pelanggaran ini?')"
-                                                                                    class="rounded-full p-1.5 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
-                                                                                    title="Tolak">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="14" height="14"
-                                                                                        viewBox="0 0 24 24" fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2"
-                                                                                        stroke-linecap="round"
-                                                                                        stroke-linejoin="round">
-                                                                                        <line x1="18"
-                                                                                            y1="6" x2="6"
-                                                                                            y2="18"></line>
-                                                                                        <line x1="6"
-                                                                                            y1="6" x2="18"
-                                                                                            y2="18"></line>
-                                                                                    </svg>
-                                                                                </button>
-                                                                            @else
-                                                                                <button type="submit" value="pending"
-                                                                                    name="status"
-                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin memverifikasi ulang pelanggaran ini?')"
-                                                                                    class="rounded-full p-1.5 text-orange-600 transition-colors duration-200 hover:bg-orange-50 hover:text-orange-700"
-                                                                                    title="Verifikasi Ulang">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="14" height="14"
-                                                                                        viewBox="0 0 24 24" fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2"
-                                                                                        stroke-linecap="round"
-                                                                                        stroke-linejoin="round">
-                                                                                        <path d="m17 2 4 4-4 4" />
-                                                                                        <path
-                                                                                            d="M3 11v-1a4 4 0 0 1 4-4h14" />
-                                                                                        <path d="m7 22-4-4 4-4" />
-                                                                                        <path
-                                                                                            d="M21 13v1a4 4 0 0 1-4 4H3" />
-                                                                                    </svg>
-                                                                                </button>
-                                                                            @endif
-
-                                                                        </form>
-
-                                                                        @if ($recap->status == 'pending')
-                                                                            <form method="POST"
-                                                                                action="{{ route('superadmin.recaps.destroy', $recap->id) }}"
-                                                                                class="inline-block">
-                                                                                @csrf
-                                                                                @method('DELETE')
-                                                                                <button type="submit"
-                                                                                    onclick="confirmSubmit(event, this, 'Apakah Anda yakin ingin menghapus pelanggaran ini?')"
-                                                                                    class="rounded-full p-1.5 text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
-                                                                                    title="Hapus">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="14" height="14"
-                                                                                        viewBox="0 0 24 24" fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2"
-                                                                                        stroke-linecap="round"
-                                                                                        stroke-linejoin="round">
-                                                                                        <path d="M3 6h18" />
-                                                                                        <path
-                                                                                            d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                                                                                        <path d="M10 11v6" />
-                                                                                        <path d="M14 11v6" />
-                                                                                        <path
-                                                                                            d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                                                                                    </svg>
-                                                                                </button>
-                                                                            </form>
-                                                                        @endif
-                                                                    </div>
-                                                                </td>
-
-                                                                <!-- NO -->
-                                                                <td class="row-number px-3 py-2 text-center font-medium whitespace-nowrap">
-                                                                    {{ $counter++ }}</td>
-
-                                                                <!-- TANGGAL -->
-                                                                <td class="px-3 py-2 whitespace-nowrap">
-                                                                    {{ \Carbon\Carbon::parse($recap->created_at)->format('d/m/Y') }}
-                                                                </td>
-
-                                                                <!-- PELANGGARAN -->
-                                                                <td class="px-3 py-2 min-w-[200px]">
-                                                                    <div class="violation-name">
-                                                                        {{ $recap->violation->name }}</div>
-                                                                </td>
-
-                                                                <!-- KATEGORI -->
-                                                                <td class="px-3 py-2 text-center">
-                                                                    @if (($recap->violation->category->name ?? '') === 'Berat')
-                                                                        <span
-                                                                            class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
-                                                                            Berat
-                                                                        </span>
-                                                                    @elseif(($recap->violation->category->name ?? '') === 'Sedang')
-                                                                        <span
-                                                                            class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
-                                                                            Sedang
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                                                                            Ringan
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-
-                                                                <!-- POIN -->
-                                                                <td class="px-3 py-2 text-center">
-                                                                    <span
-                                                                        class="font-semibold text-red-600 dark:text-red-400">
-                                                                        {{ $recap->violation->point ?? 0 }}
-                                                                    </span>
-                                                                </td>
-
-                                                                <!-- STATUS -->
-                                                                <td class="px-3 py-2 text-center whitespace-nowrap">
-                                                                    @if ($recap->status === 'verified')
-                                                                        <span
-                                                                            class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                                            Terverifikasi
-                                                                        </span>
-                                                                    @elseif($recap->status === 'not_verified')
-                                                                        <span
-                                                                            class="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
-                                                                            Tidak Terverifikasi
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">
-                                                                            Pending
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-
-                                                                <!-- DIBUAT OLEH -->
-                                                                <td class="px-3 py-2 whitespace-nowrap">
-                                                                    <span
-                                                                        class="dark:text-zink-300 text-xs text-slate-600">
-                                                                        {{ $recap->createdBy->name ?? '-' }}
-                                                                    </span>
-                                                                </td>
-
-                                                                <!-- DIVERIFIKASI OLEH -->
-                                                                <td class="px-3 py-2 whitespace-nowrap">
-                                                                    <span
-                                                                        class="dark:text-zink-300 text-xs text-slate-600">
-                                                                        {{ $recap->verifiedBy->name ?? '-' }}
-                                                                    </span>
-                                                                </td>
-
-                                                                <!-- DIUPDATE OLEH -->
-                                                                <td class="px-3 py-2 whitespace-nowrap">
-                                                                    <span
-                                                                        class="dark:text-zink-300 text-xs text-slate-600">
-                                                                        {{ $recap->updatedBy->name ?? '-' }}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        @empty
-                                                            <tr class="dark:bg-zink-800 no-data-row bg-white">
-                                                                <td colspan="10"
-                                                                    class="dark:text-zink-400 px-4 py-8 text-center text-slate-500">
-                                                                    <div class="flex flex-col items-center">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            width="48" height="48"
-                                                                            viewBox="0 0 24 24" fill="none"
-                                                                            stroke="currentColor" stroke-width="1.5"
-                                                                            stroke-linecap="round" stroke-linejoin="round"
-                                                                            class="mb-2">
-                                                                            <circle cx="12" cy="12" r="10">
-                                                                            </circle>
-                                                                            <path d="M12 6v6l4 2"></path>
-                                                                        </svg>
-                                                                        <p class="text-sm">Tidak ada data pelanggaran untuk
-                                                                            siswa ini</p>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforelse
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <!-- No Data Message -->
-                                        <div id="noFilteredData-{{ $student->id }}" class="hidden py-8 text-center">
-                                            <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="1.5">
-                                                    <circle cx="11" cy="11" r="8"></circle>
-                                                    <path d="m21 21-4.35-4.35"></path>
-                                                </svg>
-                                                <p class="text-sm">Tidak ada data yang sesuai dengan filter</p>
-                                            </div>
-                                        </div>
-
-                                        <!-- PAGINATION CONTROLS - TAMBAHKAN DI SINI -->
-                                        <div id="paginationControls-{{ $student->id }}"
-                                            class="dark:border-zink-500 mt-3 flex items-center justify-between border-t border-slate-200 pt-3">
-                                            <div class="dark:text-zink-300 text-sm text-slate-600">
-                                                <span class="page-info">1-10 dari 50</span>
-                                            </div>
-
-                                            <div class="flex items-center gap-2">
-                                                <button
-                                                    class="pagination-btn first-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    data-action="first" data-student-id="{{ $student->id }}"
-                                                    title="Halaman Pertama">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <polyline points="11 17 6 12 11 7"></polyline>
-                                                        <polyline points="18 17 13 12 18 7"></polyline>
-                                                    </svg>
-                                                </button>
-
-                                                <button
-                                                    class="pagination-btn prev-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    data-action="prev" data-student-id="{{ $student->id }}"
-                                                    title="Sebelumnya">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                                    </svg>
-                                                </button>
-
-                                                <span
-                                                    class="current-page-number dark:bg-zink-600 rounded bg-slate-100 px-3 py-1 text-sm font-medium">
-                                                    Hal 1 dari 5
-                                                </span>
-
-                                                <button
-                                                    class="pagination-btn next-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    data-action="next" data-student-id="{{ $student->id }}"
-                                                    title="Selanjutnya">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                                    </svg>
-                                                </button>
-
-                                                <button
-                                                    class="pagination-btn last-page rounded px-2 py-1 text-sm transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    data-action="last" data-student-id="{{ $student->id }}"
-                                                    title="Halaman Terakhir">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <polyline points="13 17 18 12 13 7"></polyline>
-                                                        <polyline points="6 17 11 12 6 7"></polyline>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Summary Section -->
-                                        @if ($student->recaps->count() > 0)
-                                            <div class="summary-section dark:bg-zink-700 mt-4 flex-shrink-0 rounded-lg bg-slate-50 border border-slate-200 dark:border-zink-600 shadow-sm p-3 mb-2 mx-4"
-                                                id="summary-{{ $student->id }}">
-                                                <div class="flex items-center justify-between">
-                                                    <span
-                                                        class="dark:text-zink-300 text-sm font-medium text-slate-600">Total
-                                                        Pelanggaran:</span>
-                                                    <span class="text-sm font-bold" id="totalCount-{{ $student->id }}">
-                                                        {{ $student->recaps->count() }}
-                                                    </span>
-                                                </div>
-                                                <div class="mt-1 flex items-center justify-between">
-                                                    <span
-                                                        class="dark:text-zink-300 text-sm font-medium text-slate-600">Total
-                                                        Poin:</span>
-                                                    <span class="text-sm font-bold text-orange-600"
-                                                        id="totalPoints-{{ $student->id }}">
-                                                        {{ $student->recaps->sum(fn($r) => $r->violation->point ?? 0) }}
-                                                        Poin
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
             @endif
 
         </div>
@@ -1103,6 +792,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (typeof DataTable !== 'undefined') {
+                new DataTable('#historyTable');
+            }
+
             // Main table filter functionality
             const classFilter = document.getElementById('classFilter');
             const genderFilter = document.getElementById('genderFilter');
@@ -1842,6 +1535,8 @@
                             '.mb-4');
                         const facingField = document.getElementById(`facing-${studentId}`)?.closest(
                             '.mb-4');
+                        const kepsekContainer = document.getElementById(`kepsek-container-${studentId}`);
+                        const kepsekSelect = document.getElementById(`kepsek-${studentId}`);
 
                         // Cek apakah tindakan adalah "Teguran Tertulis dan Pemanggilan Orang Tua"
                         const isTeguranTertulisOrPemanggilan = action &&
@@ -1850,6 +1545,30 @@
                         const isKegiatanSosial = action &&
                             (action.toLowerCase().includes('kegiatan sosial') ||
                                 action.toLowerCase().includes('kegiatan sosial'));
+                        const isLisan = action && action.toLowerCase().includes('lisan');
+
+                        const refNumberInput = document.getElementById(`reference_number-${studentId}`);
+                        const refAsterisk = document.getElementById(`ref-asterisk-${studentId}`);
+
+                        if (isLisan) {
+                            if (kepsekContainer) kepsekContainer.classList.add('hidden');
+                            if (kepsekSelect) {
+                                kepsekSelect.required = false;
+                                kepsekSelect.value = '';
+                            }
+                            if (refNumberInput) {
+                                refNumberInput.required = false;
+                                refNumberInput.value = '';
+                            }
+                            if (refAsterisk) refAsterisk.classList.add('hidden');
+                            select.closest('form').target = '_self';
+                        } else {
+                            if (kepsekContainer) kepsekContainer.classList.remove('hidden');
+                            if (kepsekSelect) kepsekSelect.required = true;
+                            if (refNumberInput) refNumberInput.required = true;
+                            if (refAsterisk) refAsterisk.classList.remove('hidden');
+                            select.closest('form').target = '_blank';
+                        }
 
                         // Tampilkan/sembunyikan field berdasarkan tindakan
                         if (isTeguranTertulisOrPemanggilan) {
@@ -1922,6 +1641,51 @@
                 `;
                 container.insertAdjacentHTML('beforeend', formHtml);
             }
+        }
+
+        function switchTab(tab) {
+            const activeBtn = document.getElementById('tabActiveBtn');
+            const historyBtn = document.getElementById('tabHistoryBtn');
+            const activeContent = document.getElementById('tabActiveContent');
+            const historyContent = document.getElementById('tabHistoryContent');
+
+            if (tab === 'active') {
+                activeBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                historyBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.add('border-transparent', 'text-slate-500');
+
+                activeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+            } else {
+                historyBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                historyBtn.classList.remove('border-transparent', 'text-slate-500');
+                
+                activeBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                activeBtn.classList.add('border-transparent', 'text-slate-500');
+
+                historyContent.classList.remove('hidden');
+                activeContent.classList.add('hidden');
+            }
+        }
+
+        function confirmReset(event, form) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Semua poin pelanggaran dan riwayat tindakan siswa ini akan dihapus dan direset ke 0!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Reset ke 0!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         }
     </script>
 @endsection

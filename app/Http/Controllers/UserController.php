@@ -88,6 +88,11 @@ class UserController extends Controller
                 return '/kesiswaan-bk/dashboard';
             case 'super-admin':
                 return '/superadmin/dashboard';
+            case 'siswa':
+                return '/siswa/dashboard';
+            case 'wakel':
+            case 'wali-kelas':
+                return '/wakel/dashboard';
             default:
                 return '/';
         }
