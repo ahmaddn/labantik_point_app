@@ -171,7 +171,6 @@
                                 <thead>
                                     <tr>
                                         <th>Aksi</th>
-                                        <th>No</th>
                                         <th>NIS</th>
                                         <th>Nama Lengkap</th>
                                         <th>Jenis Kelamin</th>
@@ -468,7 +467,6 @@
                                                             </form>
                                         </td>
 
-                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $student->student->student_number ?? '-' }}</td>
                                         <td>{{ $student->student->full_name ?? '-' }}</td>
                                         <td>{{ $student->student->gender ?? '-' }}</td>
@@ -491,7 +489,6 @@
                                     <thead>
                                         <tr>
                                             <th>Aksi</th>
-                                            <th>No</th>
                                             <th>NIS</th>
                                             <th>Nama Lengkap</th>
                                             <th>Kelas</th>
@@ -527,7 +524,6 @@
                                                         </form>
                                                     </div>
                                                 </td>
-                                                <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $student->student->student_number ?? '-' }}</td>
                                                 <td>{{ $student->student->full_name ?? '-' }}</td>
                                                 <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>

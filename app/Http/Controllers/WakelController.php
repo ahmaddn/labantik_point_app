@@ -317,11 +317,11 @@ class WakelController extends Controller
 
         $activeStudents = $allStudents->filter(function ($student) {
             return $student->has_new_violations;
-        });
+        })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
 
         $historyStudents = $allStudents->filter(function ($student) {
             return $student->action_detail && !$student->has_new_violations;
-        });
+        })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
 
         return view('wakel.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions', 'class'));
     }

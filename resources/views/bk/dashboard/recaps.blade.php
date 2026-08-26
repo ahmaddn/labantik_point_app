@@ -103,7 +103,6 @@
                             <thead>
                                 <tr>
                                     <th>Aksi</th>
-                                    <th>No</th>
                                     <th>Total Poin Terverifikasi</th>
                                     <th>Nama Lengkap</th>
                                     <th>Kelas</th>
@@ -248,7 +247,6 @@
                                         </div>
                                     </td>
 
-                                    <td class="row-number">{{ $loop->iteration }}</td>
                                     <td>
                                         <span class="whitespace-nowrap font-semibold text-red-600 dark:text-red-400">
                                             {{ $rec->total_points_verified }} Poin
@@ -269,7 +267,6 @@
                                 <thead>
                                     <tr>
                                         <th>Aksi</th>
-                                        <th>No</th>
                                         <th>NIS</th>
                                         <th>Nama Lengkap</th>
                                         <th>Kelas</th>
@@ -299,7 +296,6 @@
                                                     </a>
                                                 </div>
                                             </td>
-                                            <td>{{ $loop->iteration }}</td>
                                             <td>{{ $student->student->student_number ?? '-' }}</td>
                                             <td>{{ $student->student->full_name ?? '-' }}</td>
                                             <td>{{ $student->class->academic_level }} {{ $student->class->name }}</td>
