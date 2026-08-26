@@ -50,9 +50,12 @@ class WakelController extends Controller
         // Ambil semua siswa di kelas wali kelas pada tahun akademik aktif
         $allStudents = RefStudentAcademicYear::where('academic_year', $academicYear)
             ->where('class_id', $classId)
-            ->with(['recaps' => function ($query) {
-                $query->where('status', 'verified')->with('violation');
-            }, 'student'])
+            ->with([
+                'student',
+                'recaps' => function ($query) {
+                    $query->where('status', 'verified')->with('violation.category');
+                }
+            ])
             ->get();
 
         $totalViolations = 0;
@@ -90,10 +93,8 @@ class WakelController extends Controller
 
         // Distribusi Kategori Pelanggaran di kelas ini
         $allStudentIds = $allStudents->pluck('student_id');
-        $allRecaps = P_Recaps::whereIn('ref_student_id', $allStudentIds)
-            ->where('status', 'verified')
-            ->with(['violation.category'])
-            ->get();
+        // Optimasi: Gunakan flatMap dari collection in-memory
+        $allRecaps = $allStudents->flatMap(fn($student) => $student->recaps);
 
         $categoryDistribution = [
             'Ringan' => 0,

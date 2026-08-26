@@ -42,9 +42,13 @@ class SuperAdminController extends Controller
 
         // Get all students in academic year
         $allStudents = RefStudentAcademicYear::where('academic_year', $academicYear)
-            ->with(['recaps' => function ($query) {
-                $query->where('status', 'verified')->with('violation');
-            }])
+            ->with([
+                'student',
+                'class',
+                'recaps' => function ($query) {
+                    $query->where('status', 'verified')->with('violation.category');
+                }
+            ])
             ->get();
 
         $totalViolations = 0;
@@ -107,9 +111,8 @@ class SuperAdminController extends Controller
 
         // Most Frequent Violation
         $violationCounts = [];
-        $allRecaps = P_Recaps::where('status', 'verified')
-            ->with(['violation.category'])
-            ->get();
+        // Optimasi: FlatMap recaps siswa yang sudah ter-load di memory dan ter-filter tahun ajaran aktif
+        $allRecaps = $allStudents->flatMap(fn($student) => $student->recaps);
 
         $categoryDistribution = [
             'Ringan' => 0,
