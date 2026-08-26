@@ -598,8 +598,22 @@ class SuperAdminController extends Controller
             }
 
             $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
-            $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
-            $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('j F Y') : '';
+            $actionDay = '';
+            try {
+                $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
+            } catch (\Exception $e) {
+                $preyDate = $request->prey;
+            }
+
+            try {
+                $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('j F Y') : '';
+                if ($request->action_date) {
+                    $actionDay = Carbon::parse($request->action_date)->locale('id')->translatedFormat('l');
+                }
+            } catch (\Exception $e) {
+                $actionDateFormatted = $request->action_date;
+                $actionDay = '';
+            }
             $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
 
             if ($request->filled('kepala_sekolah_id')) {
@@ -640,6 +654,7 @@ class SuperAdminController extends Controller
                 'student_nisn' => $studentAcademicYear->student->national_identification_number ?? '',
                 'parent_name' => $request->parent_name ?? '',
                 'action_date' => $actionDateFormatted,
+                'action_day' => $actionDay,
                 'time' => $request->time ?? '',
                 'room' => $request->room ?? '',
                 'facing' => $request->facing ?? '',

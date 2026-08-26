@@ -108,8 +108,8 @@
         style="width:35.96pt; text-indent:0pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
         style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
         style="font-family:Arial;">
-        @if (!empty($action_date))
-            {{ \Carbon\Carbon::parse($action_date)->locale('id')->translatedFormat('l') }}, {{ $action_date }}
+        @if (!empty($action_day))
+            {{ $action_day }}, {{ $action_date }}
         @else
             {{ $action_date ?? '' }}
         @endif
