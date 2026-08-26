@@ -58,7 +58,6 @@
                             <thead>
                                 <tr>
                                     <th>Aksi</th>
-                                    <th>No</th>
                                     <th>Nama Lengkap</th>
                                     <th>Jenis Kelamin</th>
                                     <th>Poin Akumulasi</th>
@@ -78,7 +77,6 @@
                                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                             </button>
                                         </td>
-                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $murid->student->full_name }}</td>
                                         <td>{{ $murid->student->gender }}</td>
                                         <td>
