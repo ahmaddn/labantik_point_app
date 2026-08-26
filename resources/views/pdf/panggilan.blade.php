@@ -92,13 +92,13 @@
         style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
         style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
         style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><em><span
-            style="font-family:Arial;">{{ $room ?? '' }}</span></em></p>
+            style="font-family:Arial;">tempat</span></em></p>
 <p style="margin-top:0pt; margin-bottom:0pt;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-left:36pt; margin-bottom:0pt; text-indent:36pt; line-height:150%;"><em><span
             style="font-family:Arial;">Assalamu&rsquo;alaikum Warrahmatullahi Wabarakatuh</span></em></p>
 <p style="margin-top:0pt; margin-left:72pt; margin-bottom:0pt; text-align:justify; line-height:150%;"><span
         style="font-family:Arial;">Disampaikan dengan hormat, sehubungan dengan adanya permasalahan yang perlu
-        diketahui dan dimusyawarahkan mengenai keberlangsungan pendidikan Putra (i) Bapak/Ibu/Saudara (i) maka kami
+        diketahui dan dimusyawarahkan mengenai keberlangsungan pendidikan Putra/i Bapak/Ibu/Saudara/i maka kami
         harapkan kehadirannya pada:</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-indent:36pt; text-align:justify; line-height:150%;"><span
         style="font-family:Arial;">&nbsp;</span></p>
