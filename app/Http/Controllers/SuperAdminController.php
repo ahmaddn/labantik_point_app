@@ -319,7 +319,7 @@ class SuperAdminController extends Controller
                 ->orderBy('handling_point', 'asc')
                 ->get();
 
-            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+            $allStudents = RefStudentAcademicYear::activeAcademicYear()
                 ->with([
                     'student',
                     'class',
@@ -337,38 +337,67 @@ class SuperAdminController extends Controller
                     return $student->recaps->count() > 0;
                 })
                 ->map(function ($student) use ($handlingOptions) {
-                    $totalVerifiedPoints = $student->recaps
-                        ->whereIn('status', ['pending', 'verified'])
-                        ->sum(fn($r) => $r->violation->point ?? 0);
+                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                        ->with(['detail', 'handling', 'handle'])
+                        ->latest()
+                        ->first();
 
+                    $lastActionDate = $student->action_detail ? $student->action_detail->created_at : null;
+
+                    $totalVerifiedPoints = $student->recaps
+                        ->where('status', 'verified')
+                        ->sum(fn($r) => $r->violation->point ?? 0);
                     $student->total_points_verified = $totalVerifiedPoints;
+
+                    $hasPending = $student->recaps->where('status', 'pending')->count() > 0;
+                    if ($hasPending) {
+                        $student->has_new_violations = true;
+                    } elseif ($lastActionDate) {
+                        $newVerifiedCount = $student->recaps
+                            ->where('status', 'verified')
+                            ->filter(function($r) use ($lastActionDate) {
+                                return $r->created_at > $lastActionDate;
+                            })
+                            ->count();
+                        $student->has_new_violations = $newVerifiedCount > 0;
+                    } else {
+                        // Siswa aktif jika belum ada tindakan dan memiliki setidaknya satu pelanggaran pending/verified
+                        $hasViolations = $student->recaps->whereIn('status', ['pending', 'verified'])->count() > 0;
+                        $student->has_new_violations = $hasViolations;
+                    }
 
                     $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
                         return $handling->handling_point <= $totalVerifiedPoints;
                     });
 
-                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
-                        ->with('detail')
-                        ->latest()
-                        ->first();
-
                     return $student;
-                })
-                ->filter(function ($student) {
-                    return $student->total_points_verified > 0;
                 });
+
+            $activeStudents = $allStudents->filter(function ($student) {
+                return $student->has_new_violations;
+            });
+
+            $historyStudents = $allStudents->filter(function ($student) {
+                return $student->action_detail && !$student->has_new_violations;
+            });
         } else {
             $handlingOptions = collect();
-            $studentAcademicYears = collect();
+            $activeStudents = collect();
+            $historyStudents = collect();
         }
 
         $kepalaSekolahList = User::whereHas('roles', function($query) {
                 $query->where('code', 'kepala-sekolah');
             })
+            ->whereHas('employee', function($query) {
+                $query->whereNotNull('nip')
+                      ->where('nip', '!=', '')
+                      ->where('nip', '!=', '-');
+            })
             ->with('employee')
             ->get();
 
-        return view('superadmin.confirm-recaps.index', compact('studentAcademicYears', 'handlingOptions', 'activeAcademicYear', 'kepalaSekolahList'));
+        return view('superadmin.confirm-recaps.index', compact('activeStudents', 'historyStudents', 'handlingOptions', 'activeAcademicYear', 'kepalaSekolahList'));
     }
 
     public function detailConfirmRecaps($studentAcademicYearId)
@@ -406,11 +435,54 @@ class SuperAdminController extends Controller
             }
         }
 
+        $handlingHistory = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['detail', 'handling', 'handle'])
+            ->orderByDesc('created_at')
+            ->get();
+
         return view('superadmin.confirm-recaps.detail', compact(
             'studentAcademicYear',
             'handlingPointOptions',
             'totalVerifiedPoints',
-            'applicableHandling'
+            'applicableHandling',
+            'handlingHistory'
+        ));
+    }
+
+    public function approveConfirmRecaps($studentAcademicYearId)
+    {
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+            ->orderBy('handling_point', 'asc')
+            ->get();
+
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->with([
+                    'violation.category',
+                    'createdBy',
+                    'updatedBy',
+                    'verifiedBy'
+                ])->orderByDesc('created_at');
+            }
+        ])
+            ->findOrFail($studentAcademicYearId);
+
+        $studentAcademicYear->action_detail = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['handling', 'detail', 'handle'])
+            ->first();
+
+        $totalVerifiedPoints = $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(fn($recap) => $recap->violation->point ?? 0);
+
+        return view('superadmin.confirm-recaps.approve', compact(
+            'studentAcademicYear',
+            'handlingPointOptions',
+            'totalVerifiedPoints'
         ));
     }
 
@@ -480,11 +552,12 @@ class SuperAdminController extends Controller
             return back()->withErrors(['error' => 'Data siswa tidak ditemukan.']);
         }
 
-        if (empty($request->parent_name)) {
+        $handling = P_Config_Handlings::findOrFail($request->handling_id);
+        $isLisan = stripos($handling->handling_action, 'lisan') !== false;
+
+        if (!$isLisan && empty($request->parent_name)) {
             return back()->withErrors(['error' => 'Mohon isi nama wali.']);
         }
-
-        $handling = P_Config_Handlings::findOrFail($request->handling_id);
 
         try {
             DB::beginTransaction();
@@ -501,7 +574,7 @@ class SuperAdminController extends Controller
 
             P_Viol_Action_Detail::create([
                 'p_viol_action_id' => $action->id,
-                'parent_name' => $request->parent_name,
+                'parent_name' => $request->parent_name ?? '-',
                 'student_name' => $request->student_name,
                 'prey' => $request->prey,
                 'action_date' => $request->action_date,
@@ -514,6 +587,10 @@ class SuperAdminController extends Controller
             ]);
 
             DB::commit();
+
+            if ($isLisan) {
+                return redirect()->route('superadmin.confirm-recaps')->with('success', 'Tindakan penanganan Peringatan Lisan berhasil disimpan.');
+            }
 
             $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
             $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
@@ -591,5 +668,30 @@ class SuperAdminController extends Controller
             ->paginate(20);
 
         return view('superadmin.actions.index', compact('actions'));
+    }
+
+    public function resetPoints($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $student = RefStudentAcademicYear::findOrFail($id);
+
+            // Ganti status atau hapus recap pelanggaran pada tahun ajaran aktif
+            P_Recaps::where('ref_student_id', $student->student_id)
+                ->activeAcademicYear()
+                ->delete();
+
+            // Hapus riwayat tindakan untuk siswa ini pada tahun ajaran ini
+            P_Viol_Action::where('p_student_academic_year_id', $student->id)->delete();
+
+            DB::commit();
+
+            return redirect()->route('superadmin.confirm-recaps')->with('success', 'Poin pelanggaran siswa berhasil direset ke 0.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('resetPoints error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mereset poin: ' . $e->getMessage()]);
+        }
     }
 }

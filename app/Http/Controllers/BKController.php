@@ -333,7 +333,7 @@ class BKController extends Controller
                 ->orderBy('handling_point', 'asc')
                 ->get();
 
-            $recaps = RefStudentAcademicYear::activeAcademicYear()
+            $allStudents = RefStudentAcademicYear::activeAcademicYear()
                 ->with([
                     'student',
                     'class',
@@ -351,32 +351,56 @@ class BKController extends Controller
                     return $student->recaps->count() > 0;
                 })
                 ->map(function ($student) use ($handlingOptions) {
-                    $totalVerifiedPoints = $student->recaps
-                        ->whereIn('status', ['pending', 'verified'])
-                        ->sum(fn($r) => $r->violation->point ?? 0);
+                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
+                        ->with(['detail', 'handling', 'handle'])
+                        ->latest()
+                        ->first();
 
+                    $lastActionDate = $student->action_detail ? $student->action_detail->created_at : null;
+
+                    $totalVerifiedPoints = $student->recaps
+                        ->where('status', 'verified')
+                        ->sum(fn($r) => $r->violation->point ?? 0);
                     $student->total_points_verified = $totalVerifiedPoints;
+
+                    $hasPending = $student->recaps->where('status', 'pending')->count() > 0;
+                    if ($hasPending) {
+                        $student->has_new_violations = true;
+                    } elseif ($lastActionDate) {
+                        $newVerifiedCount = $student->recaps
+                            ->where('status', 'verified')
+                            ->filter(function($r) use ($lastActionDate) {
+                                return $r->created_at > $lastActionDate;
+                            })
+                            ->count();
+                        $student->has_new_violations = $newVerifiedCount > 0;
+                    } else {
+                        // Siswa aktif jika belum ada tindakan dan memiliki setidaknya satu pelanggaran pending/verified
+                        $hasViolations = $student->recaps->whereIn('status', ['pending', 'verified'])->count() > 0;
+                        $student->has_new_violations = $hasViolations;
+                    }
 
                     $student->available_handlings = $handlingOptions->filter(function ($handling) use ($totalVerifiedPoints) {
                         return $handling->handling_point <= $totalVerifiedPoints;
                     });
 
-                    $student->action_detail = P_Viol_Action::where('p_student_academic_year_id', $student->id)
-                        ->with('detail')
-                        ->latest()
-                        ->first();
-
                     return $student;
-                })
-                ->filter(function ($student) {
-                    return $student->total_points_verified > 0;
                 });
+
+            $activeStudents = $allStudents->filter(function ($student) {
+                return $student->has_new_violations;
+            });
+
+            $historyStudents = $allStudents->filter(function ($student) {
+                return $student->action_detail && !$student->has_new_violations;
+            });
         } else {
             $handlingOptions = collect();
-            $recaps = collect();
+            $activeStudents = collect();
+            $historyStudents = collect();
         }
 
-        return view('bk.dashboard.recaps', compact('recaps', 'activeAcademicYear', 'handlingOptions'));
+        return view('bk.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions'));
     }
 
     public function detailRecaps($studentAcademicYearId)
@@ -414,11 +438,54 @@ class BKController extends Controller
             }
         }
 
+        $handlingHistory = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['detail', 'handling', 'handle'])
+            ->orderByDesc('created_at')
+            ->get();
+
         return view('bk.dashboard.detail', compact(
             'studentAcademicYear',
             'handlingPointOptions',
             'totalVerifiedPoints',
-            'applicableHandling'
+            'applicableHandling',
+            'handlingHistory'
+        ));
+    }
+
+    public function approveConfirmRecaps($studentAcademicYearId)
+    {
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+            ->orderBy('handling_point', 'asc')
+            ->get();
+
+        $studentAcademicYear = RefStudentAcademicYear::with([
+            'student',
+            'class',
+            'recaps' => function ($query) {
+                $query->with([
+                    'violation.category',
+                    'createdBy',
+                    'updatedBy',
+                    'verifiedBy'
+                ])->orderByDesc('created_at');
+            }
+        ])
+            ->findOrFail($studentAcademicYearId);
+
+        $studentAcademicYear->action_detail = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['handling', 'detail', 'handle'])
+            ->first();
+
+        $totalVerifiedPoints = $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(fn($recap) => $recap->violation->point ?? 0);
+
+        return view('bk.dashboard.approve', compact(
+            'studentAcademicYear',
+            'handlingPointOptions',
+            'totalVerifiedPoints'
         ));
     }
 
@@ -440,6 +507,11 @@ class BKController extends Controller
             ->findOrFail($id);
 
         $handling = P_Config_Handlings::findOrFail($request->handling_id);
+        $isLisan = stripos($handling->handling_action, 'lisan') !== false;
+
+        if ($isLisan) {
+            return redirect()->back()->with('success', 'Tindakan penanganan Peringatan Lisan berhasil disimpan.');
+        }
 
         $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
 

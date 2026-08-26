@@ -47,6 +47,7 @@ Route::prefix('kesiswaan-bk')
         Route::get('/student-violations/{studentId}', [BKController::class, 'getStudentViolations'])->name('student.violations');
         Route::get('/recaps', [BKController::class, 'recaps'])->name('recaps');
         Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
+        Route::get('/recaps/{id}/approve', [BKController::class, 'approveConfirmRecaps'])->name('recaps.approve');
         Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
         Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
         Route::get('/actions', [BKController::class, 'actions'])->name('actions');
@@ -78,7 +79,9 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
     //Confirm Recaps
     Route::get('/confirm-recaps', [SuperAdminController::class, 'confirmRecaps'])->name('confirm-recaps');
     Route::get('/confirm-recaps/{studentAcademicYearId}/detail', [SuperAdminController::class, 'detailConfirmRecaps'])->name('detailConfirm-Recaps');
+    Route::get('/confirm-recaps/{studentAcademicYearId}/approve', [SuperAdminController::class, 'approveConfirmRecaps'])->name('confirm-recaps.approve');
     Route::post('/confirm-recaps/{id}/action', [SuperAdminController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
+    Route::post('/confirm-recaps/{id}/reset', [SuperAdminController::class, 'resetPoints'])->name('confirm-recaps.reset');
     Route::delete('/recaps/{id}/delete', [SuperAdminController::class, 'destroyRecap'])->name('recaps.destroy');
     Route::put('/violation-status/{id}',  [SuperAdminController::class, 'updateViolationStatus'])->name('violation-status.update');
 
@@ -97,5 +100,26 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
     Route::delete('/configs/destroy/{id}', [ConfigController::class, 'destroy'])->name('configs.destroy');
 });
 
+// Siswa Routes
+Route::prefix('siswa')
+    ->name('siswa.')
+    ->middleware(['auth', 'role:siswa'])
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\SiswaController::class, 'index'])->name('dashboard');
+        Route::get('/violations', [\App\Http\Controllers\SiswaController::class, 'violations'])->name('violations');
+        Route::get('/actions', [\App\Http\Controllers\SiswaController::class, 'actions'])->name('actions');
+    });
 
-// Route::prefix('wakel')->name('wakel.')->group(function () {});
+// Wakel Routes
+Route::prefix('wakel')
+    ->name('wakel.')
+    ->middleware(['auth', 'role:wakel'])
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\WakelController::class, 'index'])->name('dashboard');
+        Route::get('/student-data', [\App\Http\Controllers\WakelController::class, 'studentData'])->name('student-data');
+        Route::post('/violations/store/{student}', [\App\Http\Controllers\WakelController::class, 'store'])->name('violations.store');
+        Route::get('/recaps', [\App\Http\Controllers\WakelController::class, 'recaps'])->name('recaps');
+        Route::get('/recaps/{id}/detail', [\App\Http\Controllers\WakelController::class, 'detailRecaps'])->name('recaps.detail');
+        Route::post('/recaps/{id}/action', [\App\Http\Controllers\WakelController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
+        Route::get('/actions', [\App\Http\Controllers\WakelController::class, 'actions'])->name('actions');
+    });

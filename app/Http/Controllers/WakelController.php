@@ -4,48 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Models\P_Config_Handlings;
 use App\Models\P_Configs;
-use Illuminate\Http\Request;
-use App\Models\RefStudentAcademicYear;
-use App\Models\P_Violations;
 use App\Models\P_Recaps;
-use App\Models\RefClass;
-use App\Models\RefClassAcademicYear;
+use App\Models\P_Violations;
 use App\Models\P_Viol_Action;
+use App\Models\P_Viol_Action_Detail;
+use App\Models\RefStudentAcademicYear;
+use App\Models\RefClass;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class GuruController extends Controller
+class WakelController extends Controller
 {
+    private function getClassId()
+    {
+        $classId = Auth::user()->class_id;
+        if (!$classId) {
+            abort(403, 'Anda tidak terdaftar sebagai wali kelas untuk kelas manapun.');
+        }
+        return $classId;
+    }
+
     public function index()
     {
+        $classId = $this->getClassId();
+        $class = RefClass::find($classId);
+
         $activeAcademicYear = P_Configs::getActiveAcademicYear();
 
         if (!$activeAcademicYear) {
-            return view('guru.dashboard.index', [
+            return view('wakel.dashboard.index', [
+                'class' => $class,
                 'totalViolations' => 0,
                 'studentsWithoutViolations' => 0,
-                'topClass' => null,
                 'topStudent' => null,
                 'mostFrequentViolation' => null,
                 'totalActiveStudents' => 0,
                 'pendingViolationsCount' => 0,
                 'categoryDistribution' => ['Ringan' => 0, 'Sedang' => 0, 'Berat' => 0],
-                'classesToEvaluate' => []
             ]);
         }
 
         $academicYear = str_replace('-', '/', $activeAcademicYear->academic_year);
 
-        // Get all students in academic year
+        // Ambil semua siswa di kelas wali kelas pada tahun akademik aktif
         $allStudents = RefStudentAcademicYear::where('academic_year', $academicYear)
+            ->where('class_id', $classId)
             ->with(['recaps' => function ($query) {
                 $query->where('status', 'verified')->with('violation');
-            }, 'class'])
+            }, 'student'])
             ->get();
 
         $totalViolations = 0;
         $studentsWithViolations = 0;
-        $classPoints = [];
         $studentPoints = [];
 
         foreach ($allStudents as $studentAcademic) {
@@ -57,53 +68,30 @@ class GuruController extends Controller
                 $totalViolations += $verifiedRecaps->count();
             }
 
-            // For top class
-            $className = isset($studentAcademic->class) ? ($studentAcademic->class->academic_level . ' ' . $studentAcademic->class->name) : 'Unknown';
-            if (!isset($classPoints[$className])) {
-                $classPoints[$className] = 0;
-            }
-            $classPoints[$className] += $studentTotalPoints;
-
-            // For top student
             $studentPoints[] = [
                 'name' => $studentAcademic->student->full_name ?? '',
                 'nis' => $studentAcademic->student->student_number ?? '',
-                'class' => $className,
                 'points' => $studentTotalPoints
             ];
         }
 
         $studentsWithoutViolations = $allStudents->count() - $studentsWithViolations;
 
-        // Top Class
-        arsort($classPoints);
-        $topClass = null;
-        if (count($classPoints) > 0) {
-            $topClassName = array_key_first($classPoints);
-            $topClass = (object)[
-                'class_name' => $topClassName,
-                'total_points' => $classPoints[$topClassName]
-            ];
-        }
-
-        // Classes to Evaluate (Top 5)
-        $classesToEvaluate = array_slice($classPoints, 0, 5, true);
-
-        // Top Student
+        // Murid dengan poin terbanyak
         usort($studentPoints, fn($a, $b) => $b['points'] <=> $a['points']);
         $topStudent = null;
         if (count($studentPoints) > 0 && $studentPoints[0]['points'] > 0) {
             $topStudent = (object)[
                 'student_name' => $studentPoints[0]['name'],
                 'nis' => $studentPoints[0]['nis'],
-                'class_name' => $studentPoints[0]['class'],
                 'total_points' => $studentPoints[0]['points']
             ];
         }
 
-        // Most Frequent Violation
-        $violationCounts = [];
-        $allRecaps = P_Recaps::where('status', 'verified')
+        // Distribusi Kategori Pelanggaran di kelas ini
+        $allStudentIds = $allStudents->pluck('student_id');
+        $allRecaps = P_Recaps::whereIn('ref_student_id', $allStudentIds)
+            ->where('status', 'verified')
             ->with(['violation.category'])
             ->get();
 
@@ -113,22 +101,19 @@ class GuruController extends Controller
             'Berat' => 0,
         ];
 
+        $violationCounts = [];
         foreach ($allRecaps as $recap) {
-            $violationId = $recap->violation->id ?? null;
             $categoryName = $recap->violation->category->name ?? 'Lainnya';
-            
             if (isset($categoryDistribution[$categoryName])) {
                 $categoryDistribution[$categoryName]++;
-            } else {
-                $categoryDistribution[$categoryName] = 1;
             }
 
+            $violationId = $recap->violation->id ?? null;
             if ($violationId) {
                 if (!isset($violationCounts[$violationId])) {
                     $violationCounts[$violationId] = [
                         'name' => $recap->violation->name,
                         'point' => $recap->violation->point,
-                        'category' => $categoryName,
                         'count' => 0
                     ];
                 }
@@ -143,77 +128,59 @@ class GuruController extends Controller
             $mostFrequentViolation = (object)[
                 'violation_name' => $topViolation['name'],
                 'point' => $topViolation['point'],
-                'category_name' => $topViolation['category'],
                 'violation_count' => $topViolation['count']
             ];
         }
 
         $totalActiveStudents = $allStudents->count();
-        $pendingViolationsCount = P_Recaps::where('status', 'pending')->count();
+        $pendingViolationsCount = P_Recaps::whereIn('ref_student_id', $allStudentIds)
+            ->where('status', 'pending')
+            ->count();
 
-        return view('guru.dashboard.index', compact(
+        return view('wakel.dashboard.index', compact(
+            'class',
             'totalViolations',
             'studentsWithoutViolations',
-            'topClass',
             'topStudent',
             'mostFrequentViolation',
             'totalActiveStudents',
             'pendingViolationsCount',
-            'categoryDistribution',
-            'classesToEvaluate'
+            'categoryDistribution'
         ));
     }
 
-    public function studentData(Request $request)
+    public function studentData()
     {
+        $classId = $this->getClassId();
+        $class = RefClass::find($classId);
+
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
         $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
 
-        $classes = RefClassAcademicYear::with('class')
-            ->when($academicYear, function ($q) use ($academicYear) {
-                return $q->where('academic_year', $academicYear);
-            })
-            ->get()
-            ->map(function ($cay) {
-                if ($cay->class) {
-                    $cay->class->academic_year = $cay->academic_year;
-                    return $cay->class;
-                }
-                return null;
-            })
-            ->filter()
-            ->sortBy('academic_level')
-            ->values();
-
         $vals = P_Violations::with('category')->orderBy('point', 'asc')->get();
 
-        $studentAcademicYears = collect();
-        $selectedClassId = $request->input('class_id');
+        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+            ->where('class_id', $classId)
+            ->with([
+                'student',
+                'class',
+                'recaps' => function ($query) {
+                    $query->with('violation')->orderByDesc('created_at');
+                }
+            ])
+            ->get();
 
-        if ($selectedClassId) {
-            $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
-                ->where('class_id', $selectedClassId)
-                ->with([
-                    'student',
-                    'class',
-                    'recaps' => function ($query) {
-                        $query->with('violation')->orderByDesc('created_at');
-                    }
-                ])
-                ->get();
-        }
-
-        return view('guru.student-data.index', compact(
+        return view('wakel.student-data.index', compact(
             'studentAcademicYears',
             'vals',
             'activeAcademicYear',
-            'classes',
-            'selectedClassId'
+            'class'
         ));
     }
 
     public function store(Request $request, $studentId)
     {
+        $classId = $this->getClassId();
         $request->validate([
             'violations'   => 'required|array',
             'violations.*' => 'exists:p_violations,id',
@@ -227,17 +194,16 @@ class GuruController extends Controller
 
         $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
 
-        // PERBAIKAN: studentId adalah ID dari ref_student (bukan ref_student_academic_years)
+        // Pastikan siswa ini memang terdaftar di kelas milik wali kelas ini
         $studentAcademicYear = RefStudentAcademicYear::where('id', $studentId)
             ->where('academic_year', $activeAcademicYear)
-            ->with('student')
+            ->where('class_id', $classId)
             ->first();
 
         if (!$studentAcademicYear) {
-            return back()->withErrors(['error' => 'Siswa tidak terdaftar pada tahun akademik aktif']);
+            return back()->withErrors(['error' => 'Siswa tidak ditemukan atau bukan merupakan bagian dari kelas Anda.']);
         }
 
-        // Hitung poin dari recaps yang ada
         $existingRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
             ->with('violation')
             ->get();
@@ -246,7 +212,6 @@ class GuruController extends Controller
         $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
 
-        // Hitung poin baru
         $newViolations = P_Violations::whereIn('id', $request->violations)->get();
         $newPoints = $newViolations->sum('point');
 
@@ -275,35 +240,29 @@ class GuruController extends Controller
 
             DB::commit();
 
-            // Recalculate points
-            $updatedRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
-                ->with('violation')
-                ->get();
-
-            $verifiedPoints = $updatedRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
-            $pendingPoints = $updatedRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
-
-            return back()->with([
-                'success' => 'Pelanggaran berhasil ditambahkan',
-                'verified_points' => $verifiedPoints,
-                'pending_points' => $pendingPoints,
-                'total_all_points' => $verifiedPoints + $pendingPoints,
-            ]);
+            return back()->with('success', 'Pelanggaran berhasil ditambahkan dan menunggu verifikasi.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
-    public function recaps(Request $request)
+    public function recaps()
     {
+        $classId = $this->getClassId();
+        $class = RefClass::find($classId);
+
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
+        if (!$activeAcademicYear) {
+            abort(404, 'Konfigurasi tahun akademik aktif tidak ditemukan.');
+        }
 
         $handlingOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
             ->orderBy('handling_point', 'asc')
             ->get();
 
         $allStudents = RefStudentAcademicYear::activeAcademicYear()
+            ->where('class_id', $classId)
             ->with([
                 'student',
                 'class',
@@ -363,29 +322,32 @@ class GuruController extends Controller
             return $student->action_detail && !$student->has_new_violations;
         });
 
-        return view('guru.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions'));
+        return view('wakel.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions', 'class'));
     }
 
     public function detailRecaps($studentAcademicYearId)
     {
+        $classId = $this->getClassId();
         $activeAcademicYear = P_Configs::where('is_active', true)->first();
 
         $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
             ->orderBy('handling_point', 'asc')
             ->get();
 
-        $studentAcademicYear = RefStudentAcademicYear::with([
-            'student',
-            'class',
-            'recaps' => function ($query) {
-                $query->with([
-                    'violation.category',
-                    'createdBy',
-                    'updatedBy',
-                    'verifiedBy'
-                ])->orderByDesc('created_at');
-            }
-        ])
+        // Ambil data siswa pembinaan dengan verifikasi kelas
+        $studentAcademicYear = RefStudentAcademicYear::where('class_id', $classId)
+            ->with([
+                'student',
+                'class',
+                'recaps' => function ($query) {
+                    $query->with([
+                        'violation.category',
+                        'createdBy',
+                        'updatedBy',
+                        'verifiedBy'
+                    ])->orderByDesc('created_at');
+                }
+            ])
             ->findOrFail($studentAcademicYearId);
 
         $totalVerifiedPoints = $studentAcademicYear->recaps
@@ -401,17 +363,85 @@ class GuruController extends Controller
             }
         }
 
+        // Ambil tindakan penanganan yang sudah dilakukan
+        $studentAcademicYear->action_detail = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['handling', 'detail', 'handle'])
+            ->first();
+
         $handlingHistory = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
             ->with(['detail', 'handling', 'handle'])
             ->orderByDesc('created_at')
             ->get();
 
-        return view('guru.dashboard.detail', compact(
+        return view('wakel.dashboard.detail', compact(
             'studentAcademicYear',
             'handlingPointOptions',
             'totalVerifiedPoints',
             'applicableHandling',
             'handlingHistory'
         ));
+    }
+
+    public function storeHandlingAction(Request $request, $studentAcademicYearId)
+    {
+        $classId = $this->getClassId();
+        
+        $request->validate([
+            'handling_id' => 'required|exists:p_config_handlings,id',
+            'activity' => 'required|string|max:255',
+            'description' => 'required|string',
+            'violation_details' => 'nullable|array',
+            'violation_details.*' => 'string|max:255',
+        ]);
+
+        // Verifikasi bahwa siswa merupakan bagian dari kelas wali kelas
+        $studentAcademicYear = RefStudentAcademicYear::where('class_id', $classId)
+            ->findOrFail($studentAcademicYearId);
+
+        try {
+            DB::beginTransaction();
+
+            $action = P_Viol_Action::create([
+                'p_student_academic_year_id' => $studentAcademicYear->id,
+                'handling_id' => $request->handling_id,
+                'handled_by' => Auth::id(),
+                'activity' => $request->activity,
+                'description' => $request->description,
+            ]);
+
+            P_Viol_Action_Detail::create([
+                'p_viol_action_id' => $action->id,
+                'violations' => $request->violation_details ? implode(', ', $request->violation_details) : '',
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('wakel.recaps')->with('success', 'Tindakan penanganan berhasil disimpan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal menyimpan penanganan: ' . $e->getMessage()]);
+        }
+    }
+
+    public function actions()
+    {
+        $classId = $this->getClassId();
+        $class = RefClass::find($classId);
+
+        // Dapatkan semua ID murid kelas bimbingan wali kelas ini
+        $studentAcademicYearIds = RefStudentAcademicYear::where('class_id', $classId)->pluck('id');
+
+        $actions = P_Viol_Action::whereIn('p_student_academic_year_id', $studentAcademicYearIds)
+            ->with([
+                'academicYear.student',
+                'academicYear.class',
+                'handling',
+                'handle',
+                'detail'
+            ])
+            ->orderByDesc('created_at')
+            ->paginate(20);
+
+        return view('wakel.actions.index', compact('actions', 'class'));
     }
 }
