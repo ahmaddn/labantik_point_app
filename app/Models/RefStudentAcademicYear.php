@@ -101,4 +101,9 @@ class RefStudentAcademicYear extends Model
             'p_violation_id'     // FK di p_recaps → p_violations
         );
     }
+
+    public function actions()
+    {
+        return $this->hasMany(P_Viol_Action::class, 'p_student_academic_year_id');
+    }
 }

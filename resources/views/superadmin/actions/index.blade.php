@@ -31,77 +31,97 @@
                         <h6 class="text-15 mb-4">Daftar Tindakan</h6>
                     </div>
 
-                    @if (count($actions) > 0)
-                        <table id="hoverableTable" style="width: 100%" class="hover group">
-                            <thead class="dark:bg-zink-700 bg-slate-50 text-xs uppercase">
-                                <tr>
-                                    <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">
-                                        No
-                                    </th>
-                                    <th scope="col" class="dark:text-zink-200 px-4 py-4 font-semibold text-slate-700">
-                                        Nama Siswa
-                                    </th>
-                                    <th scope="col"
-                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
-                                        Kelas
-                                    </th>
-                                    <th scope="col"
-                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
-                                        Pelanggaran
-                                    </th>
-                                    <th scope="col"
-                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
-                                        Tindakan
-                                    </th>
-                                    <th scope="col"
-                                        class="dark:text-zink-200 px-4 py-4 text-center font-semibold text-slate-700">
-                                        Dibuat Oleh / Penanggung Jawab
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($actions as $index => $act)
-                                    <tr
-                                        class="dark:bg-zink-800 dark:border-zink-700 dark:hover:bg-zink-700 border-b bg-white hover:bg-slate-50">
-                                        <td class="px-4 py-4 font-medium">
-                                            {{ $index + 1 }}
-                                        </td>
-                                        <td class="whitespace-normal px-4 py-4">
-                                            <div class="dark:text-zink-200 font-medium text-slate-700">
-                                                {{ $act->academicYear->student->full_name ?? '-' }}
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-4 text-center">
-                                            <span
-                                                class="rounded-full bg-slate-50 px-3 py-1 text-sm text-slate-600 dark:bg-slate-900/30 dark:text-slate-400">
-                                                {{ $act->academicYear->class->academic_level ?? '-' }}
-                                                {{ $act->academicYear->class->name ?? '-' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4 text-center">
-                                            <span class="text-sm text-slate-500 dark:text-slate-400">
-                                                @forelse($act->academicYear->pRecaps as $recap)
-                                                    <div>{{ $recap->violation->name }}
-                                                    </div>
-                                                @empty
-                                                    <div>-</div>
-                                                @endforelse
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4 text-center">
-                                            <span class="text-sm text-slate-500 dark:text-slate-400">
-                                                {{ $act->handling->handling_action ?? '-' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-4 text-center">
-                                            <span class="text-sm text-slate-500 dark:text-slate-400">
-                                                {{ $act->handle->name ?? '-' }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                    <!-- Filters -->
+                    <div class="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="flex-1">
+                            <label for="levelFilter" class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">Filter Tingkat</label>
+                            <select id="levelFilter" onchange="filterClasses()" class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm">
+                                <option value="">Semua Tingkat</option>
+                                @foreach ($levels as $l)
+                                    <option value="{{ $l }}">{{ $l }}</option>
                                 @endforeach
-                            </tbody>
-                        </table>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label for="majorFilter" class="block text-sm font-medium text-slate-700 dark:text-zink-300 mb-2">Filter Jurusan</label>
+                            <select id="majorFilter" onchange="filterClasses()" class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm">
+                                <option value="">Semua Jurusan</option>
+                                @foreach ($majors as $m)
+                                    <option value="{{ $m->id }}">{{ $m->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    @if (count($classes) > 0)
+                        <div id="classesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach ($classes as $classData)
+                                <a href="{{ route('superadmin.actions.class', $classData->id) }}" 
+                                   data-level="{{ $classData->level }}" 
+                                   data-major="{{ $classData->major_id }}" 
+                                   class="class-card card border border-slate-200 hover:border-custom-500 dark:border-zink-600 dark:bg-zink-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
+                                    <div class="card-body p-5 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-custom-50 text-custom-500 dark:bg-custom-500/20 dark:text-custom-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 text-16 font-bold text-slate-800 dark:text-slate-100">{{ $classData->name }}</h6>
+                                                <span class="text-xs text-slate-500 dark:text-zink-300 font-medium">{{ $classData->actions->count() }} Tindakan Pendisiplinan</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-slate-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        <!-- No Filter Match Message -->
+                        <div id="noFilteredData" class="py-8 text-center hidden">
+                            <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" class="mb-2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                <p class="text-sm">Tidak ada kelas yang cocok dengan filter tingkat dan jurusan</p>
+                            </div>
+                        </div>
+
+                        <script>
+                            function filterClasses() {
+                                const selectedLevel = document.getElementById('levelFilter').value;
+                                const selectedMajor = document.getElementById('majorFilter').value;
+                                const cards = document.querySelectorAll('.class-card');
+                                let visibleCount = 0;
+
+                                cards.forEach(card => {
+                                    const levelMatch = !selectedLevel || card.getAttribute('data-level') === selectedLevel;
+                                    const majorMatch = !selectedMajor || card.getAttribute('data-major') === selectedMajor;
+
+                                    if (levelMatch && majorMatch) {
+                                        card.style.display = 'block';
+                                        visibleCount++;
+                                    } else {
+                                        card.style.display = 'none';
+                                    }
+                                });
+
+                                const noDataEl = document.getElementById('noFilteredData');
+                                const gridEl = document.getElementById('classesGrid');
+                                
+                                if (visibleCount === 0) {
+                                    gridEl.classList.add('hidden');
+                                    noDataEl.classList.remove('hidden');
+                                } else {
+                                    gridEl.classList.remove('hidden');
+                                    noDataEl.classList.add('hidden');
+                                }
+                            }
+                        </script>
                     @else
                         <div class="py-8 text-center">
                             <div class="dark:text-zink-400 flex flex-col items-center text-slate-500">

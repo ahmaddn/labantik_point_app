@@ -51,8 +51,22 @@
                 </div>
             </div>
 
-            <!-- Filter Section -->
-            <div class="card mb-4">
+            <!-- Navigation Tabs -->
+            <div class="mb-5 flex border-b border-slate-200 dark:border-zink-500 print:hidden">
+                <button type="button" id="tabViolationsBtn" onclick="switchDetailTab('violations')"
+                    class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-custom-500 text-custom-500 dark:text-custom-400 dark:border-custom-400">
+                    Daftar Pelanggaran & Ringkasan
+                </button>
+                <button type="button" id="tabHistoryBtn" onclick="switchDetailTab('history')"
+                    class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
+                    Riwayat Tindakan Pendisiplinan ({{ $handlingHistory->count() }})
+                </button>
+            </div>
+
+            <!-- Tab Content Wrapper -->
+            <div id="tabViolationsContent" class="tab-pane">
+                <!-- Filter Section -->
+                <div class="card mb-4">
                 <div class="card-body">
                     <h6 class="text-15 mb-4">Filter Data</h6>
                     <div class="flex flex-col gap-4 sm:flex-row">
@@ -356,9 +370,12 @@
                     </div>
                 </div>
             @endif
+            </div><!-- End tabViolationsContent -->
 
-            <!-- Handling History Section -->
-            <div class="card mb-4">
+            <!-- Tab History Content -->
+            <div id="tabHistoryContent" class="tab-pane hidden">
+                <!-- Handling History Section -->
+                <div class="card mb-4">
                 <div class="card-body">
                     <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3 dark:border-zink-500">
                         <div class="flex items-center gap-2">
@@ -371,8 +388,8 @@
                     </div>
 
                     @if($handlingHistory->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-500 dark:text-zink-200">
+                        <div class="overflow-x-auto w-full overflow-x-hidden">
+                            <table id="handlingHistoryTable" style="width: 100%" class="hover group">
                                 <thead class="bg-slate-50 text-xs uppercase text-slate-700 dark:bg-zink-600 dark:text-zink-200">
                                     <tr>
                                         <th class="px-4 py-3">No</th>
@@ -413,6 +430,7 @@
                     @endif
                 </div>
             </div>
+            </div><!-- End tabHistoryContent -->
 
         </div>
         <!-- container-fluid -->
@@ -701,6 +719,38 @@
 
                 // Update handling action with original verified points
                 updateHandlingAction({{ $totalVerifiedPoints }});
+            }
+
+            // JavaScript for Tab Switching
+            window.switchDetailTab = function(tabName) {
+                const violationsBtn = document.getElementById('tabViolationsBtn');
+                const historyBtn = document.getElementById('tabHistoryBtn');
+                const violationsContent = document.getElementById('tabViolationsContent');
+                const historyContent = document.getElementById('tabHistoryContent');
+
+                if (tabName === 'violations') {
+                    violationsBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    violationsBtn.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+                    
+                    historyBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    historyBtn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+
+                    violationsContent.classList.remove('hidden');
+                    historyContent.classList.add('hidden');
+                } else {
+                    historyBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    historyBtn.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+
+                    violationsBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    violationsBtn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+
+                    historyContent.classList.remove('hidden');
+                    violationsContent.classList.add('hidden');
+                }
+            }
+
+            if (typeof DataTable !== 'undefined') {
+                new DataTable('#handlingHistoryTable');
             }
         });
     </script>
