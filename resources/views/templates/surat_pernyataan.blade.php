@@ -123,7 +123,7 @@
         style="font-family:Arial;">___________________________________________</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Adalah benar Orang
-        Tua atau Wali Siswa (i):</span></p>
+        Tua atau Wali Siswa/i:</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
         style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
@@ -199,7 +199,7 @@
         style="font-family:Arial;">___________________________________________</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Dengan ini
-        mengajukan Pengunduran Diri anak saya dari Siswa (i) SMKN 1 Talaga dengan alasan:</span></p>
+        mengajukan Pengunduran Diri anak saya dari Siswa/i SMKN 1 Talaga dengan alasan:</span></p>
 <p style="margin-top:0pt; margin-left:36pt; margin-bottom:0pt; text-align:justify;"><span
         style="font-family:Arial;">&nbsp;</span></p>
 <ol type="1" style="margin:0pt; padding-left:0pt;">
