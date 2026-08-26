@@ -169,7 +169,9 @@ class WakelController extends Controller
                     $query->with('violation')->orderByDesc('created_at');
                 }
             ])
-            ->get();
+            ->get()
+            ->sortBy(fn($say) => $say->student->full_name ?? '')
+            ->values();
 
         return view('wakel.student-data.index', compact(
             'studentAcademicYears',

@@ -139,7 +139,6 @@
                             <thead>
                                 <tr>
                                     <th>Aksi</th>
-                                    <th>No</th>
                                     <th>Nama Lengkap</th>
                                     <th>Jenis Kelamin</th>
                                     <th>Kelas</th>
@@ -160,7 +159,6 @@
                                                 </svg>
                                             </button>
                                         </td>
-                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $murid->student->full_name }}</td>
                                         <td>{{ $murid->student->gender }}</td>
                                         <td>{{ $murid->class->name ?? '-' }}</td>
