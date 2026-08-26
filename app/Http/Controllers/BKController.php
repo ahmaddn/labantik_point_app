@@ -535,16 +535,81 @@ class BKController extends Controller
 
     public function actions()
     {
-        $actions = P_Viol_Action::with([
+        $activeAcademicYear = P_Configs::getActiveAcademicYear();
+        $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
+
+        $query = P_Viol_Action::with([
             'academicYear.student',
             'academicYear.class',
+            'academicYear.pRecaps' => function ($query) {
+                $query->where('status', 'verified')
+                    ->with('violation');
+            },
             'handling',
             'handle',
             'detail'
-        ])
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        ]);
 
-        return view('bk.actions.index', compact('actions'));
+        if ($academicYear) {
+            $query->whereHas('academicYear', function($q) use ($academicYear) {
+                $q->where('academic_year', $academicYear);
+            });
+        }
+
+        $actions = $query->orderByDesc('created_at')->get();
+
+        // Group actions by class ID
+        $groupedActions = $actions->groupBy(function($act) {
+            return $act->academicYear->class->id ?? 0;
+        });
+
+        // Get class details with grouped actions
+        $classes = [];
+        foreach ($groupedActions as $classId => $classActions) {
+            if ($classId > 0 && isset($classActions[0]->academicYear->class)) {
+                $classObj = $classActions[0]->academicYear->class;
+                $classes[] = (object)[
+                    'id' => $classId,
+                    'name' => $classObj->academic_level . ' ' . $classObj->name,
+                    'level' => $classObj->academic_level,
+                    'major_id' => $classObj->expertise_concentration_id ?? '',
+                    'actions' => $classActions
+                ];
+            }
+        }
+
+        // Sort classes by name
+        usort($classes, fn($a, $b) => strcmp($a->name, $b->name));
+
+        $levels = \App\Models\RefClass::select('academic_level')->distinct()->pluck('academic_level')->sort()->toArray();
+        $majors = \App\Models\CoreExpertiseConcentration::select('id', 'name')->get();
+
+        return view('bk.actions.index', compact('classes', 'actions', 'levels', 'majors'));
+    }
+
+    public function classActions($classId)
+    {
+        $activeAcademicYear = P_Configs::getActiveAcademicYear();
+        $academicYear = $activeAcademicYear ? str_replace('-', '/', $activeAcademicYear->academic_year) : null;
+
+        $class = RefClass::findOrFail($classId);
+
+        $students = RefStudentAcademicYear::where('class_id', $classId)
+            ->where('academic_year', $academicYear)
+            ->whereHas('actions')
+            ->with([
+                'student',
+                'actions.handling',
+                'recaps' => function($q) {
+                    $q->where('status', 'verified')->with('violation');
+                }
+            ])
+            ->get()
+            ->map(function($student) {
+                $student->total_points_verified = $student->recaps->sum(fn($r) => $r->violation->point ?? 0);
+                return $student;
+            });
+
+        return view('bk.actions.class', compact('class', 'students'));
     }
 }
