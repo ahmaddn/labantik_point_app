@@ -71,6 +71,7 @@
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:14pt;"><strong><u><span
                 style="font-family:Arial;">SURAT PERNYATAAN PENGUNDURAN DIRI</span></u></strong></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">Nomor : {{ $no_surat ?? '' }}</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><strong><span
             style="font-family:Arial;">&nbsp;</span></strong></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><strong><span

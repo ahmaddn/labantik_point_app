@@ -1567,16 +1567,7 @@
                         }
 
                         // Tampilkan/sembunyikan field berdasarkan tindakan
-                        if (isTeguranTertulisOrPemanggilan) {
-                            // Tampilkan semua field
-                            if (preyField) preyField.classList.remove('hidden');
-                            if (actionDateField) actionDateField.classList.remove('hidden');
-                            if (referenceNumberField) referenceNumberField.classList.remove(
-                                'hidden');
-                            if (timeField) timeField.classList.remove('hidden');
-                            if (roomField) roomField.classList.remove('hidden');
-                            if (facingField) facingField.classList.remove('hidden');
-                        } else if (isKegiatanSosial) {
+                        if (!isLisan) {
                             // Tampilkan semua field
                             if (preyField) preyField.classList.remove('hidden');
                             if (actionDateField) actionDateField.classList.remove('hidden');
