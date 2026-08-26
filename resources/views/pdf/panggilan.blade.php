@@ -219,9 +219,7 @@
                 style="font-family:Arial;">SURAT PERJANJIAN</span></u></strong></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">Nomor :</span><span
         style="font-family:Arial;">&nbsp;&nbsp;&nbsp;</span><span
-        style="font-family:Arial;">{{ $reference_number ?? '' }}</span><span <p
-        style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">&nbsp;</span>
-</p>
+        style="font-family:Arial;">{{ $reference_number ?? '' }}</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt;"><span style="font-family:Arial;">&nbsp;</span></p>
 <p style="margin-top:0pt; margin-bottom:0pt; line-height:150%;"><span style="font-family:Arial;">Yang bertanda tangan
         dibawah</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span style="font-family:Arial;">ini
