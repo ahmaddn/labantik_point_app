@@ -14,6 +14,8 @@ use App\Models\P_Viol_Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\P_PointReduction;
+
 class GuruController extends Controller
 {
     public function index()
@@ -43,7 +45,8 @@ class GuruController extends Controller
                 'class',
                 'recaps' => function ($query) {
                     $query->where('status', 'verified')->with('violation.category');
-                }
+                },
+                'pointReductions'
             ])
             ->get();
 
@@ -54,7 +57,7 @@ class GuruController extends Controller
 
         foreach ($allStudents as $studentAcademic) {
             $verifiedRecaps = $studentAcademic->recaps;
-            $studentTotalPoints = $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0);
+            $studentTotalPoints = max(0, $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0) - $studentAcademic->pointReductions->sum('points_reduced'));
 
             if ($verifiedRecaps->count() > 0) {
                 $studentsWithViolations++;
@@ -247,7 +250,11 @@ class GuruController extends Controller
             ->with('violation')
             ->get();
 
-        $currentVerifiedPoints = $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+        $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $activeAcademicYear)
+            ->sum('points_reduced');
+
+        $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
         $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
 
@@ -316,7 +323,8 @@ class GuruController extends Controller
                     $query->whereIn('status', ['pending', 'verified', 'not_verified'])
                         ->with(['violation.category'])
                         ->orderByDesc('created_at');
-                }
+                },
+                'pointReductions'
             ])
             ->get()
             ->filter(function ($studentAcademicYear) {
@@ -330,9 +338,9 @@ class GuruController extends Controller
 
                 $lastActionDate = $studentAcademicYear->action_detail ? $studentAcademicYear->action_detail->created_at : null;
 
-                $totalVerifiedPoints = $studentAcademicYear->recaps
+                $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
                     ->where('status', 'verified')
-                    ->sum(fn($r) => $r->violation->point ?? 0);
+                    ->sum(fn($r) => $r->violation->point ?? 0) - $studentAcademicYear->pointReductions->sum('points_reduced'));
                 $studentAcademicYear->violations_sum_point = $totalVerifiedPoints;
 
                 $hasPending = $studentAcademicYear->recaps->where('status', 'pending')->count() > 0;
@@ -389,13 +397,22 @@ class GuruController extends Controller
                     'updatedBy',
                     'verifiedBy'
                 ])->orderByDesc('created_at');
-            }
+            },
+            'pointReductions'
         ])
             ->findOrFail($studentAcademicYearId);
 
-        $totalVerifiedPoints = $studentAcademicYear->recaps
+        $pointReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $studentAcademicYear->academic_year)
+            ->with('creator')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $totalReductions = $pointReductions->sum('points_reduced');
+
+        $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
             ->where('status', 'verified')
-            ->sum(fn($recap) => $recap->violation->point ?? 0);
+            ->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
 
         $applicableHandling = null;
         foreach ($handlingPointOptions as $handling) {
@@ -416,7 +433,118 @@ class GuruController extends Controller
             'handlingPointOptions',
             'totalVerifiedPoints',
             'applicableHandling',
-            'handlingHistory'
+            'handlingHistory',
+            'pointReductions'
         ));
+    }
+
+    public function massCreate()
+    {
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $violations = P_Violations::with('category')->orderBy('point', 'asc')->get();
+
+        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+            ->with(['student', 'class'])
+            ->get()
+            ->sortBy(fn($say) => $say->student->full_name ?? '')
+            ->values();
+
+        return view('guru.violations.mass', compact('violations', 'studentAcademicYears', 'activeConfig'));
+    }
+
+    public function massStore(Request $request)
+    {
+        $request->validate([
+            'violation_id' => 'required|exists:p_violations,id',
+            'student_ids'  => 'required|array',
+            'student_ids.*'=> 'exists:ref_student_academic_years,id',
+        ]);
+
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
+        $violation = P_Violations::findOrFail($request->violation_id);
+
+        $savedCount = 0;
+        $skippedCount = 0;
+        $skippedNames = [];
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->student_ids as $sayId) {
+                $studentAcademicYear = RefStudentAcademicYear::where('id', $sayId)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->with('student')
+                    ->first();
+
+                if (!$studentAcademicYear) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Check points limit
+                $existingRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->with('violation')
+                    ->get();
+
+                $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->sum('points_reduced');
+
+                $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
+                $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
+                $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
+
+                if ($currentTotalPoints >= 100 || ($currentTotalPoints + $violation->point) > 100) {
+                    $skippedCount++;
+                    $skippedNames[] = $studentAcademicYear->student->full_name . " (Poin melebihi batas)";
+                    continue;
+                }
+
+                $createdAt = \Carbon\Carbon::now();
+                if ($request->date_mode === 'custom' && $request->violation_date) {
+                    try {
+                        $createdAt = \Carbon\Carbon::parse($request->violation_date)->setTimeFrom(\Carbon\Carbon::now());
+                    } catch (\Exception $e) {
+                        // Fallback to now
+                    }
+                }
+
+                // Create recap
+                P_Recaps::create([
+                    'ref_student_id'  => $studentAcademicYear->student_id,
+                    'p_violation_id'  => $violation->id,
+                    'status'          => 'pending',
+                    'created_by'      => Auth::id(),
+                    'updated_by'      => Auth::id(),
+                    'created_at'      => $createdAt,
+                    'updated_at'      => $createdAt,
+                ]);
+
+                $savedCount++;
+            }
+
+            DB::commit();
+
+            $msg = "Berhasil menyimpan {$savedCount} laporan pelanggaran secara massal.";
+            if ($skippedCount > 0) {
+                $msg .= " Dilewati: {$skippedCount} siswa (" . implode(', ', $skippedNames) . ").";
+                return back()->with('warning', $msg);
+            }
+
+            return back()->with('success', $msg);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal menyimpan laporan massal: ' . $e->getMessage()]);
+        }
     }
 }

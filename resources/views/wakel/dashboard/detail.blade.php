@@ -239,6 +239,61 @@
                 </div>
             </div>
 
+            <!-- Point Reductions History Section -->
+            <div class="card mb-4 bg-white dark:bg-zink-700">
+                <div class="card-body">
+                    <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3 dark:border-zink-500">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="minus-circle" class="h-5 w-5 text-green-500"></i>
+                            <h6 class="mb-0 text-15 font-semibold text-slate-800 dark:text-zink-50">Riwayat Pemotongan Poin</h6>
+                        </div>
+                        <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:bg-zink-600 dark:text-zink-200">
+                            {{ $pointReductions->count() }} Kali Dipotong
+                        </span>
+                    </div>
+
+                    @if($pointReductions->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-500 dark:text-zink-200">
+                                <thead class="bg-slate-50 text-xs uppercase text-slate-700 dark:bg-zink-600 dark:text-zink-200">
+                                    <tr>
+                                        <th class="px-4 py-3">No</th>
+                                        <th class="px-4 py-3">Tanggal Pemotongan</th>
+                                        <th class="px-4 py-3">Poin Dipotong</th>
+                                        <th class="px-4 py-3">Alasan / Keterangan</th>
+                                        <th class="px-4 py-3">Oleh</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pointReductions as $red)
+                                        <tr class="border-b bg-white hover:bg-slate-50/50 dark:border-zink-600 dark:bg-zink-700 dark:hover:bg-zink-600/50">
+                                            <td class="px-4 py-3 font-medium">{{ $loop->iteration }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                {{ \Carbon\Carbon::parse($red->created_at)->translatedFormat('d M Y H:i') }}
+                                            </td>
+                                            <td class="px-4 py-3 font-semibold text-green-600">
+                                                -{{ $red->points_reduced }} Poin
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-normal">
+                                                {{ $red->reason ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                {{ $red->creator->name ?? '-' }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="py-8 text-center text-slate-400 dark:text-zink-400">
+                            <i data-lucide="check-circle" class="mx-auto mb-2 h-10 w-10 text-green-500"></i>
+                            <p class="text-sm">Belum ada riwayat pemotongan poin untuk siswa ini.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
     </div>
 @endsection

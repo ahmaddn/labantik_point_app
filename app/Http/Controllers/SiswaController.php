@@ -10,6 +10,8 @@ use App\Models\RefStudentAcademicYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\P_PointReduction;
+
 class SiswaController extends Controller
 {
     public function index()
@@ -36,13 +38,21 @@ class SiswaController extends Controller
                 ->first();
         }
 
+        $academicYearVal = $studentAcademicYear ? $studentAcademicYear->academic_year : $academicYearStr;
+
         // Ambil semua recaps pelanggaran siswa
         $allRecaps = P_Recaps::where('ref_student_id', $student->id)
             ->with(['violation.category'])
             ->get();
 
+        $totalReductions = P_PointReduction::where('ref_student_id', $student->id)
+            ->when($academicYearVal, function ($q) use ($academicYearVal) {
+                $q->where('academic_year', $academicYearVal);
+            })
+            ->sum('points_reduced');
+
         // Poin terverifikasi
-        $verifiedPoints = $allRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+        $verifiedPoints = max(0, $allRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
         // Poin pending
         $pendingPoints = $allRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         // Total poin gabungan

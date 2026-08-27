@@ -55,11 +55,20 @@
                                 <div><span class="font-semibold text-slate-700 dark:text-zink-200">Jenis Kelamin:</span> {{ $studentAcademicYear->student->gender }}</div>
                             </div>
                         </div>
-                        <a href="{{ route('kesiswaan-bk.recaps') }}"
-                            class="shrink-0 flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:shadow-sm dark:bg-zink-700 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-600">
-                            <i data-lucide="arrow-left" class="h-4 w-4"></i>
-                            <span class="ml-1">Kembali</span>
-                        </a>
+                        <div class="flex gap-2">
+                            <form action="{{ route('kesiswaan-bk.recaps.reset-student', $studentAcademicYear->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus seluruh data pelanggaran, tindakan, dan pemotongan poin siswa ini secara permanen untuk simulasi?')">
+                                @csrf
+                                <button type="submit" class="btn bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-semibold px-4 py-2 rounded-md transition-all flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                    Hapus Seluruh Data Siswa (Uji Coba)
+                                </button>
+                            </form>
+                            <a href="{{ route('kesiswaan-bk.recaps') }}"
+                                class="shrink-0 flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:shadow-sm dark:bg-zink-700 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-600">
+                                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                                <span class="ml-1">Kembali</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,6 +82,10 @@
                 <button type="button" id="tabHistoryBtn" onclick="switchDetailTab('history')"
                     class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
                     Riwayat Tindakan Pendisiplinan ({{ $handlingHistory->count() }})
+                </button>
+                <button type="button" id="tabReductionsBtn" onclick="switchDetailTab('reductions')"
+                    class="tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-zink-200 dark:hover:text-zink-50">
+                    Riwayat Pemotongan Poin ({{ $pointReductions->count() }})
                 </button>
             </div>
 
@@ -483,6 +496,63 @@
             </div>
             </div><!-- End tabHistoryContent -->
 
+            <!-- Tab Reductions Content -->
+            <div id="tabReductionsContent" class="tab-pane hidden">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3 dark:border-zink-500">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="minus-circle" class="h-5 w-5 text-green-500"></i>
+                                <h6 class="mb-0 text-15 font-semibold">Riwayat Pemotongan Poin</h6>
+                            </div>
+                            <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:bg-zink-600 dark:text-zink-200">
+                                {{ $pointReductions->count() }} Kali Dipotong
+                            </span>
+                        </div>
+
+                        @if($pointReductions->count() > 0)
+                            <div class="overflow-x-auto w-full">
+                                <table style="width: 100%" class="hover group">
+                                    <thead class="bg-slate-50 text-xs uppercase text-slate-700 dark:bg-zink-600 dark:text-zink-200">
+                                        <tr>
+                                            <th class="px-4 py-3">No</th>
+                                            <th class="px-4 py-3">Tanggal Pemotongan</th>
+                                            <th class="px-4 py-3">Poin Dipotong</th>
+                                            <th class="px-4 py-3">Alasan / Keterangan</th>
+                                            <th class="px-4 py-3">Oleh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($pointReductions as $red)
+                                            <tr class="border-b bg-white hover:bg-slate-50/50 dark:border-zink-600 dark:bg-zink-700 dark:hover:bg-zink-600/50">
+                                                <td class="px-4 py-3 font-medium">{{ $loop->iteration }}</td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    {{ \Carbon\Carbon::parse($red->created_at)->translatedFormat('d M Y H:i') }}
+                                                </td>
+                                                <td class="px-4 py-3 font-semibold text-green-600">
+                                                    -{{ $red->points_reduced }} Poin
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-normal">
+                                                    {{ $red->reason ?? '-' }}
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    {{ $red->creator->name ?? '-' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="py-8 text-center text-slate-400 dark:text-zink-400">
+                                <i data-lucide="check-circle" class="mx-auto mb-2 h-10 w-10 text-green-500"></i>
+                                <p class="text-sm">Belum ada riwayat pemotongan poin untuk siswa ini.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div><!-- End tabReductionsContent -->
+
         </div>
         <!-- container-fluid -->
     </div>
@@ -776,27 +846,40 @@
             window.switchDetailTab = function(tabName) {
                 const violationsBtn = document.getElementById('tabViolationsBtn');
                 const historyBtn = document.getElementById('tabHistoryBtn');
+                const reductionsBtn = document.getElementById('tabReductionsBtn');
                 const violationsContent = document.getElementById('tabViolationsContent');
                 const historyContent = document.getElementById('tabHistoryContent');
+                const reductionsContent = document.getElementById('tabReductionsContent');
+
+                // Helper to deactivate button
+                const deactivate = (btn) => {
+                    btn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    btn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+                };
+
+                // Helper to activate button
+                const activate = (btn) => {
+                    btn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
+                    btn.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
+                };
+
+                deactivate(violationsBtn);
+                deactivate(historyBtn);
+                deactivate(reductionsBtn);
+
+                violationsContent.classList.add('hidden');
+                historyContent.classList.add('hidden');
+                reductionsContent.classList.add('hidden');
 
                 if (tabName === 'violations') {
-                    violationsBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
-                    violationsBtn.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
-                    
-                    historyBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
-                    historyBtn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
-
+                    activate(violationsBtn);
                     violationsContent.classList.remove('hidden');
-                    historyContent.classList.add('hidden');
-                } else {
-                    historyBtn.classList.add('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
-                    historyBtn.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
-
-                    violationsBtn.classList.remove('border-custom-500', 'text-custom-500', 'dark:text-custom-400', 'dark:border-custom-400');
-                    violationsBtn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-zink-200');
-
+                } else if (tabName === 'history') {
+                    activate(historyBtn);
                     historyContent.classList.remove('hidden');
-                    violationsContent.classList.add('hidden');
+                } else if (tabName === 'reductions') {
+                    activate(reductionsBtn);
+                    reductionsContent.classList.remove('hidden');
                 }
             }
 

@@ -10,7 +10,9 @@ use App\Models\P_Viol_Action;
 use App\Models\P_Viol_Action_Detail;
 use App\Models\RefStudentAcademicYear;
 use App\Models\RefClass;
+use App\Models\P_PointReduction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -54,7 +56,8 @@ class WakelController extends Controller
                 'student',
                 'recaps' => function ($query) {
                     $query->where('status', 'verified')->with('violation.category');
-                }
+                },
+                'pointReductions'
             ])
             ->get();
 
@@ -64,7 +67,7 @@ class WakelController extends Controller
 
         foreach ($allStudents as $studentAcademic) {
             $verifiedRecaps = $studentAcademic->recaps;
-            $studentTotalPoints = $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0);
+            $studentTotalPoints = max(0, $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0) - $studentAcademic->pointReductions->sum('points_reduced'));
 
             if ($verifiedRecaps->count() > 0) {
                 $studentsWithViolations++;
@@ -211,7 +214,11 @@ class WakelController extends Controller
             ->with('violation')
             ->get();
 
-        $currentVerifiedPoints = $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+        $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $activeAcademicYear)
+            ->sum('points_reduced');
+
+        $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
         $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
 
@@ -273,7 +280,8 @@ class WakelController extends Controller
                     $query->whereIn('status', ['pending', 'verified', 'not_verified'])
                         ->with(['violation.category'])
                         ->orderByDesc('created_at');
-                }
+                },
+                'pointReductions'
             ])
             ->get()
             ->filter(function ($studentAcademicYear) {
@@ -287,9 +295,9 @@ class WakelController extends Controller
 
                 $lastActionDate = $studentAcademicYear->action_detail ? $studentAcademicYear->action_detail->created_at : null;
 
-                $totalVerifiedPoints = $studentAcademicYear->recaps
+                $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
                     ->where('status', 'verified')
-                    ->sum(fn($r) => $r->violation->point ?? 0);
+                    ->sum(fn($r) => $r->violation->point ?? 0) - $studentAcademicYear->pointReductions->sum('points_reduced'));
                 $studentAcademicYear->violations_sum_point = $totalVerifiedPoints;
 
                 $hasPending = $studentAcademicYear->recaps->where('status', 'pending')->count() > 0;
@@ -349,13 +357,22 @@ class WakelController extends Controller
                         'updatedBy',
                         'verifiedBy'
                     ])->orderByDesc('created_at');
-                }
+                },
+                'pointReductions'
             ])
             ->findOrFail($studentAcademicYearId);
 
-        $totalVerifiedPoints = $studentAcademicYear->recaps
+        $pointReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $studentAcademicYear->academic_year)
+            ->with('creator')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $totalReductions = $pointReductions->sum('points_reduced');
+
+        $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
             ->where('status', 'verified')
-            ->sum(fn($recap) => $recap->violation->point ?? 0);
+            ->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
 
         $applicableHandling = null;
         foreach ($handlingPointOptions as $handling) {
@@ -381,7 +398,8 @@ class WakelController extends Controller
             'handlingPointOptions',
             'totalVerifiedPoints',
             'applicableHandling',
-            'handlingHistory'
+            'handlingHistory',
+            'pointReductions'
         ));
     }
 
@@ -446,5 +464,68 @@ class WakelController extends Controller
             ->paginate(20);
 
         return view('wakel.actions.index', compact('actions', 'class'));
+    }
+
+    public function approveConfirmRecaps($studentAcademicYearId)
+    {
+        $classId = $this->getClassId();
+        $activeAcademicYear = P_Configs::where('is_active', true)->first();
+
+        $handlingPointOptions = P_Config_Handlings::where('p_config_id', $activeAcademicYear->id)
+            ->orderBy('handling_point', 'asc')
+            ->get();
+
+        $studentAcademicYear = RefStudentAcademicYear::where('class_id', $classId)
+            ->with([
+                'student',
+                'class',
+                'recaps' => function ($query) {
+                    $query->with([
+                        'violation.category',
+                        'createdBy',
+                        'updatedBy',
+                        'verifiedBy'
+                    ])->orderByDesc('created_at');
+                },
+                'pointReductions'
+            ])
+            ->findOrFail($studentAcademicYearId);
+
+        $studentAcademicYear->action_detail = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)
+            ->with(['handling', 'detail', 'handle'])
+            ->first();
+
+        $totalReductions = $studentAcademicYear->pointReductions->sum('points_reduced');
+
+        $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
+            ->where('status', 'verified')
+            ->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
+
+        return view('wakel.dashboard.approve', compact(
+            'studentAcademicYear',
+            'handlingPointOptions',
+            'totalVerifiedPoints'
+        ));
+    }
+
+    public function updateViolationStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,verified,not_verified'
+        ]);
+
+        try {
+            $recap = P_Recaps::findOrFail($id);
+            $recap->update([
+                'status' => $request->status,
+                'verified_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+
+            return redirect()->back()->with('success', 'Status berhasil diperbarui!');
+        } catch (\Exception $e) {
+            Log::error('updateViolationStatus error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

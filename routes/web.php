@@ -33,6 +33,8 @@ Route::prefix('guru')
 
         Route::post('/store', [GuruController::class, 'store'])->name('violations.store');
         Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
+        Route::get('/violations/mass', [GuruController::class, 'massCreate'])->name('violations.mass');
+        Route::post('/violations/mass', [GuruController::class, 'massStore'])->name('violations.mass.store');
     });
 
 
@@ -50,6 +52,8 @@ Route::prefix('kesiswaan-bk')
         Route::get('/recaps/{id}/approve', [BKController::class, 'approveConfirmRecaps'])->name('recaps.approve');
         Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
         Route::post('/recaps/{id}/reset', [BKController::class, 'resetPoints'])->name('recaps.reset');
+        Route::post('/recaps/{id}/reset-student', [BKController::class, 'resetStudentData'])->name('recaps.reset-student');
+        Route::post('/recaps/reset-all-testing', [BKController::class, 'resetAllTestingData'])->name('recaps.reset-all-testing');
         Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
         Route::get('/actions', [BKController::class, 'actions'])->name('actions');
         Route::get('/actions/class/{classId}', [BKController::class, 'classActions'])->name('actions.class');
@@ -60,6 +64,8 @@ Route::prefix('kesiswaan-bk')
         Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
         Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
             ->name('templates.download');
+        Route::get('/violations/mass', [BKController::class, 'massCreate'])->name('violations.mass');
+        Route::post('/violations/mass', [BKController::class, 'massStore'])->name('violations.mass.store');
     });
 
 Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('superadmin.')->group(function () {
@@ -69,6 +75,8 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
     // routes/web.php
     Route::post('/superadmin/store/{student}', [SuperAdminController::class, 'store'])
         ->name('violations.store');
+    Route::get('/violations/mass', [SuperAdminController::class, 'massCreate'])->name('violations.mass');
+    Route::post('/violations/mass', [SuperAdminController::class, 'massStore'])->name('violations.mass.store');
 
     //Violations
     Route::get('/violations', [ViolationController::class, 'index'])
@@ -86,6 +94,8 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
     Route::get('/confirm-recaps/{studentAcademicYearId}/approve', [SuperAdminController::class, 'approveConfirmRecaps'])->name('confirm-recaps.approve');
     Route::post('/confirm-recaps/{id}/action', [SuperAdminController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
     Route::post('/confirm-recaps/{id}/reset', [SuperAdminController::class, 'resetPoints'])->name('confirm-recaps.reset');
+    Route::post('/confirm-recaps/{id}/reset-student', [SuperAdminController::class, 'resetStudentData'])->name('confirm-recaps.reset-student');
+    Route::post('/confirm-recaps/reset-all-testing', [SuperAdminController::class, 'resetAllTestingData'])->name('confirm-recaps.reset-all-testing');
     Route::delete('/recaps/{id}/delete', [SuperAdminController::class, 'destroyRecap'])->name('recaps.destroy');
     Route::put('/violation-status/{id}',  [SuperAdminController::class, 'updateViolationStatus'])->name('violation-status.update');
 
@@ -127,6 +137,8 @@ Route::prefix('wakel')
         Route::post('/violations/store/{student}', [\App\Http\Controllers\WakelController::class, 'store'])->name('violations.store');
         Route::get('/recaps', [\App\Http\Controllers\WakelController::class, 'recaps'])->name('recaps');
         Route::get('/recaps/{id}/detail', [\App\Http\Controllers\WakelController::class, 'detailRecaps'])->name('recaps.detail');
+        Route::get('/recaps/{id}/approve', [\App\Http\Controllers\WakelController::class, 'approveConfirmRecaps'])->name('recaps.approve');
         Route::post('/recaps/{id}/action', [\App\Http\Controllers\WakelController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
+        Route::put('/violation-status/{id}', [\App\Http\Controllers\WakelController::class, 'updateViolationStatus'])->name('violation-status.update');
         Route::get('/actions', [\App\Http\Controllers\WakelController::class, 'actions'])->name('actions');
     });

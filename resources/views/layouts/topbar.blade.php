@@ -46,6 +46,102 @@
                           </button>
                       </div>
 
+                      <!-- Notification Bell Dropdown -->
+                      @php
+                          $currentUser = Auth::user();
+                          $pendingRecapsForNotif = collect();
+                          $notifTargetRoute = '';
+                          
+                          if ($currentUser) {
+                              if ($currentUser->hasRole('super-admin')) {
+                                  $pendingRecapsForNotif = \App\Models\P_Recaps::with(['student', 'violation', 'studentAcademicYear'])
+                                      ->where('status', 'pending')
+                                      ->latest()
+                                      ->get();
+                                  $notifTargetRoute = 'superadmin.confirm-recaps.approve';
+                              } elseif ($currentUser->hasRole('kesiswaan-bk')) {
+                                  $pendingRecapsForNotif = \App\Models\P_Recaps::with(['student', 'violation', 'studentAcademicYear'])
+                                      ->where('status', 'pending')
+                                      ->latest()
+                                      ->get();
+                                  $notifTargetRoute = 'kesiswaan-bk.recaps.approve';
+                              } elseif ($currentUser->hasRole('wali-kelas')) {
+                                  $classId = $currentUser->class_id;
+                                  if ($classId) {
+                                      $studentIds = \App\Models\RefStudentAcademicYear::where('class_id', $classId)
+                                          ->activeAcademicYear()
+                                          ->pluck('student_id');
+                                          
+                                      $pendingRecapsForNotif = \App\Models\P_Recaps::with(['student', 'violation', 'studentAcademicYear'])
+                                          ->whereIn('ref_student_id', $studentIds)
+                                          ->where('status', 'pending')
+                                          ->latest()
+                                          ->get();
+                                      $notifTargetRoute = 'wakel.recaps.approve';
+                                  }
+                              }
+                          }
+                      @endphp
+
+                      @if($currentUser && ($currentUser->hasRole('super-admin') || $currentUser->hasRole('kesiswaan-bk') || $currentUser->hasRole('wali-kelas')))
+                      <div class="relative flex items-center dropdown h-header mr-1">
+                          <button type="button"
+                              class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover dropdown-toggle group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
+                              id="notificationDropdownButton" data-bs-toggle="dropdown">
+                              <i data-lucide="bell" class="w-5 h-5 stroke-1"></i>
+                              @if($pendingRecapsForNotif->count() > 0)
+                                  <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                                      {{ $pendingRecapsForNotif->count() }}
+                                  </span>
+                              @endif
+                          </button>
+                          
+                          <div class="absolute z-50 hidden ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[20rem] max-w-[24rem] dark:bg-zink-600 p-0 overflow-hidden"
+                              aria-labelledby="notificationDropdownButton">
+                              <div class="p-3 border-b border-slate-100 dark:border-zink-500 bg-slate-50 dark:bg-zink-700/50 flex items-center justify-between">
+                                  <h6 class="text-sm font-semibold text-slate-800 dark:text-zink-50 m-0">Laporan Pelanggaran Baru</h6>
+                                  <span class="rounded bg-red-100 dark:bg-red-950/30 px-2 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
+                                      {{ $pendingRecapsForNotif->count() }} Pending
+                                  </span>
+                              </div>
+                              <div class="max-h-[280px] overflow-y-auto divide-y divide-slate-100 dark:divide-zink-500">
+                                  @forelse($pendingRecapsForNotif as $notif)
+                                      @php
+                                          $say = \App\Models\RefStudentAcademicYear::where('student_id', $notif->ref_student_id)->activeAcademicYear()->first();
+                                          $routeParam = $say ? $say->id : '#';
+                                      @endphp
+                                      <a href="{{ $routeParam !== '#' ? route($notifTargetRoute, $routeParam) : '#' }}" 
+                                         class="block p-3 hover:bg-slate-50 dark:hover:bg-zink-600/50 transition-all">
+                                          <div class="flex items-start gap-3">
+                                              <div class="flex-shrink-0 mt-0.5">
+                                                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 dark:bg-amber-950/20 text-amber-500">
+                                                      <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                                                  </div>
+                                              </div>
+                                              <div class="flex-grow">
+                                                  <h6 class="text-13 font-bold text-slate-850 dark:text-zink-50 mb-0.5">
+                                                      {{ $notif->student->full_name }}
+                                                  </h6>
+                                                  <p class="text-xs text-slate-500 dark:text-zink-300 mb-1">
+                                                      {{ $notif->violation->name }} ({{ $notif->violation->point }} Poin)
+                                                  </p>
+                                                  <span class="text-[10px] text-slate-400 dark:text-zink-400">
+                                                      {{ $notif->created_at->diffForHumans() }}
+                                                  </span>
+                                              </div>
+                                          </div>
+                                      </a>
+                                  @empty
+                                      <div class="p-6 text-center text-slate-400 dark:text-zink-400">
+                                          <i data-lucide="check-circle" class="mx-auto mb-2 h-8 w-8 text-green-500"></i>
+                                          <p class="text-xs m-0">Tidak ada laporan pelanggaran baru</p>
+                                      </div>
+                                  @endforelse
+                              </div>
+                          </div>
+                      </div>
+                      @endif
+
                       <div class="relative flex items-center h-header">
                           <button type="button"
                               class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
