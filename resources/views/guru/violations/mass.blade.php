@@ -108,13 +108,15 @@
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">2. Pilih Siswa Pelanggar</label>
 
-                            <!-- Search + Select All dalam satu baris -->
-                            <div class="flex items-center gap-3 mb-3">
+                            <!-- Search + Select All -->
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
                                 <div class="relative flex-1">
                                     <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NIS..." class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
-                                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                        <i data-lucide="search" class="size-4"></i>
-                                    </div>
+                                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                                        </svg>
+                                    </span>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
                                     <input type="checkbox" id="select-all" class="size-4 cursor-pointer text-blue-600 border-slate-300 rounded focus:ring-blue-500">
@@ -122,35 +124,39 @@
                                 </div>
                             </div>
 
-                            <!-- Scrollable Checkbox List -->
-                            <div class="border border-slate-200 dark:border-zink-600 rounded-lg p-4 max-h-[380px] overflow-y-auto bg-slate-50/50 dark:bg-zink-800/20">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="students-container">
+                            <!-- Student Grid dengan Pagination -->
+                            <div class="border border-slate-200 dark:border-zink-600 rounded-lg p-4 bg-slate-50/50 dark:bg-zink-800/20">
+                                <!-- Hidden data store -->
+                                <div id="students-data" class="hidden">
                                     @forelse($studentAcademicYears as $say)
-                                        <div class="student-row flex items-start gap-3 p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm transition-all duration-150 cursor-pointer"
+                                        <div class="student-row"
                                              data-name="{{ strtolower($say->student->full_name ?? '') }}"
                                              data-class="{{ strtolower($say->class ? $say->class->academic_level . ' ' . $say->class->name : '') }}"
-                                             data-nis="{{ strtolower($say->student->student_number ?? '') }}">
-                                            <div class="pt-0.5 shrink-0">
-                                                <input type="checkbox" name="student_ids[]" value="{{ $say->id }}" id="student-{{ $say->id }}" class="student-checkbox size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer">
-                                            </div>
-                                            <label for="student-{{ $say->id }}" class="flex flex-col gap-0.5 cursor-pointer min-w-0">
-                                                <span class="font-semibold text-sm text-slate-800 dark:text-zink-50 leading-snug truncate">
-                                                    {{ $say->student->full_name ?? 'Tanpa Nama' }}
-                                                </span>
-                                                <span class="text-xs text-slate-500 dark:text-zink-300">
-                                                    Kelas: {{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '-' }}
-                                                </span>
-                                                <span class="text-[11px] text-slate-400 dark:text-zink-400">
-                                                    NIS: {{ $say->student->student_number ?? '-' }}
-                                                </span>
-                                            </label>
+                                             data-nis="{{ strtolower($say->student->student_number ?? '') }}"
+                                             data-id="{{ $say->id }}"
+                                             data-fullname="{{ $say->student->full_name ?? 'Tanpa Nama' }}"
+                                             data-classname="{{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '-' }}"
+                                             data-nisval="{{ $say->student->student_number ?? '-' }}">
                                         </div>
                                     @empty
-                                        <div class="col-span-full text-center text-slate-500 dark:text-zink-400 py-8">
-                                            <i data-lucide="users" class="size-8 mx-auto mb-2 opacity-40"></i>
-                                            <p>Tidak ada data siswa aktif.</p>
-                                        </div>
                                     @endforelse
+                                </div>
+
+                                <!-- Grid tampilan -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 min-h-[200px]" id="students-container"></div>
+
+                                <!-- Empty state -->
+                                <div id="empty-state" class="hidden text-center text-slate-500 dark:text-zink-400 py-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-8 mx-auto mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <p class="text-sm">Tidak ada siswa ditemukan.</p>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div id="pagination-container" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-3 border-t border-slate-200 dark:border-zink-600">
+                                    <p id="pagination-info" class="text-xs text-slate-500 dark:text-zink-400"></p>
+                                    <div id="pagination-buttons" class="flex items-center gap-1 flex-wrap"></div>
                                 </div>
                             </div>
                         </div>
@@ -175,66 +181,176 @@
 @section('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById('search-student');
-            const selectAllCheckbox = document.getElementById('select-all');
-            const studentRows = document.querySelectorAll('.student-row');
+            // ─── Choices.js untuk dropdown pelanggaran ────────────────
+            new Choices('#violation_id', {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Ketik untuk mencari...',
+                itemSelectText: '',
+                noResultsText: 'Tidak ada hasil',
+                noChoicesText: 'Tidak ada pilihan',
+                placeholder: true,
+                placeholderValue: '-- Pilih Pelanggaran --',
+            });
 
-            // Date Picker Toggling
-            const btnToday = document.getElementById('btn-today');
-            const btnCustom = document.getElementById('btn-custom');
+            // ─── State ───────────────────────────────────────────────
+            const PER_PAGE   = 6;
+            let currentPage  = 1;
+            let filteredRows = [];
+            const checkedIds = new Set();
+
+            // ─── Elemen ──────────────────────────────────────────────
+            const searchInput       = document.getElementById('search-student');
+            const selectAllCb       = document.getElementById('select-all');
+            const container         = document.getElementById('students-container');
+            const emptyState        = document.getElementById('empty-state');
+            const paginationInfo    = document.getElementById('pagination-info');
+            const paginationButtons = document.getElementById('pagination-buttons');
+            const allRows           = Array.from(document.querySelectorAll('#students-data .student-row'));
+
+            // ─── Date Picker ─────────────────────────────────────────
+            const btnToday            = document.getElementById('btn-today');
+            const btnCustom           = document.getElementById('btn-custom');
             const customDateContainer = document.getElementById('custom-date-container');
-            const dateModeInput = document.getElementById('date_mode');
+            const dateModeInput       = document.getElementById('date_mode');
 
             btnToday.addEventListener('click', function () {
                 btnToday.classList.add('bg-blue-600', 'text-white');
                 btnToday.classList.remove('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
                 btnCustom.classList.remove('bg-blue-600', 'text-white');
                 btnCustom.classList.add('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
                 customDateContainer.classList.add('hidden');
                 dateModeInput.value = 'today';
             });
-
             btnCustom.addEventListener('click', function () {
                 btnCustom.classList.add('bg-blue-600', 'text-white');
                 btnCustom.classList.remove('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
                 btnToday.classList.remove('bg-blue-600', 'text-white');
                 btnToday.classList.add('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
                 customDateContainer.classList.remove('hidden');
                 dateModeInput.value = 'custom';
             });
 
-            // 1. Live Filter Pencarian
-            searchInput.addEventListener('input', function (e) {
-                const query = e.target.value.toLowerCase();
-                studentRows.forEach(row => {
-                    const name = row.getAttribute('data-name');
-                    const nis = row.getAttribute('data-nis');
-                    const classVal = row.getAttribute('data-class');
+            // ─── Render halaman ──────────────────────────────────────
+            function renderPage(page) {
+                currentPage = page;
+                const start = (page - 1) * PER_PAGE;
+                const end   = start + PER_PAGE;
+                const slice = filteredRows.slice(start, end);
 
-                    if (name.includes(query) || nis.includes(query) || classVal.includes(query)) {
-                        row.style.setProperty('display', 'flex', 'important');
-                    } else {
-                        row.style.setProperty('display', 'none', 'important');
-                    }
+                container.innerHTML = '';
+
+                if (filteredRows.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    paginationInfo.textContent = '';
+                    paginationButtons.innerHTML = '';
+                    return;
+                }
+                emptyState.classList.add('hidden');
+
+                slice.forEach(function (row) {
+                    const id        = row.dataset.id;
+                    const fullname  = row.dataset.fullname;
+                    const className = row.dataset.classname;
+                    const nis       = row.dataset.nisval;
+                    const checked   = checkedIds.has(id) ? 'checked' : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'flex items-start gap-3 p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm transition-all duration-150 cursor-pointer';
+                    card.innerHTML = `
+                        <div class="pt-0.5 shrink-0">
+                            <input type="checkbox" name="student_ids[]" value="${id}" id="student-${id}"
+                                class="student-checkbox size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                                ${checked}>
+                        </div>
+                        <label for="student-${id}" class="flex flex-col gap-0.5 cursor-pointer min-w-0">
+                            <span class="font-semibold text-sm text-slate-800 dark:text-zink-50 leading-snug truncate">${fullname}</span>
+                            <span class="text-xs text-slate-500 dark:text-zink-300">Kelas: ${className}</span>
+                            <span class="text-[11px] text-slate-400 dark:text-zink-400">NIS: ${nis}</span>
+                        </label>`;
+                    container.appendChild(card);
+
+                    card.querySelector('.student-checkbox').addEventListener('change', function () {
+                        if (this.checked) checkedIds.add(id);
+                        else checkedIds.delete(id);
+                        syncSelectAll();
+                    });
                 });
-            });
 
-            // 2. Pilih Semua (hanya yang sedang tampil terfilter)
-            selectAllCheckbox.addEventListener('change', function () {
+                renderPagination();
+                syncSelectAll();
+            }
+
+            // ─── Render tombol pagination ─────────────────────────────
+            function renderPagination() {
+                const total      = filteredRows.length;
+                const totalPages = Math.ceil(total / PER_PAGE);
+                const start      = Math.min((currentPage - 1) * PER_PAGE + 1, total);
+                const end        = Math.min(currentPage * PER_PAGE, total);
+
+                paginationInfo.textContent = total > 0
+                    ? `Menampilkan ${start}–${end} dari ${total} siswa`
+                    : '';
+
+                paginationButtons.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                paginationButtons.appendChild(makeBtn('&laquo;', currentPage === 1, () => renderPage(currentPage - 1)));
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = makeBtn(i, false, () => renderPage(i));
+                    if (i === currentPage) {
+                        btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                        btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+                    }
+                    paginationButtons.appendChild(btn);
+                }
+
+                paginationButtons.appendChild(makeBtn('&raquo;', currentPage === totalPages, () => renderPage(currentPage + 1)));
+            }
+
+            function makeBtn(label, disabled, onClick) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.innerHTML = label;
+                btn.className = 'min-w-[32px] h-8 px-2 rounded border border-slate-200 dark:border-zink-600 text-sm text-slate-600 dark:text-zink-200 hover:bg-slate-100 dark:hover:bg-zink-600 transition-colors duration-150';
+                if (disabled) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-40', 'cursor-not-allowed');
+                } else {
+                    btn.addEventListener('click', onClick);
+                }
+                return btn;
+            }
+
+            function syncSelectAll() {
+                const cbs = container.querySelectorAll('.student-checkbox');
+                selectAllCb.checked = cbs.length > 0 && Array.from(cbs).every(cb => cb.checked);
+            }
+
+            function applyFilter() {
+                const query = searchInput.value.toLowerCase().trim();
+                filteredRows = allRows.filter(function (row) {
+                    return row.dataset.name.includes(query)
+                        || row.dataset.nis.includes(query)
+                        || row.dataset.class.includes(query);
+                });
+                renderPage(1);
+            }
+
+            searchInput.addEventListener('input', applyFilter);
+
+            selectAllCb.addEventListener('change', function () {
                 const isChecked = this.checked;
-                studentRows.forEach(row => {
-                    if (row.style.display !== 'none') {
-                        const checkbox = row.querySelector('.student-checkbox');
-                        if (checkbox) {
-                            checkbox.checked = isChecked;
-                        }
-                    }
+                container.querySelectorAll('.student-checkbox').forEach(function (cb) {
+                    cb.checked = isChecked;
+                    if (isChecked) checkedIds.add(cb.value);
+                    else checkedIds.delete(cb.value);
                 });
             });
+
+            // Init
+            filteredRows = allRows;
+            renderPage(1);
         });
     </script>
 @endsection
