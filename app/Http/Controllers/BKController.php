@@ -643,7 +643,7 @@ class BKController extends Controller
             if (empty($actionType)) {
                 $actionName = strtolower($handling->handling_action ?? '');
                 if (str_contains($actionName, 'perjanjian')) $actionType = 'perjanjian';
-                elseif (str_contains($actionName, 'pernyataan')) $actionType = 'pernyataan';
+                elseif (str_contains($actionName, 'pernyataan') || str_contains($actionName, 'diri') || str_contains($actionName, 'mundur')) $actionType = 'pernyataan';
                 elseif (str_contains($actionName, 'pengembalian')) $actionType = 'pengembalian';
                 elseif (str_contains($actionName, 'lisan')) $actionType = 'lisan';
                 else $actionType = 'panggilan';
@@ -745,5 +745,23 @@ class BKController extends Controller
             ->values();
 
         return view('bk.actions.class', compact('class', 'students'));
+    }
+
+    public function destroyAction($id)
+    {
+        try {
+            DB::beginTransaction();
+            $action = P_Viol_Action::findOrFail($id);
+            if ($action->detail) {
+                $action->detail->delete();
+            }
+            $action->delete();
+            DB::commit();
+            return redirect()->back()->with('success', 'Tindakan penanganan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('destroyAction error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

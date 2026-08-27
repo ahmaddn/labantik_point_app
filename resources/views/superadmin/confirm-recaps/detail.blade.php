@@ -398,6 +398,7 @@
                                         <th class="px-4 py-3">Tindakan</th>
                                         <th class="px-4 py-3">Diberikan Oleh</th>
                                         <th class="px-4 py-3">Detail Penanganan / Deskripsi</th>
+                                        <th class="px-4 py-3 text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -417,6 +418,17 @@
                                             </td>
                                             <td class="px-4 py-3 whitespace-normal">
                                                 {{ $history->description ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center flex justify-center">
+                                                <form action="{{ route('superadmin.actions.destroy', $history->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin membatalkan tindakan ini?')"
+                                                        class="btn dark:bg-zink-700 border-red-500 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white flex size-[32px] items-center justify-center rounded-full bg-white p-0"
+                                                        title="Batalkan Tindakan">
+                                                        <i data-lucide="trash-2" class="size-4"></i>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach
