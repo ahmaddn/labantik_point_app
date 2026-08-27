@@ -4,13 +4,23 @@
         class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm px-4 pb-[calc(theme('spacing.header')_*_0.8)] pt-[calc(theme('spacing.header')_*_1)] group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)] group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto">
         <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 
+            <!-- Breadcrumb -->
             <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
                 <div class="grow">
-                    <h5 class="text-16 font-semibold">Input Laporan Pelanggaran Massal (Super Admin)</h5>
+                    <h5 class="text-16">Input Laporan Pelanggaran Massal</h5>
                 </div>
                 <ul class="flex shrink-0 items-center gap-2 text-sm font-normal">
-                    <li class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
-                        <a href="#!" class="dark:text-zink-200 text-slate-400">Pelanggaran</a>
+                    <li
+                        class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
+                        <a href="#!" class="dark:text-zink-200 text-slate-400">Dashboards</a>
+                    </li>
+                    <li
+                        class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
+                        <a href="#!" class="dark:text-zink-200 text-slate-400">Super Admin</a>
+                    </li>
+                    <li
+                        class="before:font-remix dark:text-zink-200 relative before:absolute before:-top-[3px] before:text-[18px] before:text-slate-400 before:content-['\ea54'] ltr:pr-4 ltr:before:-right-1 rtl:pl-4 rtl:before:-left-1">
+                        <a href="{{ route('superadmin.violations') }}" class="dark:text-zink-200 text-slate-400">Pelanggaran</a>
                     </li>
                     <li class="dark:text-zink-100 text-slate-700">
                         Input Massal
@@ -73,28 +83,29 @@
                 </div>
             @endif
 
-            <div class="card border-none shadow-md rounded-xl bg-white dark:bg-zink-700">
-                <div class="card-body p-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-15 mb-4">Form Input Pelanggaran Massal</h6>
                     <form action="{{ route('superadmin.violations.mass.store') }}" method="POST" class="space-y-6">
                         @csrf
 
                         <!-- Opsi Tanggal Pelanggaran -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">Tanggal Kejadian Pelanggaran</label>
-                            <div class="flex gap-2 mb-3">
-                                <button type="button" id="btn-today" class="btn bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-all duration-150">Hari Ini</button>
-                                <button type="button" id="btn-custom" class="btn border border-slate-200 dark:border-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-4 py-2 rounded-lg transition-all duration-150">Pilih Tanggal Lain</button>
+                        <div>
+                            <label class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">Tanggal Kejadian Pelanggaran</label>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <button type="button" id="btn-today" class="btn bg-custom-500 border-custom-500 text-white hover:bg-custom-600 hover:border-custom-600 text-sm font-medium px-4 py-2">Hari Ini</button>
+                                <button type="button" id="btn-custom" class="btn bg-white border-slate-200 text-slate-700 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 hover:bg-slate-50 dark:hover:bg-zink-500 text-sm font-medium px-4 py-2">Pilih Tanggal Lain</button>
                             </div>
                             <div id="custom-date-container" class="hidden">
-                                <input type="date" name="violation_date" id="violation_date" value="{{ date('Y-m-d') }}" class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full md:w-64 rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                                <input type="date" name="violation_date" id="violation_date" value="{{ date('Y-m-d') }}" class="form-input dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:border-custom-500 dark:focus:border-custom-800 w-full md:w-64 border-slate-200">
                             </div>
                             <input type="hidden" name="date_mode" id="date_mode" value="today">
                         </div>
 
                         <!-- 1. Pilih Pelanggaran -->
                         <div>
-                            <label for="violation_id" class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">1. Pilih Jenis Pelanggaran</label>
-                            <select name="violation_id" id="violation_id" required class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                            <label for="violation_id" class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">1. Pilih Jenis Pelanggaran</label>
+                            <select name="violation_id" id="violation_id" required class="form-input dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:border-custom-500 dark:focus:border-custom-800 w-full border-slate-200">
                                 <option value="" disabled selected>-- Pilih Pelanggaran --</option>
                                 @foreach($violations as $violation)
                                     <option value="{{ $violation->id }}">
@@ -106,26 +117,24 @@
 
                         <!-- 2. Pilih Siswa -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">2. Pilih Siswa Pelanggar</label>
-                            
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-                                <!-- Kolom Pencarian -->
-                                <div class="relative w-full md:w-72">
-                                    <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NISN..." class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                            <label class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">2. Pilih Siswa Pelanggar</label>
+
+                            <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="relative w-full sm:max-w-md">
+                                    <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NISN..." class="form-input dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:border-custom-500 dark:focus:border-custom-800 w-full border-slate-200 pl-9">
                                     <div class="absolute left-3 top-2.5 text-slate-400">
                                         <i data-lucide="search" class="size-4"></i>
                                     </div>
                                 </div>
 
-                                <!-- Checkbox Pilih Semua -->
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" id="select-all" class="size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                                    <label for="select-all" class="text-sm font-medium text-slate-600 dark:text-zink-200 cursor-pointer">Pilih Semua yang Tampil</label>
+                                <div class="flex shrink-0 items-center gap-2 sm:pr-2">
+                                    <input type="checkbox" id="select-all" class="size-4 rounded border-slate-300 text-custom-500 focus:ring-custom-500">
+                                    <label for="select-all" class="cursor-pointer text-sm font-medium text-slate-600 dark:text-zink-200">Pilih Semua yang Tampil</label>
                                 </div>
                             </div>
 
                             <!-- Scrollable Checkbox List -->
-                            <div class="border border-slate-200 dark:border-zink-600 rounded-lg p-4 max-h-[350px] overflow-y-auto bg-slate-50/50 dark:bg-zink-800/20">
+                            <div class="max-h-[350px] overflow-y-auto rounded-md border border-slate-200 bg-slate-50/50 p-4 dark:border-zink-500 dark:bg-zink-800/20">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="students-container">
                                     @forelse($studentAcademicYears as $say)
                                         <div class="student-row flex items-start p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:shadow-sm transition-all duration-150"
@@ -155,11 +164,11 @@
                         </div>
 
                         <!-- 3. Submit -->
-                        <div class="pt-4 border-t border-slate-100 dark:border-zink-600 flex justify-end gap-3">
-                            <a href="{{ route('superadmin.dashboard') }}" class="btn border border-slate-200 hover:bg-slate-50 dark:border-zink-600 dark:hover:bg-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-5 py-2.5 rounded-lg">
+                        <div class="flex justify-end gap-2 border-t border-slate-200 pt-4 dark:border-zink-500">
+                            <a href="{{ route('superadmin.violations') }}" class="btn bg-white text-red-500 border-slate-200 hover:bg-red-50 hover:text-red-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-500">
                                 Batal
                             </a>
-                            <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg">
+                            <button type="submit" class="btn bg-custom-500 border-custom-500 text-white hover:bg-custom-600 hover:border-custom-600 focus:bg-custom-600 focus:border-custom-600">
                                 Simpan Laporan Pelanggaran Massal
                             </button>
                         </div>
@@ -184,24 +193,24 @@
             const customDateContainer = document.getElementById('custom-date-container');
             const dateModeInput = document.getElementById('date_mode');
 
+            const activeDateClasses = ['bg-custom-500', 'border-custom-500', 'text-white', 'hover:bg-custom-600', 'hover:border-custom-600'];
+            const inactiveDateClasses = ['bg-white', 'border-slate-200', 'text-slate-700', 'dark:bg-zink-600', 'dark:border-zink-500', 'dark:text-zink-100', 'hover:bg-slate-50', 'dark:hover:bg-zink-500'];
+
+            function setActiveDateButton(activeBtn, inactiveBtn) {
+                activeBtn.classList.add(...activeDateClasses);
+                activeBtn.classList.remove(...inactiveDateClasses);
+                inactiveBtn.classList.remove(...activeDateClasses);
+                inactiveBtn.classList.add(...inactiveDateClasses);
+            }
+
             btnToday.addEventListener('click', function () {
-                btnToday.classList.add('bg-blue-600', 'text-white');
-                btnToday.classList.remove('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
-                btnCustom.classList.remove('bg-blue-600', 'text-white');
-                btnCustom.classList.add('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
+                setActiveDateButton(btnToday, btnCustom);
                 customDateContainer.classList.add('hidden');
                 dateModeInput.value = 'today';
             });
 
             btnCustom.addEventListener('click', function () {
-                btnCustom.classList.add('bg-blue-600', 'text-white');
-                btnCustom.classList.remove('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
-                btnToday.classList.remove('bg-blue-600', 'text-white');
-                btnToday.classList.add('border', 'border-slate-200', 'text-slate-700', 'dark:border-zink-600', 'dark:text-zink-100');
-                
+                setActiveDateButton(btnCustom, btnToday);
                 customDateContainer.classList.remove('hidden');
                 dateModeInput.value = 'custom';
             });

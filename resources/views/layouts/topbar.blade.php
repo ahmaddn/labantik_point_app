@@ -85,18 +85,20 @@
 
                       @if($currentUser && ($currentUser->hasRole('super-admin') || $currentUser->hasRole('kesiswaan-bk') || $currentUser->hasRole('wali-kelas')))
                       <div class="relative flex items-center dropdown h-header mr-1">
-                          <button type="button"
-                              class="inline-flex relative justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover dropdown-toggle group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
-                              id="notificationDropdownButton" data-bs-toggle="dropdown">
-                              <i data-lucide="bell" class="w-5 h-5 stroke-1"></i>
+                          <div class="relative shrink-0">
+                              <button type="button"
+                                  class="inline-flex justify-center items-center p-0 text-topbar-item transition-all w-[37.5px] h-[37.5px] duration-200 ease-linear bg-topbar rounded-md btn hover:bg-topbar-item-bg-hover hover:text-topbar-item-hover dropdown-toggle group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:hover:bg-topbar-item-bg-hover-dark group-data-[topbar=dark]:hover:text-topbar-item-hover-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:hover:bg-topbar-item-bg-hover-brand group-data-[topbar=brand]:hover:text-topbar-item-hover-brand group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:hover:bg-zink-600 group-data-[topbar=brand]:text-topbar-item-brand group-data-[topbar=dark]:dark:hover:text-zink-50 group-data-[topbar=dark]:dark:text-zink-200 group-data-[topbar=dark]:text-topbar-item-dark"
+                                  id="notificationDropdownButton" data-bs-toggle="dropdown">
+                                  <i data-lucide="bell" class="w-5 h-5 stroke-1"></i>
+                              </button>
                               @if($pendingRecapsForNotif->count() > 0)
-                                  <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                                      {{ $pendingRecapsForNotif->count() }}
+                                  <span class="pointer-events-none absolute -top-1 ltr:-right-1 rtl:-left-1 z-10 inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white dark:ring-zink-700">
+                                      {{ $pendingRecapsForNotif->count() > 99 ? '99+' : $pendingRecapsForNotif->count() }}
                                   </span>
                               @endif
-                          </button>
-                          
-                          <div class="absolute z-50 hidden ltr:text-left rtl:text-right bg-white rounded-md shadow-md !top-4 dropdown-menu min-w-[20rem] max-w-[24rem] dark:bg-zink-600 p-0 overflow-hidden"
+                          </div>
+
+                          <div class="absolute z-50 hidden ltr:text-left rtl:text-right bg-white rounded-md shadow-md dropdown-menu min-w-[20rem] max-w-[24rem] dark:bg-zink-600 p-0 overflow-hidden"
                               aria-labelledby="notificationDropdownButton">
                               <div class="p-3 border-b border-slate-100 dark:border-zink-500 bg-slate-50 dark:bg-zink-700/50 flex items-center justify-between">
                                   <h6 class="text-sm font-semibold text-slate-800 dark:text-zink-50 m-0">Laporan Pelanggaran Baru</h6>
