@@ -122,7 +122,7 @@
                         <div class="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 p-4 rounded-xl">
                             <div class="flex justify-between items-start mb-2">
                                 <h6 class="text-15 font-bold text-blue-900 dark:text-blue-200">
-                                    {{ $studentAcademicYear->action_detail->handling->handling_name }}
+                                    {{ $studentAcademicYear->action_detail->handling?->handling_name ?? $studentAcademicYear->action_detail->handling?->handling_action ?? '-' }}
                                 </h6>
                                 <span class="text-11 text-slate-500 dark:text-zink-300">
                                     {{ $studentAcademicYear->action_detail->created_at->format('d/m/Y H:i') }}

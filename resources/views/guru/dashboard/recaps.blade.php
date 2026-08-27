@@ -177,11 +177,11 @@
                                             </td>
                                             <td>
                                                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                                    {{ $student->action_detail->handling->handling_action ?? $student->action_detail->handling->handling_name ?? '-' }}
+                                                    {{ $student->action_detail->handling?->handling_action ?? $student->action_detail->handling?->handling_name ?? '-' }}
                                                 </span>
                                             </td>
                                             <td>{{ $student->action_detail->handle->name ?? '-' }}</td>
-                                            <td>{{ $student->action_detail->created_at->format('d M Y') }}</td>
+                                            <td>{{ $student->action_detail->created_at?->format('d M Y') ?? '-' }}</td>
                                             <td>
                                                 <a href="{{ route('guru.recaps.detail', $student->id) }}" class="btn bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-zink-600 dark:hover:bg-zink-500 dark:text-zink-50 text-12 font-medium px-3 py-1.5 rounded">
                                                     Detail
