@@ -49,10 +49,12 @@ Route::prefix('kesiswaan-bk')
         Route::get('/recaps/{id}/detail', [BKController::class, 'detailRecaps'])->name('recaps.detail');
         Route::get('/recaps/{id}/approve', [BKController::class, 'approveConfirmRecaps'])->name('recaps.approve');
         Route::post('/recaps/{id}/action', [BKController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
+        Route::post('/recaps/{id}/reset', [BKController::class, 'resetPoints'])->name('recaps.reset');
         Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
         Route::get('/actions', [BKController::class, 'actions'])->name('actions');
         Route::get('/actions/class/{classId}', [BKController::class, 'classActions'])->name('actions.class');
         Route::delete('/actions/{id}', [BKController::class, 'destroyAction'])->name('actions.destroy');
+        Route::get('/actions/{id}/print', [BKController::class, 'printAction'])->name('actions.print');
 
         //Templates
         Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
@@ -95,6 +97,7 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
     Route::get('/actions', [SuperAdminController::class, 'actions'])->name('actions');
     Route::get('/actions/class/{classId}', [SuperAdminController::class, 'classActions'])->name('actions.class');
     Route::delete('/actions/{id}', [SuperAdminController::class, 'destroyAction'])->name('actions.destroy');
+    Route::get('/actions/{id}/print', [SuperAdminController::class, 'printAction'])->name('actions.print');
     //Configs
     Route::get('/configs', [ConfigController::class, 'index'])->name('configs');
     Route::post('/configs/store', [ConfigController::class, 'store'])->name('configs.store');

@@ -269,18 +269,28 @@
                             </div>
 
                             <!-- Total Poin Terverifikasi -->
-                            <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md dark:border-zink-600 dark:bg-zink-700">
-                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-500/20">
-                                    <i data-lucide="shield-alert" class="h-6 w-6"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1 text-sm text-slate-500 dark:text-slate-400">Poin Terverifikasi</p>
-                                    <h5 class="mb-0 text-xl font-bold text-red-500" id="detailVerifiedPoints">
-                                        {{ $totalVerifiedPoints }}
-                                        <span class="text-sm font-normal text-red-300">Poin</span>
-                                    </h5>
-                                </div>
-                            </div>
+                             <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all hover:shadow-md dark:border-zink-600 dark:bg-zink-700 flex-1">
+                                 <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-500/20">
+                                     <i data-lucide="shield-alert" class="h-6 w-6"></i>
+                                 </div>
+                                 <div class="flex-1">
+                                     <p class="mb-1 text-sm text-slate-500 dark:text-slate-400">Poin Terverifikasi</p>
+                                     <h5 class="mb-0 text-xl font-bold text-red-500" id="detailVerifiedPoints">
+                                         {{ $totalVerifiedPoints }}
+                                         <span class="text-sm font-normal text-red-300">Poin</span>
+                                     </h5>
+                                 </div>
+                                 @if($totalVerifiedPoints > 0)
+                                     <form action="{{ route('kesiswaan-bk.recaps.reset', $studentAcademicYear->id) }}" method="POST" class="inline-block shrink-0">
+                                         @csrf
+                                         <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin mereset semua poin dan tindakan siswa ini?')"
+                                             class="flex h-10 px-3 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all text-xs font-semibold"
+                                             title="Reset Poin ke 0">
+                                             <i data-lucide="rotate-ccw" class="h-4 w-4"></i> Reset Poin
+                                         </button>
+                                     </form>
+                                 @endif
+                             </div>
                         </div>
 
                         <div class="space-y-4">
@@ -432,17 +442,31 @@
                                                 {{ $history->description ?? '-' }}
                                             </td>
                                             <td class="px-4 py-3 text-center">
-                                                <div class="flex justify-center items-center">
-                                                    <form action="{{ route('kesiswaan-bk.actions.destroy', $history->id) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin membatalkan tindakan ini?')"
-                                                            class="flex h-8 w-8 items-center justify-center rounded-full border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white dark:bg-zink-700 transition-all"
-                                                            title="Batalkan Tindakan">
-                                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                 <div class="flex justify-center items-center gap-2">
+                                                     @php
+                                                         $actionType = $history->handling->letter_type;
+                                                         if (empty($actionType)) {
+                                                             $actionName = strtolower($history->handling->handling_action ?? '');
+                                                             if (str_contains($actionName, 'lisan')) $actionType = 'lisan';
+                                                         }
+                                                     @endphp
+                                                     @if($actionType !== 'lisan')
+                                                         <a href="{{ route('kesiswaan-bk.actions.print', $history->id) }}" target="_blank"
+                                                             class="flex h-8 w-8 items-center justify-center rounded-full border border-blue-500 bg-white text-blue-500 hover:bg-blue-500 hover:text-white dark:bg-zink-700 transition-all"
+                                                             title="Cetak Surat Tindakan">
+                                                             <i data-lucide="printer" class="h-4 w-4"></i>
+                                                         </a>
+                                                     @endif
+                                                     <form action="{{ route('kesiswaan-bk.actions.destroy', $history->id) }}" method="POST" class="inline">
+                                                         @csrf
+                                                         @method('DELETE')
+                                                         <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin membatalkan tindakan ini?')"
+                                                             class="flex h-8 w-8 items-center justify-center rounded-full border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white dark:bg-zink-700 transition-all"
+                                                             title="Batalkan Tindakan">
+                                                             <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                                         </button>
+                                                     </form>
+                                                 </div>
                                             </td>
                                         </tr>
                                     @endforeach

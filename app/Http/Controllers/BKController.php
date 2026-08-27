@@ -764,4 +764,123 @@ class BKController extends Controller
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+    public function resetPoints($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $student = RefStudentAcademicYear::findOrFail($id);
+
+            // Ganti status atau hapus recap pelanggaran pada tahun ajaran aktif
+            P_Recaps::where('ref_student_id', $student->student_id)
+                ->activeAcademicYear()
+                ->delete();
+
+            // Hapus riwayat tindakan untuk siswa ini pada tahun ajaran ini
+            P_Viol_Action::where('p_student_academic_year_id', $student->id)->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Poin pelanggaran siswa berhasil direset ke 0.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('resetPoints error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mereset poin: ' . $e->getMessage()]);
+        }
+    }
+
+    public function printAction($id)
+    {
+        $action = P_Viol_Action::with(['detail', 'handling', 'academicYear.student', 'academicYear.class', 'academicYear.recaps.violation'])->findOrFail($id);
+        $studentAcademicYear = $action->academicYear;
+        $detail = $action->detail;
+
+        $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
+        $actionDay = '';
+        try {
+            $preyDate = ($detail && $detail->prey) ? Carbon::parse($detail->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
+        } catch (\Exception $e) {
+            $preyDate = $detail ? $detail->prey : '';
+        }
+
+        try {
+            $actionDateFormatted = ($detail && $detail->action_date) ? Carbon::parse($detail->action_date)->locale('id')->translatedFormat('j F Y') : '';
+            if ($detail && $detail->action_date) {
+                $actionDay = Carbon::parse($detail->action_date)->locale('id')->translatedFormat('l');
+            }
+        } catch (\Exception $e) {
+            $actionDateFormatted = $detail ? $detail->action_date : '';
+            $actionDay = '';
+        }
+        $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
+
+        $kepalaSekolah = null;
+        if ($detail && $detail->kepala_sekolah_id) {
+            $kepalaSekolah = \App\Models\User::where('id', $detail->kepala_sekolah_id)
+                ->with('employee')
+                ->first();
+        }
+        if (!$kepalaSekolah) {
+            $kepalaSekolah = \App\Models\User::whereHas('roles', function ($query) {
+                $query->where('code', 'kepala-sekolah');
+            })->with('employee')->first();
+        }
+        if (!$kepalaSekolah) {
+            $kepalaSekolah = \App\Models\User::where('email', 'kepsek@gmail.com')
+                ->with('employee')
+                ->first();
+        }
+
+        if ($kepalaSekolah && $kepalaSekolah->employee) {
+            $kepalaSekolah->name = $kepalaSekolah->employee->full_name ?? $kepalaSekolah->name;
+            $kepalaSekolah->nip = 'NIP. ' . ($kepalaSekolah->employee->nip ?? '-');
+        }
+
+        $violations = $detail ? ($detail->violations ?? []) : [];
+
+        $data = [
+            'student' => $studentAcademicYear->student,
+            'class' => $studentAcademicYear->class,
+            'handling' => $action->handling,
+            'description' => $action->description,
+            'total_points' => $totalPoints,
+            'date' => $preyDate,
+            'violations' => $studentAcademicYear->recaps,
+            'prey' => $preyDate,
+            'reference_number' => $detail->reference_number ?? '',
+            'student_name' => $detail->student_name ?? ($studentAcademicYear->student->full_name ?? ''),
+            'student_nis' => $studentAcademicYear->student->student_number ?? '',
+            'student_nisn' => $studentAcademicYear->student->national_student_number ?? '',
+            'parent_name' => $detail->parent_name ?? '',
+            'action_date' => $actionDateFormatted,
+            'action_day' => $actionDay,
+            'time' => $detail->time ?? '',
+            'room' => $detail->room ?? '',
+            'facing' => $detail->facing ?? '',
+            'kelas' => $kelasString,
+            'kepala_sekolah' => $kepalaSekolah,
+            'violation_list' => array_values($violations),
+        ];
+
+        $actionType = $action->handling->letter_type;
+        if (empty($actionType)) {
+            $actionName = strtolower($action->handling->handling_action ?? '');
+            if (str_contains($actionName, 'perjanjian')) $actionType = 'perjanjian';
+            elseif (str_contains($actionName, 'pernyataan') || str_contains($actionName, 'diri') || str_contains($actionName, 'mundur')) $actionType = 'pernyataan';
+            elseif (str_contains($actionName, 'pengembalian')) $actionType = 'pengembalian';
+            elseif (str_contains($actionName, 'lisan')) $actionType = 'lisan';
+            else $actionType = 'panggilan';
+        }
+
+        if ($actionType === 'perjanjian') {
+            return view('pdf.perjanjian', $data);
+        } elseif ($actionType === 'pernyataan') {
+            return view('pdf.pernyataan', $data);
+        } elseif ($actionType === 'pengembalian') {
+            return view('pdf.pengembalian', $data);
+        } else {
+            return view('pdf.panggilan', $data);
+        }
+    }
 }
