@@ -106,4 +106,10 @@ class RefStudentAcademicYear extends Model
     {
         return $this->hasMany(P_Viol_Action::class, 'p_student_academic_year_id');
     }
+
+    public function pointReductions()
+    {
+        return $this->hasMany(P_PointReduction::class, 'ref_student_id', 'student_id')
+            ->where('academic_year', $this->academic_year);
+    }
 }

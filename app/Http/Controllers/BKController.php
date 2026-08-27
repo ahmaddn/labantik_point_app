@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\RefStudentAcademicYear;
 use App\Models\P_Recaps;
 use App\Models\P_Viol_Action;
+use App\Models\P_PointReduction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +47,8 @@ class BKController extends Controller
                 'class',
                 'recaps' => function ($query) {
                     $query->where('status', 'verified')->with('violation.category');
-                }
+                },
+                'pointReductions'
             ])
             ->get();
 
@@ -57,7 +59,7 @@ class BKController extends Controller
 
         foreach ($allStudents as $studentAcademic) {
             $verifiedRecaps = $studentAcademic->recaps;
-            $studentTotalPoints = $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0);
+            $studentTotalPoints = max(0, $verifiedRecaps->sum(fn($r) => $r->violation->point ?? 0) - $studentAcademic->pointReductions->sum('points_reduced'));
 
             if ($verifiedRecaps->count() > 0) {
                 $studentsWithViolations++;
@@ -251,7 +253,11 @@ class BKController extends Controller
             ->with('violation')
             ->get();
 
-        $currentVerifiedPoints = $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+        $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $activeAcademicYear)
+            ->sum('points_reduced');
+
+        $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
         $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
         $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
 
@@ -289,7 +295,7 @@ class BKController extends Controller
                 ->with('violation')
                 ->get();
 
-            $verifiedPoints = $updatedRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0);
+            $verifiedPoints = max(0, $updatedRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
             $pendingPoints = $updatedRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
 
             return back()->with([
@@ -349,7 +355,8 @@ class BKController extends Controller
                             'updatedBy',
                             'verifiedBy'
                         ])->orderBy('created_at', 'asc');
-                    }
+                    },
+                    'pointReductions'
                 ])
                 ->get()
                 ->filter(function ($student) {
@@ -363,9 +370,9 @@ class BKController extends Controller
 
                     $lastActionDate = $student->action_detail ? $student->action_detail->created_at : null;
 
-                    $totalVerifiedPoints = $student->recaps
+                    $totalVerifiedPoints = max(0, $student->recaps
                         ->where('status', 'verified')
-                        ->sum(fn($r) => $r->violation->point ?? 0);
+                        ->sum(fn($r) => $r->violation->point ?? 0) - $student->pointReductions->sum('points_reduced'));
                     $student->total_points_verified = $totalVerifiedPoints;
 
                     $hasPending = $student->recaps->where('status', 'pending')->count() > 0;
@@ -432,13 +439,22 @@ class BKController extends Controller
                     'updatedBy',
                     'verifiedBy'
                 ])->orderByDesc('created_at');
-            }
+            },
+            'pointReductions'
         ])
             ->findOrFail($studentAcademicYearId);
 
-        $totalVerifiedPoints = $studentAcademicYear->recaps
+        $pointReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $studentAcademicYear->academic_year)
+            ->with('creator')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $totalReductions = $pointReductions->sum('points_reduced');
+
+        $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
             ->where('status', 'verified')
-            ->sum(fn($recap) => $recap->violation->point ?? 0);
+            ->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
 
         $applicableHandling = null;
         foreach ($handlingPointOptions as $handling) {
@@ -459,7 +475,8 @@ class BKController extends Controller
             'handlingPointOptions',
             'totalVerifiedPoints',
             'applicableHandling',
-            'handlingHistory'
+            'handlingHistory',
+            'pointReductions'
         ));
     }
 
@@ -481,7 +498,8 @@ class BKController extends Controller
                     'updatedBy',
                     'verifiedBy'
                 ])->orderByDesc('created_at');
-            }
+            },
+            'pointReductions'
         ])
             ->findOrFail($studentAcademicYearId);
 
@@ -489,9 +507,11 @@ class BKController extends Controller
             ->with(['handling', 'detail', 'handle'])
             ->first();
 
-        $totalVerifiedPoints = $studentAcademicYear->recaps
+        $totalReductions = $studentAcademicYear->pointReductions->sum('points_reduced');
+
+        $totalVerifiedPoints = max(0, $studentAcademicYear->recaps
             ->where('status', 'verified')
-            ->sum(fn($recap) => $recap->violation->point ?? 0);
+            ->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
 
         return view('bk.dashboard.approve', compact(
             'studentAcademicYear',
@@ -573,7 +593,10 @@ class BKController extends Controller
                 return redirect()->route('kesiswaan-bk.recaps')->with('success', 'Tindakan penanganan Peringatan Lisan berhasil disimpan.');
             }
 
-            $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
+            $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+                ->where('academic_year', $studentAcademicYear->academic_year)
+                ->sum('points_reduced');
+            $totalPoints = max(0, $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
             $actionDay = '';
             try {
                 $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
@@ -734,11 +757,12 @@ class BKController extends Controller
                 'actions.handling',
                 'recaps' => function ($q) {
                     $q->where('status', 'verified')->with('violation');
-                }
+                },
+                'pointReductions'
             ])
             ->get()
             ->map(function ($student) {
-                $student->total_points_verified = $student->recaps->sum(fn($r) => $r->violation->point ?? 0);
+                $student->total_points_verified = max(0, $student->recaps->sum(fn($r) => $r->violation->point ?? 0) - $student->pointReductions->sum('points_reduced'));
                 return $student;
             })
             ->sortBy(fn($student) => $student->student->full_name ?? '')
@@ -765,28 +789,83 @@ class BKController extends Controller
         }
     }
 
-    public function resetPoints($id)
+    public function resetPoints(Request $request, $id)
     {
+        $request->validate([
+            'points_reduced' => 'required|integer|min:1',
+            'reason' => 'nullable|string|max:255',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            $student = RefStudentAcademicYear::findOrFail($id);
+            $studentAcademicYear = RefStudentAcademicYear::findOrFail($id);
 
-            // Ganti status atau hapus recap pelanggaran pada tahun ajaran aktif
-            P_Recaps::where('ref_student_id', $student->student_id)
-                ->activeAcademicYear()
-                ->delete();
-
-            // Hapus riwayat tindakan untuk siswa ini pada tahun ajaran ini
-            P_Viol_Action::where('p_student_academic_year_id', $student->id)->delete();
+            P_PointReduction::create([
+                'ref_student_id' => $studentAcademicYear->student_id,
+                'academic_year' => $studentAcademicYear->academic_year,
+                'points_reduced' => $request->points_reduced,
+                'reason' => $request->reason,
+                'created_by' => Auth::id(),
+            ]);
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Poin pelanggaran siswa berhasil direset ke 0.');
+            return redirect()->back()->with('success', 'Pemotongan poin sebesar ' . $request->points_reduced . ' poin berhasil dicatat.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('resetPoints error: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Terjadi kesalahan saat mereset poin: ' . $e->getMessage()]);
+        }
+    }
+
+    public function resetStudentData($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $studentAcademicYear = RefStudentAcademicYear::findOrFail($id);
+            $studentId = $studentAcademicYear->student_id;
+
+            // Delete recaps
+            P_Recaps::where('ref_student_id', $studentId)->delete();
+
+            // Find actions to delete details first
+            $actionIds = P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)->pluck('id');
+            \App\Models\P_Viol_Action_Detail::whereIn('p_viol_action_id', $actionIds)->delete();
+            P_Viol_Action::where('p_student_academic_year_id', $studentAcademicYear->id)->delete();
+
+            // Delete point reductions
+            P_PointReduction::where('ref_student_id', $studentId)->delete();
+
+            DB::commit();
+
+            return redirect()->route('kesiswaan-bk.recaps')->with('success', 'Seluruh data simulasi siswa ini berhasil dikosongkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('resetStudentData error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()]);
+        }
+    }
+
+    public function resetAllTestingData()
+    {
+        try {
+            DB::beginTransaction();
+
+            // Delete all recaps, actions, details, reductions
+            DB::table('p_recaps')->delete();
+            DB::table('p_viol_action_details')->delete();
+            DB::table('p_viol_actions')->delete();
+            DB::table('p_point_reductions')->delete();
+
+            DB::commit();
+
+            return redirect()->route('kesiswaan-bk.recaps')->with('success', 'Seluruh data uji coba sistem berhasil dikosongkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('resetAllTestingData error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat mengosongkan data uji coba: ' . $e->getMessage()]);
         }
     }
 
@@ -796,7 +875,10 @@ class BKController extends Controller
         $studentAcademicYear = $action->academicYear;
         $detail = $action->detail;
 
-        $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
+        $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+            ->where('academic_year', $studentAcademicYear->academic_year)
+            ->sum('points_reduced');
+        $totalPoints = max(0, $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0) - $totalReductions);
         $actionDay = '';
         try {
             $preyDate = ($detail && $detail->prey) ? Carbon::parse($detail->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
@@ -832,9 +914,18 @@ class BKController extends Controller
                 ->first();
         }
 
-        if ($kepalaSekolah && $kepalaSekolah->employee) {
-            $kepalaSekolah->name = $kepalaSekolah->employee->full_name ?? $kepalaSekolah->name;
-            $kepalaSekolah->nip = 'NIP. ' . ($kepalaSekolah->employee->nip ?? '-');
+        if ($kepalaSekolah) {
+            if ($kepalaSekolah->employee) {
+                $kepalaSekolah->name = $kepalaSekolah->employee->full_name ?? $kepalaSekolah->name;
+                $kepalaSekolah->nip = 'NIP. ' . ($kepalaSekolah->employee->nip ?? '-');
+            } else {
+                $kepalaSekolah->nip = 'NIP. -';
+            }
+        } else {
+            $kepalaSekolah = (object)[
+                'name' => '-',
+                'nip' => 'NIP. -'
+            ];
         }
 
         $violations = $detail ? ($detail->violations ?? []) : [];
@@ -863,9 +954,9 @@ class BKController extends Controller
             'violation_list' => array_values($violations),
         ];
 
-        $actionType = $action->handling->letter_type;
+        $actionType = $action->handling ? $action->handling->letter_type : null;
         if (empty($actionType)) {
-            $actionName = strtolower($action->handling->handling_action ?? '');
+            $actionName = strtolower($action->handling ? ($action->handling->handling_action ?? '') : '');
             if (str_contains($actionName, 'perjanjian')) $actionType = 'perjanjian';
             elseif (str_contains($actionName, 'pernyataan') || str_contains($actionName, 'diri') || str_contains($actionName, 'mundur')) $actionType = 'pernyataan';
             elseif (str_contains($actionName, 'pengembalian')) $actionType = 'pengembalian';
@@ -881,6 +972,116 @@ class BKController extends Controller
             return view('pdf.pengembalian', $data);
         } else {
             return view('pdf.panggilan', $data);
+        }
+    }
+
+    public function massCreate()
+    {
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $violations = P_Violations::with('category')->orderBy('point', 'asc')->get();
+
+        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+            ->with(['student', 'class'])
+            ->get()
+            ->sortBy(fn($say) => $say->student->full_name ?? '')
+            ->values();
+
+        return view('bk.violations.mass', compact('violations', 'studentAcademicYears', 'activeConfig'));
+    }
+
+    public function massStore(Request $request)
+    {
+        $request->validate([
+            'violation_id' => 'required|exists:p_violations,id',
+            'student_ids'  => 'required|array',
+            'student_ids.*'=> 'exists:ref_student_academic_years,id',
+        ]);
+
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
+        $violation = P_Violations::findOrFail($request->violation_id);
+
+        $savedCount = 0;
+        $skippedCount = 0;
+        $skippedNames = [];
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->student_ids as $sayId) {
+                $studentAcademicYear = RefStudentAcademicYear::where('id', $sayId)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->with('student')
+                    ->first();
+
+                if (!$studentAcademicYear) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Check points limit
+                $existingRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->with('violation')
+                    ->get();
+
+                $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->sum('points_reduced');
+
+                $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
+                $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
+                $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
+
+                if ($currentTotalPoints >= 100 || ($currentTotalPoints + $violation->point) > 100) {
+                    $skippedCount++;
+                    $skippedNames[] = $studentAcademicYear->student->full_name . " (Poin melebihi batas)";
+                    continue;
+                }
+
+                $createdAt = \Carbon\Carbon::now();
+                if ($request->date_mode === 'custom' && $request->violation_date) {
+                    try {
+                        $createdAt = \Carbon\Carbon::parse($request->violation_date)->setTimeFrom(\Carbon\Carbon::now());
+                    } catch (\Exception $e) {
+                        // Fallback to now
+                    }
+                }
+
+                // Create recap
+                P_Recaps::create([
+                    'ref_student_id'  => $studentAcademicYear->student_id,
+                    'p_violation_id'  => $violation->id,
+                    'status'          => 'pending',
+                    'created_by'      => Auth::id(),
+                    'updated_by'      => Auth::id(),
+                    'created_at'      => $createdAt,
+                    'updated_at'      => $createdAt,
+                ]);
+
+                $savedCount++;
+            }
+
+            DB::commit();
+
+            $msg = "Berhasil menyimpan {$savedCount} laporan pelanggaran secara massal.";
+            if ($skippedCount > 0) {
+                $msg .= " Dilewati: {$skippedCount} siswa (" . implode(', ', $skippedNames) . ").";
+                return back()->with('warning', $msg);
+            }
+
+            return back()->with('success', $msg);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal menyimpan laporan massal: ' . $e->getMessage()]);
         }
     }
 }

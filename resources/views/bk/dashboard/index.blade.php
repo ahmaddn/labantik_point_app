@@ -212,6 +212,23 @@
 <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        @if ($pendingViolationsCount > 0)
+        Swal.fire({
+            title: 'Laporan Pelanggaran Baru!',
+            text: 'Ada {{ $pendingViolationsCount }} laporan pelanggaran baru yang membutuhkan konfirmasi.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Buka Halaman Konfirmasi',
+            cancelButtonText: 'Nanti Saja'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('kesiswaan-bk.recaps') }}";
+            }
+        });
+        @endif
+
         var options = {
             series: [{{ $categoryDistribution['Ringan'] ?? 0 }}, {{ $categoryDistribution['Sedang'] ?? 0 }}, {{ $categoryDistribution['Berat'] ?? 0 }}],
             labels: ['Ringan', 'Sedang', 'Berat'],

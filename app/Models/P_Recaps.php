@@ -52,6 +52,11 @@ class P_Recaps extends Model
         return $query;
     }
 
+    public function studentAcademicYear()
+    {
+        return $this->belongsTo(RefStudentAcademicYear::class, 'ref_student_id', 'student_id');
+    }
+
     // Relationship dengan RefStudent
     public function student()
     {

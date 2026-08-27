@@ -5,8 +5,15 @@
         <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 
             <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
-                <div class="grow">
-                    <h5 class="text-16">Rekap & Konfirmasi Pelanggaran</h5>
+                <div class="grow flex items-center justify-between">
+                    <h5 class="text-16 font-semibold">Rekap & Konfirmasi Pelanggaran</h5>
+                    <form action="{{ route('superadmin.confirm-recaps.reset-all-testing') }}" method="POST" class="inline" onsubmit="return confirm('PENTING: Apakah Anda yakin ingin mengosongkan SELURUH data pelanggaran, tindakan, dan pemotongan poin semua siswa di sistem untuk memulai ulang uji coba?')">
+                        @csrf
+                        <button type="submit" class="btn bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950 dark:text-red-300 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            Kosongkan Seluruh Data Uji Coba
+                        </button>
+                    </form>
                 </div>
                 <ul class="flex shrink-0 items-center gap-2 text-sm font-normal">
                     <li
@@ -546,12 +553,12 @@
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
                                                             </a>
                                                         @endif
-                                                        <form method="POST" action="{{ route('superadmin.confirm-recaps.reset', $student->id) }}" class="inline-block" onsubmit="confirmReset(event, this)">
-                                                            @csrf
-                                                            <button type="submit" class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-red-500 bg-white p-0 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white" title="Reset Poin ke 0 (Tobat)">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                                                            </button>
-                                                        </form>
+                                                        <button type="button" 
+                                                            onclick="openReductionModal('{{ $student->id }}', '{{ addslashes($student->student->full_name) }}', '{{ $student->total_points_verified }}', '{{ route('superadmin.confirm-recaps.reset', $student->id) }}')"
+                                                            class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-red-500 bg-white p-0 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white"
+                                                            title="Potong Poin">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                                        </button>
                                                     </div>
                                                 </td>
                                                 <td>{{ $student->student->student_number ?? '-' }}</td>
@@ -1688,22 +1695,55 @@
             }
         }
 
-        function confirmReset(event, form) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Semua poin pelanggaran dan riwayat tindakan siswa ini akan dihapus dan direset ke 0!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Reset ke 0!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
+        function openReductionModal(studentId, studentName, currentPoints, routeUrl) {
+            document.getElementById('reductionForm').action = routeUrl;
+            document.getElementById('reductionStudentName').value = studentName;
+            document.getElementById('reductionCurrentPoints').value = currentPoints + ' Poin';
+            document.getElementById('points_reduced').max = currentPoints;
+            document.getElementById('points_reduced').value = '';
+            document.getElementById('reduction_reason').value = '';
+            document.getElementById('reductionModal').classList.remove('hidden');
+        }
+
+        function closeReductionModal() {
+            document.getElementById('reductionModal').classList.add('hidden');
         }
     </script>
+
+    <!-- Modal Pemotongan Poin -->
+    <div id="reductionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-slate-900/50 backdrop-blur-sm">
+        <div class="card w-full max-w-md bg-white dark:bg-zink-700 shadow-xl rounded-xl mx-4">
+            <div class="card-body p-6">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-zink-600 pb-3 mb-4">
+                    <h5 class="text-16 font-bold text-slate-800 dark:text-zink-50">Pemotongan Poin Siswa</h5>
+                    <button type="button" onclick="closeReductionModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <form id="reductionForm" method="POST" action="">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">Nama Siswa</label>
+                        <input type="text" id="reductionStudentName" readonly class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 w-full rounded-md border border-slate-200 px-3 py-2 text-sm bg-slate-50 cursor-not-allowed">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">Total Poin Saat Ini</label>
+                        <input type="text" id="reductionCurrentPoints" readonly class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-300 w-full rounded-md border border-slate-200 px-3 py-2 text-sm bg-slate-50 cursor-not-allowed">
+                    </div>
+                    <div class="mb-4">
+                        <label for="points_reduced" class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">Jumlah Pemotongan Poin</label>
+                        <input type="number" name="points_reduced" id="points_reduced" min="1" required class="dark:bg-zink-700 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="reduction_reason" class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">Alasan Pemotongan</label>
+                        <textarea name="reason" id="reduction_reason" rows="3" required placeholder="Contoh: Penghargaan Lomba Adiwiyata, Perilaku Positif, dll" class="dark:bg-zink-700 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeReductionModal()" class="btn border border-slate-300 hover:bg-slate-50 dark:border-zink-500 dark:hover:bg-zink-600 dark:text-zink-200 text-sm font-semibold px-4 py-2 rounded-lg">Batal</button>
+                        <button type="submit" class="btn bg-blue-600 text-white hover:bg-blue-700 text-sm font-semibold px-4 py-2 rounded-lg">Simpan Pemotongan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection

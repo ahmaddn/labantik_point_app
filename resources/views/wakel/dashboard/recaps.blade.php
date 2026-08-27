@@ -90,9 +90,23 @@
                                     <td>{{ $rec->student->student_number }}</td>
                                     <td>{{ $rec->student->gender }}</td>
                                     <td>
-                                        <a href="{{ route('wakel.recaps.detail', $rec->id) }}" class="btn bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-zink-600 dark:hover:bg-zink-500 dark:text-zink-50 text-12 font-medium px-3 py-1.5 rounded">
-                                            Detail & Tindakan
-                                        </a>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('wakel.recaps.detail', $rec->id) }}" class="btn bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-zink-600 dark:hover:bg-zink-500 dark:text-zink-50 text-12 font-medium px-3 py-1.5 rounded" title="Detail & Tindakan">
+                                                Detail & Tindakan
+                                            </a>
+                                            @if ($rec->has_new_violations)
+                                                <a href="{{ route('wakel.recaps.approve', $rec->id) }}"
+                                                    class="btn dark:bg-zink-700 flex size-[32px] items-center justify-center rounded-full border-green-500 bg-white p-0 text-green-500 hover:border-green-600 hover:bg-green-600 hover:text-white"
+                                                    title="Konfirmasi Laporan Baru">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M18 6 7 17l-5-5" />
+                                                        <path d="m22 10-7.5 7.5L13 16" />
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
