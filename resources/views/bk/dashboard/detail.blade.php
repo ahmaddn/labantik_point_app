@@ -28,6 +28,19 @@
                 </ul>
             </div>
 
+            @if (session('success'))
+                <div class="px-4 py-3 mb-4 text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400 rounded-lg flex items-center gap-2">
+                    <i data-lucide="check-circle" class="size-4"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="px-4 py-3 mb-4 text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400 rounded-lg flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="size-4"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
             <!-- Student Info Card -->
             <div class="card mb-4 shadow-sm relative overflow-hidden">
                 <div class="card-body p-5">
@@ -418,16 +431,18 @@
                                             <td class="px-4 py-3 whitespace-normal">
                                                 {{ $history->description ?? '-' }}
                                             </td>
-                                            <td class="px-4 py-3 text-center flex justify-center">
-                                                <form action="{{ route('kesiswaan-bk.actions.destroy', $history->id) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin membatalkan tindakan ini?')"
-                                                        class="btn dark:bg-zink-700 border-red-500 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white flex size-[32px] items-center justify-center rounded-full bg-white p-0"
-                                                        title="Batalkan Tindakan">
-                                                        <i data-lucide="trash-2" class="size-4"></i>
-                                                    </button>
-                                                </form>
+                                            <td class="px-4 py-3 text-center">
+                                                <div class="flex justify-center items-center">
+                                                    <form action="{{ route('kesiswaan-bk.actions.destroy', $history->id) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" onclick="return confirmSubmit(event, this, 'Apakah Anda yakin ingin membatalkan tindakan ini?')"
+                                                            class="flex h-8 w-8 items-center justify-center rounded-full border border-red-500 bg-white text-red-500 hover:bg-red-500 hover:text-white dark:bg-zink-700 transition-all"
+                                                            title="Batalkan Tindakan">
+                                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
