@@ -1,3 +1,48 @@
+<style>
+    .print-btn-container {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .print-btn {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .print-btn:hover {
+        background-color: #2563eb;
+    }
+    @media print {
+        .print-btn-container {
+            display: none !important;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    }
+</style>
+<div class="print-btn-container">
+    <button class="print-btn" onclick="window.print()">Cetak Surat</button>
+</div>
+@php
+    $actionName = strtolower($handling->handling_action ?? '');
+    // If not specified, default to show both
+    $showPanggilan = empty($actionName) || str_contains($actionName, 'panggilan') || str_contains($actionName, 'pemanggilan') || str_contains($actionName, 'panggil');
+    $showPerjanjian = empty($actionName) || str_contains($actionName, 'perjanjian') || str_contains($actionName, 'pernyataan') || str_contains($actionName, 'janji');
+@endphp
+
+@if ($showPanggilan)
 <table cellspacing="0" cellpadding="0" style="width: 559.95pt; border-collapse: collapse">
     <tbody>
         <tr style="height: 1pt">
@@ -161,7 +206,13 @@
 
 <p style="margin-top:0pt; margin-left:288pt; margin-bottom:0pt; text-align:justify;"><span
         style="font-family:Arial;">{{ $kepala_sekolah->nip ?? '' }}</span></p>
+@endif
+
+@if ($showPanggilan && $showPerjanjian)
 <div style="page-break-after:always;"></div>
+@endif
+
+@if ($showPerjanjian)
 <table cellspacing="0" cellpadding="0" style="width: 559.95pt; border-collapse: collapse">
     <tbody>
         <tr style="height: 1pt">
@@ -351,3 +402,4 @@
                 style="font-family:Arial;">{{ $kepala_sekolah->name ?? '' }}&nbsp;</span></u></strong></p>
 <p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span
         style="font-family:Arial;">{{ $kepala_sekolah->nip ?? '' }}</span></p>
+@endif

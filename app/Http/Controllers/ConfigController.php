@@ -42,6 +42,7 @@ class ConfigController extends Controller
             'academic_year' => 'required|exists:ref_student_academic_years,academic_year',
             'handling_points.*' => 'nullable|numeric',
             'handling_actions.*' => 'nullable|string',
+            'letter_types.*' => 'nullable|string',
         ]);
 
         try {
@@ -68,6 +69,7 @@ class ConfigController extends Controller
                             'p_config_id'    => $config->id,
                             'handling_point' => $point,
                             'handling_action' => $request->handling_actions[$index],
+                            'letter_type' => $request->letter_types[$index] ?? null,
                             'created_at' => now(),
                             'updated_at' => now(),
                         ];
@@ -93,6 +95,7 @@ class ConfigController extends Controller
             'academic_year' => 'required|exists:ref_student_academic_years,academic_year',
             'handling_points.*' => 'required|numeric',
             'handling_actions.*' => 'required|string',
+            'letter_types.*' => 'nullable|string',
         ]);
 
         try {
@@ -116,6 +119,7 @@ class ConfigController extends Controller
                         'p_config_id'    => $id,
                         'handling_point' => $point,
                         'handling_action' => $request->handling_actions[$index],
+                        'letter_type' => $request->letter_types[$index] ?? null,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];

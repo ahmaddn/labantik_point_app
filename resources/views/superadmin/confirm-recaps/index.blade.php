@@ -251,11 +251,35 @@
                                                                         data-student-id="{{ $student->id }}">
                                                                         <option value="">Pilih tindakan...</option>
                                                                         @foreach ($handlingOptions as $item)
+                                                                            @php
+                                                                                $actionType = $item->letter_type;
+                                                                                if (empty($actionType)) {
+                                                                                    $actionNameLower = strtolower($item->handling_action ?? '');
+                                                                                    if (str_contains($actionNameLower, 'lisan')) $actionType = 'lisan';
+                                                                                    elseif (str_contains($actionNameLower, 'perjanjian')) $actionType = 'perjanjian';
+                                                                                    elseif (str_contains($actionNameLower, 'pernyataan')) $actionType = 'pernyataan';
+                                                                                    elseif (str_contains($actionNameLower, 'pengembalian')) $actionType = 'pengembalian';
+                                                                                    else $actionType = 'panggilan';
+                                                                                }
+
+                                                                                if ($actionType === 'lisan') {
+                                                                                    $formatText = ' (Teguran Lisan)';
+                                                                                } elseif ($actionType === 'perjanjian') {
+                                                                                    $formatText = ' (Format: Surat Perjanjian)';
+                                                                                } elseif ($actionType === 'pernyataan') {
+                                                                                    $formatText = ' (Format: Surat Pernyataan)';
+                                                                                } elseif ($actionType === 'pengembalian') {
+                                                                                    $formatText = ' (Format: Surat Pengembalian)';
+                                                                                } else {
+                                                                                    $formatText = ' (Format: Surat Panggilan Orang Tua)';
+                                                                                }
+                                                                            @endphp
                                                                             <option value="{{ $item->id }}"
                                                                                 data-action="{{ e($item->handling_action) }}"
                                                                                 data-point="{{ e($item->handling_point) }}"
+                                                                                data-letter-type="{{ $item->letter_type ?? '' }}"
                                                                                 {{ (!$applicableHandling || $item->id !== $applicableHandling->id) ? 'disabled' : '' }}>
-                                                                                {{ $item->handling_action }} -
+                                                                                {{ $item->handling_action }}{{ $formatText }} -
                                                                                 {{ $item->handling_point }} Poin
                                                                             </option>
                                                                         @endforeach
@@ -1541,7 +1565,8 @@
                         const isKegiatanSosial = action &&
                             (action.toLowerCase().includes('kegiatan sosial') ||
                                 action.toLowerCase().includes('kegiatan sosial'));
-                        const isLisan = action && action.toLowerCase().includes('lisan');
+                        const letterType = selectedOption.getAttribute('data-letter-type') || '';
+                        const isLisan = letterType === 'lisan' || (letterType === '' && action && action.toLowerCase().includes('lisan'));
 
                         const refNumberInput = document.getElementById(`reference_number-${studentId}`);
                         const refAsterisk = document.getElementById(`ref-asterisk-${studentId}`);
