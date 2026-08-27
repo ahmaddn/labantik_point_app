@@ -252,15 +252,15 @@
                                                                         <option value="">Pilih tindakan...</option>
                                                                         @foreach ($handlingOptions as $item)
                                                                             @php
-                                                                                $actionType = $item->letter_type;
-                                                                                if (empty($actionType)) {
-                                                                                    $actionNameLower = strtolower($item->handling_action ?? '');
-                                                                                    if (str_contains($actionNameLower, 'lisan')) $actionType = 'lisan';
-                                                                                    elseif (str_contains($actionNameLower, 'perjanjian')) $actionType = 'perjanjian';
-                                                                                    elseif (str_contains($actionNameLower, 'pernyataan')) $actionType = 'pernyataan';
-                                                                                    elseif (str_contains($actionNameLower, 'pengembalian')) $actionType = 'pengembalian';
-                                                                                    else $actionType = 'panggilan';
-                                                                                }
+                                                                                 $actionType = $item->letter_type;
+                                                                                 if (empty($actionType)) {
+                                                                                     $actionNameLower = strtolower($item->handling_action ?? '');
+                                                                                     if (str_contains($actionNameLower, 'lisan')) $actionType = 'lisan';
+                                                                                     elseif (str_contains($actionNameLower, 'perjanjian')) $actionType = 'perjanjian';
+                                                                                     elseif (str_contains($actionNameLower, 'pernyataan') || str_contains($actionNameLower, 'diri') || str_contains($actionNameLower, 'mundur')) $actionType = 'pernyataan';
+                                                                                     elseif (str_contains($actionNameLower, 'pengembalian')) $actionType = 'pengembalian';
+                                                                                     else $actionType = 'panggilan';
+                                                                                 }
 
                                                                                 if ($actionType === 'lisan') {
                                                                                     $formatText = ' (Teguran Lisan)';

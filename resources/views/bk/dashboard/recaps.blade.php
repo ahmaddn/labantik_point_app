@@ -188,7 +188,7 @@
                                                                                 $actionNameLower = strtolower($item->handling_action ?? '');
                                                                                 if (str_contains($actionNameLower, 'lisan')) $actionType = 'lisan';
                                                                                 elseif (str_contains($actionNameLower, 'perjanjian')) $actionType = 'perjanjian';
-                                                                                elseif (str_contains($actionNameLower, 'pernyataan')) $actionType = 'pernyataan';
+                                                                                elseif (str_contains($actionNameLower, 'pernyataan') || str_contains($actionNameLower, 'diri') || str_contains($actionNameLower, 'mundur')) $actionType = 'pernyataan';
                                                                                 elseif (str_contains($actionNameLower, 'pengembalian')) $actionType = 'pengembalian';
                                                                                 else $actionType = 'panggilan';
                                                                             }

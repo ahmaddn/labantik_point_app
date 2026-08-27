@@ -52,6 +52,7 @@ Route::prefix('kesiswaan-bk')
         Route::put('/violation-status/{id}', [BKController::class, 'updateViolationStatus'])->name('violation-status.update');
         Route::get('/actions', [BKController::class, 'actions'])->name('actions');
         Route::get('/actions/class/{classId}', [BKController::class, 'classActions'])->name('actions.class');
+        Route::delete('/actions/{id}', [BKController::class, 'destroyAction'])->name('actions.destroy');
 
         //Templates
         Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
@@ -93,6 +94,7 @@ Route::prefix('superadmin')->middleware(['auth', 'role:super-admin'])->name('sup
 
     Route::get('/actions', [SuperAdminController::class, 'actions'])->name('actions');
     Route::get('/actions/class/{classId}', [SuperAdminController::class, 'classActions'])->name('actions.class');
+    Route::delete('/actions/{id}', [SuperAdminController::class, 'destroyAction'])->name('actions.destroy');
     //Configs
     Route::get('/configs', [ConfigController::class, 'index'])->name('configs');
     Route::post('/configs/store', [ConfigController::class, 'store'])->name('configs.store');

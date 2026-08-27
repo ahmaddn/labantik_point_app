@@ -667,7 +667,7 @@ class SuperAdminController extends Controller
             if (empty($actionType)) {
                 $actionName = strtolower($handling->handling_action ?? '');
                 if (str_contains($actionName, 'perjanjian')) $actionType = 'perjanjian';
-                elseif (str_contains($actionName, 'pernyataan')) $actionType = 'pernyataan';
+                elseif (str_contains($actionName, 'pernyataan') || str_contains($actionName, 'diri') || str_contains($actionName, 'mundur')) $actionType = 'pernyataan';
                 elseif (str_contains($actionName, 'pengembalian')) $actionType = 'pengembalian';
                 elseif (str_contains($actionName, 'lisan')) $actionType = 'lisan';
                 else $actionType = 'panggilan';
@@ -793,6 +793,24 @@ class SuperAdminController extends Controller
             DB::rollBack();
             Log::error('resetPoints error: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Terjadi kesalahan saat mereset poin: ' . $e->getMessage()]);
+        }
+    }
+
+    public function destroyAction($id)
+    {
+        try {
+            DB::beginTransaction();
+            $action = P_Viol_Action::findOrFail($id);
+            if ($action->detail) {
+                $action->detail->delete();
+            }
+            $action->delete();
+            DB::commit();
+            return redirect()->back()->with('success', 'Tindakan penanganan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('destroyAction error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }
