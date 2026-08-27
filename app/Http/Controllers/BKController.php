@@ -396,16 +396,13 @@ class BKController extends Controller
                 return $student->has_new_violations;
             })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
 
-            $historyStudents = $allStudents->filter(function ($student) {
-                return $student->action_detail && !$student->has_new_violations;
-            })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
-        } else {
-            $handlingOptions = collect();
-            $activeStudents = collect();
-            $historyStudents = collect();
-        }
+        $kepalaSekolahList = \App\Models\User::whereHas('roles', function($query) {
+                $query->where('code', 'kepala-sekolah');
+            })
+            ->with('employee')
+            ->get();
 
-        return view('bk.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions'));
+        return view('bk.dashboard.recaps', compact('activeStudents', 'historyStudents', 'activeAcademicYear', 'handlingOptions', 'kepalaSekolahList'));
     }
 
     public function detailRecaps($studentAcademicYearId)
@@ -498,7 +495,19 @@ class BKController extends Controller
     {
         $request->validate([
             'handling_id' => 'required|exists:p_config_handlings,id',
+            'student_name' => 'nullable|string|max:191',
+            'parent_name' => 'nullable|string|max:191',
             'description' => 'nullable|string',
+            'prey' => 'nullable|date',
+            'action_date' => 'nullable|date',
+            'reference_number' => 'nullable|string|max:191',
+            'time' => 'nullable|string|max:50',
+            'room' => 'nullable|string|max:100',
+            'facing' => 'nullable|string|max:100',
+            'violation_count' => 'nullable|integer|min:0|max:10',
+            'violations' => 'nullable|array',
+            'violations.*' => 'nullable|string|max:500',
+            'kepala_sekolah_id' => 'nullable|exists:core_users,id',
         ]);
 
         $studentAcademicYear = RefStudentAcademicYear::with([
@@ -509,30 +518,124 @@ class BKController extends Controller
                     ->with('violation.category');
             }
         ])
-            ->findOrFail($id);
+            ->find($id);
+
+        if (!$studentAcademicYear || !$studentAcademicYear->student) {
+            return back()->withErrors(['error' => 'Data siswa tidak ditemukan.']);
+        }
 
         $handling = P_Config_Handlings::findOrFail($request->handling_id);
         $isLisan = stripos($handling->handling_action, 'lisan') !== false;
 
-        if ($isLisan) {
-            return redirect()->back()->with('success', 'Tindakan penanganan Peringatan Lisan berhasil disimpan.');
+        if (!$isLisan && empty($request->parent_name)) {
+            return back()->withErrors(['error' => 'Mohon isi nama wali.']);
         }
 
-        $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
+        try {
+            DB::beginTransaction();
 
-        $data = [
-            'student' => $studentAcademicYear->student,
-            'class' => $studentAcademicYear->class,
-            'handling' => $handling,
-            'description' => $request->description,
-            'total_points' => $totalPoints,
-            'date' => Carbon::now()->locale('id')->translatedFormat('j F Y'),
-            'violations' => $studentAcademicYear->recaps
-        ];
+            $action = P_Viol_Action::create([
+                'p_student_academic_year_id' => $studentAcademicYear->id,
+                'handling_id' => $request->handling_id,
+                'handled_by' => Auth::id(),
+                'activity' => $handling->handling_action,
+                'description' => $request->description,
+            ]);
 
-        $pdf = Pdf::loadView('pdf.handling-action', $data);
+            $violations = array_filter($request->violations ?? [], fn($v) => !empty($v));
 
-        return $pdf->download('Surat-Tindakan-' . $studentAcademicYear->student->full_name . '-' . Carbon::now()->format('YmdHis') . '.pdf');
+            \App\Models\P_Viol_Action_Detail::create([
+                'p_viol_action_id' => $action->id,
+                'parent_name' => $request->parent_name ?? '-',
+                'student_name' => $request->student_name,
+                'prey' => $request->prey,
+                'action_date' => $request->action_date,
+                'reference_number' => $request->reference_number,
+                'time' => $request->time,
+                'room' => $request->room,
+                'facing' => $request->facing,
+                'violation_count' => count($violations),
+                'violations' => count($violations) > 0 ? array_values($violations) : null,
+            ]);
+
+            DB::commit();
+
+            if ($isLisan) {
+                return redirect()->route('kesiswaan-bk.recaps')->with('success', 'Tindakan penanganan Peringatan Lisan berhasil disimpan.');
+            }
+
+            $totalPoints = $studentAcademicYear->recaps->sum(fn($recap) => $recap->violation->point ?? 0);
+            $actionDay = '';
+            try {
+                $preyDate = $request->prey ? Carbon::parse($request->prey)->locale('id')->translatedFormat('j F Y') : Carbon::now()->locale('id')->translatedFormat('j F Y');
+            } catch (\Exception $e) {
+                $preyDate = $request->prey;
+            }
+
+            try {
+                $actionDateFormatted = $request->action_date ? Carbon::parse($request->action_date)->locale('id')->translatedFormat('j F Y') : '';
+                if ($request->action_date) {
+                    $actionDay = Carbon::parse($request->action_date)->locale('id')->translatedFormat('l');
+                }
+            } catch (\Exception $e) {
+                $actionDateFormatted = $request->action_date;
+                $actionDay = '';
+            }
+            $kelasString = trim(($studentAcademicYear->class->academic_level ?? '') . ' ' . ($studentAcademicYear->class->name ?? ''));
+
+            if ($request->filled('kepala_sekolah_id')) {
+                $kepalaSekolah = \App\Models\User::where('id', $request->kepala_sekolah_id)
+                    ->with('employee')
+                    ->first();
+            } else {
+                $kepalaSekolah = \App\Models\User::whereHas('roles', function($query) {
+                        $query->where('code', 'kepala-sekolah');
+                    })
+                    ->with('employee')
+                    ->first();
+            }
+
+            if (!$kepalaSekolah) {
+                $kepalaSekolah = \App\Models\User::where('email', 'kepsek@gmail.com')
+                    ->with('employee')
+                    ->first();
+            }
+
+            if ($kepalaSekolah && $kepalaSekolah->employee) {
+                $kepalaSekolah->name = $kepalaSekolah->employee->full_name ?? $kepalaSekolah->name;
+                $kepalaSekolah->nip = 'NIP. ' . ($kepalaSekolah->employee->nip ?? '-');
+            }
+
+            $data = [
+                'student' => $studentAcademicYear->student,
+                'class' => $studentAcademicYear->class,
+                'handling' => $handling,
+                'description' => $request->description,
+                'total_points' => $totalPoints,
+                'date' => $preyDate,
+                'violations' => $studentAcademicYear->recaps,
+                'prey' => $preyDate,
+                'reference_number' => $request->reference_number ?? '',
+                'student_name' => $request->student_name ?? '',
+                'student_nis' => $studentAcademicYear->student->student_number ?? '',
+                'student_nisn' => $studentAcademicYear->student->national_identification_number ?? '',
+                'parent_name' => $request->parent_name ?? '',
+                'action_date' => $actionDateFormatted,
+                'action_day' => $actionDay,
+                'time' => $request->time ?? '',
+                'room' => $request->room ?? '',
+                'facing' => $request->facing ?? '',
+                'kelas' => $kelasString,
+                'kepala_sekolah' => $kepalaSekolah,
+                'violation_list' => array_values($violations),
+            ];
+
+            return view('pdf.panggilan', $data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('storeHandlingAction error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
     public function actions()

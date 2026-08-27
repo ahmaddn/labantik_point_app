@@ -15,11 +15,7 @@ class SiswaController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $student = $user->student;
-
-        if (!$student) {
-            abort(404, 'Data siswa tidak ditemukan.');
-        }
+        $student = $this->getOrLinkStudent($user);
 
         $activeConfig = P_Configs::where('is_active', true)->first();
         $academicYearStr = $activeConfig ? str_replace('-', '/', $activeConfig->academic_year) : null;
@@ -98,11 +94,7 @@ class SiswaController extends Controller
     public function violations()
     {
         $user = Auth::user();
-        $student = $user->student;
-
-        if (!$student) {
-            abort(404, 'Data siswa tidak ditemukan.');
-        }
+        $student = $this->getOrLinkStudent($user);
 
         $violations = P_Recaps::where('ref_student_id', $student->id)
             ->with(['violation.category', 'createdBy', 'verifiedBy'])
@@ -115,11 +107,7 @@ class SiswaController extends Controller
     public function actions()
     {
         $user = Auth::user();
-        $student = $user->student;
-
-        if (!$student) {
-            abort(404, 'Data siswa tidak ditemukan.');
-        }
+        $student = $this->getOrLinkStudent($user);
 
         $studentAcademicYearIds = RefStudentAcademicYear::where('student_id', $student->id)->pluck('id');
         
@@ -129,5 +117,40 @@ class SiswaController extends Controller
             ->paginate(15);
 
         return view('siswa.actions.index', compact('student', 'actions'));
+    }
+
+    private function getOrLinkStudent($user)
+    {
+        $student = $user->student;
+        if (!$student) {
+            // Auto-link student by matching student_number/NISN prefix in email, or name
+            $emailPrefix = explode('@', $user->email)[0];
+            $student = \App\Models\RefStudent::where('student_number', $emailPrefix)
+                ->orWhere('national_student_number', $emailPrefix)
+                ->orWhere('full_name', 'like', $user->name)
+                ->first();
+
+            if ($student) {
+                $student->user_id = $user->id;
+                $student->save();
+                $user->load('student');
+                $student = $user->student;
+            } else {
+                // Fallback creation for testing/development accounts
+                $student = \App\Models\RefStudent::create([
+                    'id' => (string) \Illuminate\Support\Str::uuid(),
+                    'user_id' => $user->id,
+                    'full_name' => $user->name,
+                    'student_number' => is_numeric($emailPrefix) ? $emailPrefix : '99999999',
+                    'national_student_number' => '9999999999',
+                    'gender' => 'L',
+                    'religion' => 'Islam',
+                    'address' => 'Tidak diketahui',
+                ]);
+                $user->load('student');
+                $student = $user->student;
+            }
+        }
+        return $student;
     }
 }
