@@ -232,28 +232,28 @@
                         </label>
                         
                         <!-- Column Headers -->
-                        <div class="grid grid-cols-12 gap-3 mb-2 font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-zink-300 px-1">
-                            <div class="col-span-2">Poin Batas</div>
-                            <div class="col-span-6">Tindakan Penanganan</div>
-                            <div class="col-span-3">Format Surat</div>
-                            <div class="col-span-1"></div>
+                        <div class="flex items-center gap-3 mb-2 font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-zink-300 px-1">
+                            <div style="width: 80px; flex-shrink: 0;">Poin Batas</div>
+                            <div style="flex-grow: 1;">Tindakan Penanganan</div>
+                            <div style="width: 160px; flex-shrink: 0;">Format Surat</div>
+                            <div style="width: 40px; flex-shrink: 0;"></div>
                         </div>
 
                         <div id="handlingPointsContainer" class="space-y-2">
-                            <div class="handling-point-row mb-2 grid grid-cols-12 gap-3 items-center">
-                                <div class="col-span-2">
+                            <div class="handling-point-row mb-2 flex items-center gap-3">
+                                <div style="width: 80px; flex-shrink: 0;">
                                     <input type="number" name="handling_points[]"
                                         class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                         placeholder="Poin" required>
                                 </div>
 
-                                <div class="col-span-6">
+                                <div style="flex-grow: 1;">
                                     <input type="text" name="handling_actions[]"
                                         class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none"
                                         placeholder="Aksi / Nama Penanganan" required>
                                 </div>
 
-                                <div class="col-span-3">
+                                <div style="width: 160px; flex-shrink: 0;">
                                     <select name="letter_types[]" required
                                          class="form-input dark:border-zink-500 focus:border-custom-500 w-full border-slate-200 focus:outline-none">
                                          <option value="lisan">Lisan</option>
@@ -264,9 +264,9 @@
                                      </select>
                                 </div>
 
-                                <div class="col-span-1 text-center">
+                                <div style="width: 40px; flex-shrink: 0;" class="text-center">
                                     <button type="button"
-                                        class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0 w-full inline-flex items-center justify-center">
+                                        class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg w-full inline-flex items-center justify-center">
                                         <i data-lucide="trash-2" class="size-4"></i>
                                     </button>
                                 </div>
@@ -328,11 +328,11 @@
                         </label>
                         
                         <!-- Column Headers -->
-                        <div class="grid grid-cols-12 gap-3 mb-2 font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-zink-300 px-1">
-                            <div class="col-span-2">Poin Batas</div>
-                            <div class="col-span-6">Tindakan Penanganan</div>
-                            <div class="col-span-3">Format Surat</div>
-                            <div class="col-span-1"></div>
+                        <div class="flex items-center gap-3 mb-2 font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-zink-300 px-1">
+                            <div style="width: 80px; flex-shrink: 0;">Poin Batas</div>
+                            <div style="flex-grow: 1;">Tindakan Penanganan</div>
+                            <div style="width: 160px; flex-shrink: 0;">Format Surat</div>
+                            <div style="width: 40px; flex-shrink: 0;"></div>
                         </div>
 
                         <div id="editHandlingPointsContainer" class="space-y-2">
@@ -663,21 +663,21 @@
             function addHandlingRow(handling = null) {
                 const container = document.getElementById('handlingPointsContainer');
                 const newRow = document.createElement('div');
-                newRow.className = 'handling-point-row mb-2 grid grid-cols-12 gap-3 items-center';
+                newRow.className = 'handling-point-row mb-2 flex items-center gap-3';
                 const type = handling ? (handling.letter_type || 'lisan') : 'lisan';
 
                 newRow.innerHTML = `
-            <div class="col-span-2">
+            <div style="width: 80px; flex-shrink: 0;">
                 <input type="number" name="handling_points[]" value="${handling ? handling.handling_point : ''}"
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
                     placeholder="Poin" required>
             </div>
-            <div class="col-span-6">
+            <div style="flex-grow: 1;">
                 <input type="text" name="handling_actions[]" value="${handling ? handling.handling_action : ''}"
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
                     placeholder="Aksi / Nama Penanganan" required>
             </div>
-            <div class="col-span-3">
+            <div style="width: 160px; flex-shrink: 0;">
                 <select name="letter_types[]" required
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
                     <option value="lisan" ${type === 'lisan' ? 'selected' : ''}>Lisan</option>
@@ -687,9 +687,9 @@
                     <option value="panggilan" ${type === 'panggilan' ? 'selected' : ''}>Panggilan Ortu</option>
                 </select>
             </div>
-            <div class="col-span-1 text-center">
+            <div style="width: 40px; flex-shrink: 0;" class="text-center">
                 <button type="button"
-                    class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0 w-full inline-flex items-center justify-center">
+                    class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg w-full inline-flex items-center justify-center">
                     <i data-lucide="trash-2" class="size-4"></i>
                 </button>
             </div>
@@ -710,21 +710,21 @@
             function addEditHandlingRow(handling = null) {
                 const container = document.getElementById('editHandlingPointsContainer');
                 const newRow = document.createElement('div');
-                newRow.className = 'handling-point-row mb-2 grid grid-cols-12 gap-3 items-center';
+                newRow.className = 'handling-point-row mb-2 flex items-center gap-3';
                 const type = handling ? (handling.letter_type || 'lisan') : 'lisan';
 
                 newRow.innerHTML = `
-            <div class="col-span-2">
+            <div style="width: 80px; flex-shrink: 0;">
                 <input type="number" name="handling_points[]" value="${handling ? handling.handling_point : ''}"
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
                     placeholder="Poin" required>
             </div>
-            <div class="col-span-6">
+            <div style="flex-grow: 1;">
                 <input type="text" name="handling_actions[]" value="${handling ? handling.handling_action : ''}"
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full"
                     placeholder="Aksi / Nama Penanganan" required>
             </div>
-            <div class="col-span-3">
+            <div style="width: 160px; flex-shrink: 0;">
                 <select name="letter_types[]" required
                     class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-full">
                     <option value="lisan" ${type === 'lisan' ? 'selected' : ''}>Lisan</option>
@@ -734,9 +734,9 @@
                     <option value="panggilan" ${type === 'panggilan' ? 'selected' : ''}>Panggilan Ortu</option>
                 </select>
             </div>
-            <div class="col-span-1 text-center">
+            <div style="width: 40px; flex-shrink: 0;" class="text-center">
                 <button type="button"
-                    class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0 w-full inline-flex items-center justify-center">
+                    class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg w-full inline-flex items-center justify-center">
                     <i data-lucide="trash-2" class="size-4"></i>
                 </button>
             </div>
