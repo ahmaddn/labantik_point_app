@@ -240,6 +240,15 @@
                                     class="form-input dark:border-zink-500 focus:border-custom-500 flex-1 border-slate-200 focus:outline-none"
                                     placeholder="Aksi (contoh: Peringatan lisan)">
 
+                                <select name="letter_types[]" required
+                                     class="form-input dark:border-zink-500 focus:border-custom-500 w-48 shrink-0 border-slate-200 focus:outline-none">
+                                     <option value="lisan">Teguran Lisan</option>
+                                     <option value="perjanjian">Surat Perjanjian</option>
+                                     <option value="pernyataan">Surat Pernyataan</option>
+                                     <option value="pengembalian">Surat Pengembalian</option>
+                                     <option value="panggilan">Surat Panggilan Orang Tua</option>
+                                 </select>
+
                                 <button type="button"
                                     class="btn-remove-handling btn shrink-0 rounded-lg bg-red-100 !px-3 !py-2 text-red-500 hover:bg-red-600 hover:text-white">
                                     <i data-lucide="trash-2" class="size-4"></i>
@@ -627,9 +636,9 @@
 
             function addHandlingRow(handling = null) {
                 const container = document.getElementById('handlingPointsContainer');
-
                 const newRow = document.createElement('div');
                 newRow.className = 'flex items-center gap-3 mb-2 handling-point-row';
+                const type = handling ? (handling.letter_type || 'lisan') : 'lisan';
 
                 newRow.innerHTML = `
             <input type="number" name="handling_points[]" value="${handling ? handling.handling_point : ''}"
@@ -639,6 +648,15 @@
             <input type="text" name="handling_actions[]" value="${handling ? handling.handling_action : ''}"
                 class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 flex-1"
                 placeholder="Aksi (contoh: Peringatan lisan)">
+
+            <select name="letter_types[]" required
+                class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-48 shrink-0">
+                <option value="lisan" ${type === 'lisan' ? 'selected' : ''}>Teguran Lisan</option>
+                <option value="perjanjian" ${type === 'perjanjian' ? 'selected' : ''}>Surat Perjanjian</option>
+                <option value="pernyataan" ${type === 'pernyataan' ? 'selected' : ''}>Surat Pernyataan</option>
+                <option value="pengembalian" ${type === 'pengembalian' ? 'selected' : ''}>Surat Pengembalian</option>
+                <option value="panggilan" ${type === 'panggilan' ? 'selected' : ''}>Surat Panggilan Orang Tua</option>
+            </select>
 
             <button type="button"
                 class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0">
@@ -661,8 +679,8 @@
             function addEditHandlingRow(handling = null) {
                 const container = document.getElementById('editHandlingPointsContainer');
                 const newRow = document.createElement('div');
-
                 newRow.className = 'flex items-center gap-3 mb-2 handling-point-row';
+                const type = handling ? (handling.letter_type || 'lisan') : 'lisan';
 
                 newRow.innerHTML = `
             <input type="number" name="handling_points[]" value="${handling ? handling.handling_point : ''}"
@@ -672,6 +690,15 @@
             <input type="text" name="handling_actions[]" value="${handling ? handling.handling_action : ''}"
                 class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 flex-1"
                 placeholder="Aksi (contoh: Peringatan lisan)" required>
+
+            <select name="letter_types[]" required
+                class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 w-48 shrink-0">
+                <option value="lisan" ${type === 'lisan' ? 'selected' : ''}>Teguran Lisan</option>
+                <option value="perjanjian" ${type === 'perjanjian' ? 'selected' : ''}>Surat Perjanjian</option>
+                <option value="pernyataan" ${type === 'pernyataan' ? 'selected' : ''}>Surat Pernyataan</option>
+                <option value="pengembalian" ${type === 'pengembalian' ? 'selected' : ''}>Surat Pengembalian</option>
+                <option value="panggilan" ${type === 'panggilan' ? 'selected' : ''}>Surat Panggilan Orang Tua</option>
+            </select>
 
             <button type="button"
                 class="btn-remove-handling text-red-500 btn bg-red-100 hover:text-white hover:bg-red-600 !px-3 !py-2 rounded-lg shrink-0">

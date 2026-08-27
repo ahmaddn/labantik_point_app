@@ -17,7 +17,8 @@ class P_Config_Handlings extends Model
         'id',
         'p_config_id',
         'handling_point',
-        'handling_action'
+        'handling_action',
+        'letter_type'
     ];
 
     public function config()

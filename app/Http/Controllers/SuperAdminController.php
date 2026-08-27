@@ -558,7 +558,7 @@ class SuperAdminController extends Controller
         }
 
         $handling = P_Config_Handlings::findOrFail($request->handling_id);
-        $isLisan = stripos($handling->handling_action, 'lisan') !== false;
+        $isLisan = ($handling->letter_type === 'lisan') || (empty($handling->letter_type) && stripos($handling->handling_action, 'lisan') !== false);
 
         if (!$isLisan && empty($request->parent_name)) {
             return back()->withErrors(['error' => 'Mohon isi nama wali.']);
@@ -651,7 +651,7 @@ class SuperAdminController extends Controller
                 'reference_number' => $request->reference_number ?? '',
                 'student_name' => $request->student_name ?? '',
                 'student_nis' => $studentAcademicYear->student->student_number ?? '',
-                'student_nisn' => $studentAcademicYear->student->national_identification_number ?? '',
+                'student_nisn' => $studentAcademicYear->student->national_student_number ?? '',
                 'parent_name' => $request->parent_name ?? '',
                 'action_date' => $actionDateFormatted,
                 'action_day' => $actionDay,
@@ -663,7 +663,25 @@ class SuperAdminController extends Controller
                 'violation_list' => array_values($violations),
             ];
 
-            return view('pdf.panggilan', $data);
+            $actionType = $handling->letter_type;
+            if (empty($actionType)) {
+                $actionName = strtolower($handling->handling_action ?? '');
+                if (str_contains($actionName, 'perjanjian')) $actionType = 'perjanjian';
+                elseif (str_contains($actionName, 'pernyataan')) $actionType = 'pernyataan';
+                elseif (str_contains($actionName, 'pengembalian')) $actionType = 'pengembalian';
+                elseif (str_contains($actionName, 'lisan')) $actionType = 'lisan';
+                else $actionType = 'panggilan';
+            }
+
+            if ($actionType === 'perjanjian') {
+                return view('pdf.perjanjian', $data);
+            } elseif ($actionType === 'pernyataan') {
+                return view('pdf.pernyataan', $data);
+            } elseif ($actionType === 'pengembalian') {
+                return view('pdf.pengembalian', $data);
+            } else {
+                return view('pdf.panggilan', $data);
+            }
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('storeHandlingAction error: ' . $e->getMessage());
