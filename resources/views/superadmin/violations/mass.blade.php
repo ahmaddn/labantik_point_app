@@ -119,45 +119,48 @@
                         <div>
                             <label class="dark:text-zink-300 mb-2 block text-sm font-medium text-slate-700">2. Pilih Siswa Pelanggar</label>
 
-                            <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div class="relative w-full sm:max-w-md">
-                                    <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NISN..." class="form-input dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:border-custom-500 dark:focus:border-custom-800 w-full border-slate-200 pl-9">
-                                    <div class="absolute left-3 top-2.5 text-slate-400">
+                            <!-- Search + Select All dalam satu baris -->
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="relative flex-1">
+                                    <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NIS..." class="form-input dark:border-zink-500 dark:bg-zink-700 dark:text-zink-100 focus:border-custom-500 dark:focus:border-custom-800 w-full border-slate-200 pl-9">
+                                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                                         <i data-lucide="search" class="size-4"></i>
                                     </div>
                                 </div>
-
-                                <div class="flex shrink-0 items-center gap-2 sm:pr-2">
-                                    <input type="checkbox" id="select-all" class="size-4 rounded border-slate-300 text-custom-500 focus:ring-custom-500">
-                                    <label for="select-all" class="cursor-pointer text-sm font-medium text-slate-600 dark:text-zink-200">Pilih Semua yang Tampil</label>
+                                <div class="flex shrink-0 items-center gap-2">
+                                    <input type="checkbox" id="select-all" class="size-4 cursor-pointer rounded border-slate-300 text-custom-500 focus:ring-custom-500">
+                                    <label for="select-all" class="cursor-pointer text-sm font-medium text-slate-600 dark:text-zink-200 whitespace-nowrap">Pilih Semua yang Tampil</label>
                                 </div>
                             </div>
 
                             <!-- Scrollable Checkbox List -->
-                            <div class="max-h-[350px] overflow-y-auto rounded-md border border-slate-200 bg-slate-50/50 p-4 dark:border-zink-500 dark:bg-zink-800/20">
+                            <div class="max-h-[380px] overflow-y-auto rounded-md border border-slate-200 bg-slate-50/50 p-4 dark:border-zink-500 dark:bg-zink-800/20">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="students-container">
                                     @forelse($studentAcademicYears as $say)
-                                        <div class="student-row flex items-start p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:shadow-sm transition-all duration-150"
-                                             data-name="{{ $say->student->full_name ?? '' }}"
-                                             data-class="{{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '' }}"
-                                             data-nisn="{{ $say->student->national_student_number ?? '' }}">
-                                            <div class="flex items-center h-5">
-                                                <input type="checkbox" name="student_ids[]" value="{{ $say->id }}" id="student-{{ $say->id }}" class="student-checkbox size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                                        <div class="student-row flex items-start gap-3 p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:border-custom-300 hover:shadow-sm transition-all duration-150 cursor-pointer"
+                                             data-name="{{ strtolower($say->student->full_name ?? '') }}"
+                                             data-class="{{ strtolower($say->class ? $say->class->academic_level . ' ' . $say->class->name : '') }}"
+                                             data-nis="{{ strtolower($say->student->student_number ?? '') }}">
+                                            <div class="pt-0.5 shrink-0">
+                                                <input type="checkbox" name="student_ids[]" value="{{ $say->id }}" id="student-{{ $say->id }}" class="student-checkbox size-4 cursor-pointer rounded border-slate-300 text-custom-500 focus:ring-custom-500">
                                             </div>
-                                            <div class="ml-3 text-sm">
-                                                <label for="student-{{ $say->id }}" class="font-semibold text-slate-800 dark:text-zink-50 cursor-pointer block leading-tight">
+                                            <label for="student-{{ $say->id }}" class="flex flex-col gap-0.5 cursor-pointer min-w-0">
+                                                <span class="font-semibold text-sm text-slate-800 dark:text-zink-50 leading-snug truncate">
                                                     {{ $say->student->full_name ?? 'Tanpa Nama' }}
-                                                </label>
-                                                <span class="text-xs text-slate-500 dark:text-zink-300 block mt-1">
+                                                </span>
+                                                <span class="text-xs text-slate-500 dark:text-zink-300">
                                                     Kelas: {{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '-' }}
                                                 </span>
-                                                <span class="text-[11px] text-slate-400 block">
-                                                    NISN: {{ $say->student->national_student_number ?? '-' }}
+                                                <span class="text-[11px] text-slate-400 dark:text-zink-400">
+                                                    NIS: {{ $say->student->student_number ?? '-' }}
                                                 </span>
-                                            </div>
+                                            </label>
                                         </div>
                                     @empty
-                                        <div class="col-span-full text-center text-slate-500 py-6">Tidak ada data siswa aktif.</div>
+                                        <div class="col-span-full text-center text-slate-500 dark:text-zink-400 py-8">
+                                            <i data-lucide="users" class="size-8 mx-auto mb-2 opacity-40"></i>
+                                            <p>Tidak ada data siswa aktif.</p>
+                                        </div>
                                     @endforelse
                                 </div>
                             </div>
@@ -219,11 +222,11 @@
             searchInput.addEventListener('input', function (e) {
                 const query = e.target.value.toLowerCase();
                 studentRows.forEach(row => {
-                    const name = row.getAttribute('data-name').toLowerCase();
-                    const nisn = row.getAttribute('data-nisn').toLowerCase();
-                    const classVal = row.getAttribute('data-class').toLowerCase();
+                    const name = row.getAttribute('data-name');
+                    const nis = row.getAttribute('data-nis');
+                    const classVal = row.getAttribute('data-class');
 
-                    if (name.includes(query) || nisn.includes(query) || classVal.includes(query)) {
+                    if (name.includes(query) || nis.includes(query) || classVal.includes(query)) {
                         row.style.setProperty('display', 'flex', 'important');
                     } else {
                         row.style.setProperty('display', 'none', 'important');
