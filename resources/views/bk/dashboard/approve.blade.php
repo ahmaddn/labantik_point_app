@@ -54,7 +54,7 @@
                         <i data-lucide="info" class="h-4 w-4"></i>
                         Tindakan Penanganan Sudah Dilakukan
                     </div>
-                    Siswa ini telah diberikan tindakan <strong>{{ $studentAcademicYear->action_detail->handling->handling_action ?? $studentAcademicYear->action_detail->handling->handling_name }}</strong> oleh <strong>{{ $studentAcademicYear->action_detail->handle->name ?? '-' }}</strong> pada tanggal {{ $studentAcademicYear->action_detail->created_at->format('d M Y') }}.
+                    Siswa ini telah diberikan tindakan <strong>{{ $studentAcademicYear->action_detail->handling?->handling_action ?? $studentAcademicYear->action_detail->handling?->handling_name ?? '-' }}</strong> oleh <strong>{{ $studentAcademicYear->action_detail->handle->name ?? '-' }}</strong> pada tanggal {{ $studentAcademicYear->action_detail->created_at->format('d M Y') }}.
                 </div>
             @endif
 

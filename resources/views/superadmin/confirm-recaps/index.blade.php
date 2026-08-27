@@ -539,7 +539,7 @@
                                                                 <circle cx="12" cy="12" r="3" />
                                                             </svg>
                                                         </a>
-                                                        @if($student->action_detail && (!empty($student->action_detail->handling->letter_type) ? $student->action_detail->handling->letter_type !== 'lisan' : !str_contains(strtolower($student->action_detail->handling->handling_action ?? ''), 'lisan')))
+                                                        @if($student->action_detail && (!empty($student->action_detail->handling?->letter_type) ? $student->action_detail->handling->letter_type !== 'lisan' : !str_contains(strtolower($student->action_detail->handling?->handling_action ?? ''), 'lisan')))
                                                             <a href="{{ route('superadmin.actions.print', $student->action_detail->id) }}" target="_blank"
                                                                 class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-blue-500 bg-white p-0 text-blue-500 hover:border-blue-600 hover:bg-blue-600 hover:text-white"
                                                                 title="Cetak Ulang Surat">
@@ -564,11 +564,11 @@
                                                 </td>
                                                 <td>
                                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                                        {{ $student->action_detail->handling->handling_action ?? $student->action_detail->handling->handling_name ?? '-' }}
+                                                        {{ $student->action_detail->handling?->handling_action ?? $student->action_detail->handling?->handling_name ?? '-' }}
                                                     </span>
                                                 </td>
                                                 <td>{{ $student->action_detail->handle->name ?? '-' }}</td>
-                                                <td>{{ $student->action_detail->created_at->format('d M Y') }}</td>
+                                                <td>{{ $student->action_detail->created_at?->format('d M Y') ?? '-' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
