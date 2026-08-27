@@ -108,57 +108,42 @@
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 dark:text-zink-100 mb-2">2. Pilih Siswa Pelanggar</label>
 
-                            <!-- Search + Select All -->
-                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                                <div class="relative flex-1">
-                                    <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NIS..." class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
-                                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                                        </svg>
-                                    </span>
+                            <!-- Search -->
+                            <input type="text" id="search-student" placeholder="Cari Nama / Kelas / NIS..." autocomplete="off"
+                                class="dark:bg-zink-600 dark:border-zink-500 dark:text-zink-100 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 mb-3">
+
+                            <!-- Hidden data store -->
+                            <div id="students-data" class="hidden">
+                                @foreach($studentAcademicYears as $say)
+                                    <div class="student-row"
+                                         data-name="{{ strtolower($say->student->full_name ?? '') }}"
+                                         data-class="{{ strtolower($say->class ? $say->class->academic_level . ' ' . $say->class->name : '') }}"
+                                         data-nis="{{ strtolower($say->student->student_number ?? '') }}"
+                                         data-id="{{ $say->id }}"
+                                         data-fullname="{{ $say->student->full_name ?? 'Tanpa Nama' }}"
+                                         data-classname="{{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '-' }}"
+                                         data-nisval="{{ $say->student->student_number ?? '-' }}">
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="border border-slate-200 dark:border-zink-600 rounded-lg overflow-hidden">
+                                <div id="search-prompt" class="text-center text-slate-400 dark:text-zink-500 py-8 text-sm px-4">
+                                    Ketik nama, kelas, atau NIS untuk mencari siswa
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <input type="checkbox" id="select-all" class="size-4 cursor-pointer text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                                    <label for="select-all" class="text-sm font-medium text-slate-600 dark:text-zink-200 cursor-pointer whitespace-nowrap">Pilih Semua yang Tampil</label>
+                                <div id="search-results" class="hidden p-3">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="results-container"></div>
+                                    <div id="no-results" class="hidden text-center text-slate-400 dark:text-zink-500 py-6 text-sm">Tidak ada siswa ditemukan.</div>
+                                </div>
+                                <div id="selected-section" class="hidden border-t border-slate-200 dark:border-zink-600 bg-white dark:bg-zink-700/50 p-3">
+                                    <p class="text-xs font-semibold text-slate-500 dark:text-zink-400 uppercase tracking-wide mb-2">
+                                        Terpilih: <span id="selected-count">0</span> siswa
+                                    </p>
+                                    <div class="flex flex-wrap gap-2" id="selected-tags"></div>
                                 </div>
                             </div>
 
-                            <!-- Student Grid dengan Pagination -->
-                            <div class="border border-slate-200 dark:border-zink-600 rounded-lg p-4 bg-slate-50/50 dark:bg-zink-800/20">
-                                <!-- Hidden data store -->
-                                <div id="students-data" class="hidden">
-                                    @forelse($studentAcademicYears as $say)
-                                        <div class="student-row"
-                                             data-name="{{ strtolower($say->student->full_name ?? '') }}"
-                                             data-class="{{ strtolower($say->class ? $say->class->academic_level . ' ' . $say->class->name : '') }}"
-                                             data-nis="{{ strtolower($say->student->student_number ?? '') }}"
-                                             data-id="{{ $say->id }}"
-                                             data-fullname="{{ $say->student->full_name ?? 'Tanpa Nama' }}"
-                                             data-classname="{{ $say->class ? $say->class->academic_level . ' ' . $say->class->name : '-' }}"
-                                             data-nisval="{{ $say->student->student_number ?? '-' }}">
-                                        </div>
-                                    @empty
-                                    @endforelse
-                                </div>
-
-                                <!-- Grid tampilan -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 min-h-[200px]" id="students-container"></div>
-
-                                <!-- Empty state -->
-                                <div id="empty-state" class="hidden text-center text-slate-500 dark:text-zink-400 py-8">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-8 mx-auto mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                    </svg>
-                                    <p class="text-sm">Tidak ada siswa ditemukan.</p>
-                                </div>
-
-                                <!-- Pagination -->
-                                <div id="pagination-container" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 pt-3 border-t border-slate-200 dark:border-zink-600">
-                                    <p id="pagination-info" class="text-xs text-slate-500 dark:text-zink-400"></p>
-                                    <div id="pagination-buttons" class="flex items-center gap-1 flex-wrap"></div>
-                                </div>
-                            </div>
+                            <div id="hidden-inputs"></div>
                         </div>
 
                         <!-- 3. Submit -->
@@ -192,21 +177,6 @@
                 placeholderValue: '-- Pilih Pelanggaran --',
             });
 
-            // ─── State ───────────────────────────────────────────────
-            const PER_PAGE   = 6;
-            let currentPage  = 1;
-            let filteredRows = [];
-            const checkedIds = new Set();
-
-            // ─── Elemen ──────────────────────────────────────────────
-            const searchInput       = document.getElementById('search-student');
-            const selectAllCb       = document.getElementById('select-all');
-            const container         = document.getElementById('students-container');
-            const emptyState        = document.getElementById('empty-state');
-            const paginationInfo    = document.getElementById('pagination-info');
-            const paginationButtons = document.getElementById('pagination-buttons');
-            const allRows           = Array.from(document.querySelectorAll('#students-data .student-row'));
-
             // ─── Date Picker ─────────────────────────────────────────
             const btnToday            = document.getElementById('btn-today');
             const btnCustom           = document.getElementById('btn-custom');
@@ -230,127 +200,103 @@
                 dateModeInput.value = 'custom';
             });
 
-            // ─── Render halaman ──────────────────────────────────────
-            function renderPage(page) {
-                currentPage = page;
-                const start = (page - 1) * PER_PAGE;
-                const end   = start + PER_PAGE;
-                const slice = filteredRows.slice(start, end);
+            // ─── Pencarian & Pilih Siswa ──────────────────────────────
+            const allRows         = Array.from(document.querySelectorAll('#students-data .student-row'));
+            const searchInput     = document.getElementById('search-student');
+            const searchPrompt    = document.getElementById('search-prompt');
+            const searchResults   = document.getElementById('search-results');
+            const resultsContainer= document.getElementById('results-container');
+            const noResults       = document.getElementById('no-results');
+            const selectedSection = document.getElementById('selected-section');
+            const selectedTags    = document.getElementById('selected-tags');
+            const selectedCount   = document.getElementById('selected-count');
+            const hiddenInputs    = document.getElementById('hidden-inputs');
+            const selectedMap     = new Map();
 
-                container.innerHTML = '';
-
-                if (filteredRows.length === 0) {
-                    emptyState.classList.remove('hidden');
-                    paginationInfo.textContent = '';
-                    paginationButtons.innerHTML = '';
-                    return;
-                }
-                emptyState.classList.add('hidden');
-
-                slice.forEach(function (row) {
-                    const id        = row.dataset.id;
-                    const fullname  = row.dataset.fullname;
-                    const className = row.dataset.classname;
-                    const nis       = row.dataset.nisval;
-                    const checked   = checkedIds.has(id) ? 'checked' : '';
-
-                    const card = document.createElement('div');
-                    card.className = 'flex items-start gap-3 p-3 bg-white dark:bg-zink-700 rounded-lg border border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm transition-all duration-150 cursor-pointer';
-                    card.innerHTML = `
-                        <div class="pt-0.5 shrink-0">
-                            <input type="checkbox" name="student_ids[]" value="${id}" id="student-${id}"
-                                class="student-checkbox size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
-                                ${checked}>
-                        </div>
-                        <label for="student-${id}" class="flex flex-col gap-0.5 cursor-pointer min-w-0">
-                            <span class="font-semibold text-sm text-slate-800 dark:text-zink-50 leading-snug truncate">${fullname}</span>
-                            <span class="text-xs text-slate-500 dark:text-zink-300">Kelas: ${className}</span>
-                            <span class="text-[11px] text-slate-400 dark:text-zink-400">NIS: ${nis}</span>
-                        </label>`;
-                    container.appendChild(card);
-
-                    card.querySelector('.student-checkbox').addEventListener('change', function () {
-                        if (this.checked) checkedIds.add(id);
-                        else checkedIds.delete(id);
-                        syncSelectAll();
-                    });
-                });
-
-                renderPagination();
-                syncSelectAll();
-            }
-
-            // ─── Render tombol pagination ─────────────────────────────
-            function renderPagination() {
-                const total      = filteredRows.length;
-                const totalPages = Math.ceil(total / PER_PAGE);
-                const start      = Math.min((currentPage - 1) * PER_PAGE + 1, total);
-                const end        = Math.min(currentPage * PER_PAGE, total);
-
-                paginationInfo.textContent = total > 0
-                    ? `Menampilkan ${start}–${end} dari ${total} siswa`
-                    : '';
-
-                paginationButtons.innerHTML = '';
-                if (totalPages <= 1) return;
-
-                paginationButtons.appendChild(makeBtn('&laquo;', currentPage === 1, () => renderPage(currentPage - 1)));
-
-                for (let i = 1; i <= totalPages; i++) {
-                    const btn = makeBtn(i, false, () => renderPage(i));
-                    if (i === currentPage) {
-                        btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
-                        btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
-                    }
-                    paginationButtons.appendChild(btn);
-                }
-
-                paginationButtons.appendChild(makeBtn('&raquo;', currentPage === totalPages, () => renderPage(currentPage + 1)));
-            }
-
-            function makeBtn(label, disabled, onClick) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.innerHTML = label;
-                btn.className = 'min-w-[32px] h-8 px-2 rounded border border-slate-200 dark:border-zink-600 text-sm text-slate-600 dark:text-zink-200 hover:bg-slate-100 dark:hover:bg-zink-600 transition-colors duration-150';
-                if (disabled) {
-                    btn.disabled = true;
-                    btn.classList.add('opacity-40', 'cursor-not-allowed');
-                } else {
-                    btn.addEventListener('click', onClick);
-                }
-                return btn;
-            }
-
-            function syncSelectAll() {
-                const cbs = container.querySelectorAll('.student-checkbox');
-                selectAllCb.checked = cbs.length > 0 && Array.from(cbs).every(cb => cb.checked);
-            }
-
-            function applyFilter() {
-                const query = searchInput.value.toLowerCase().trim();
-                filteredRows = allRows.filter(function (row) {
+            function renderResults(query) {
+                const matched = allRows.filter(function (row) {
                     return row.dataset.name.includes(query)
                         || row.dataset.nis.includes(query)
                         || row.dataset.class.includes(query);
                 });
-                renderPage(1);
+                resultsContainer.innerHTML = '';
+                if (matched.length === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    matched.forEach(function (row) {
+                        const id        = row.dataset.id;
+                        const fullname  = row.dataset.fullname;
+                        const className = row.dataset.classname;
+                        const nis       = row.dataset.nisval;
+                        const isSelected = selectedMap.has(id);
+                        const card = document.createElement('div');
+                        card.className = 'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150 '
+                            + (isSelected ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600'
+                                          : 'bg-white dark:bg-zink-700 border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm');
+                        card.dataset.id = id;
+                        card.innerHTML = `
+                            <div class="pt-0.5 shrink-0">
+                                <input type="checkbox" class="result-checkbox size-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer" ${isSelected ? 'checked' : ''}>
+                            </div>
+                            <div class="flex flex-col gap-0.5 min-w-0">
+                                <span class="font-semibold text-sm text-slate-800 dark:text-zink-50 leading-snug truncate">${fullname}</span>
+                                <span class="text-xs text-slate-500 dark:text-zink-300">Kelas: ${className}</span>
+                                <span class="text-[11px] text-slate-400 dark:text-zink-400">NIS: ${nis}</span>
+                            </div>`;
+                        card.addEventListener('click', function (e) { if (e.target.tagName === 'INPUT') return; toggleStudent(id, fullname, className, nis, card); });
+                        card.querySelector('.result-checkbox').addEventListener('change', function () { toggleStudent(id, fullname, className, nis, card); });
+                        resultsContainer.appendChild(card);
+                    });
+                }
             }
 
-            searchInput.addEventListener('input', applyFilter);
+            function toggleStudent(id, fullname, className, nis, card) {
+                if (selectedMap.has(id)) {
+                    selectedMap.delete(id);
+                    card.className = 'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150 bg-white dark:bg-zink-700 border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm';
+                    card.querySelector('.result-checkbox').checked = false;
+                } else {
+                    selectedMap.set(id, { fullname, className, nis });
+                    card.className = 'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150 bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600';
+                    card.querySelector('.result-checkbox').checked = true;
+                }
+                syncSelectedSection();
+            }
 
-            selectAllCb.addEventListener('change', function () {
-                const isChecked = this.checked;
-                container.querySelectorAll('.student-checkbox').forEach(function (cb) {
-                    cb.checked = isChecked;
-                    if (isChecked) checkedIds.add(cb.value);
-                    else checkedIds.delete(cb.value);
-                });
+            function syncSelectedSection() {
+                selectedTags.innerHTML = '';
+                hiddenInputs.innerHTML = '';
+                if (selectedMap.size === 0) {
+                    selectedSection.classList.add('hidden');
+                } else {
+                    selectedSection.classList.remove('hidden');
+                    selectedMap.forEach(function (data, id) {
+                        const tag = document.createElement('span');
+                        tag.className = 'inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-medium px-2.5 py-1 rounded-full';
+                        tag.innerHTML = `${data.fullname} <button type="button" class="hover:text-blue-900 dark:hover:text-blue-100 leading-none text-base font-bold" data-remove="${id}">&times;</button>`;
+                        tag.querySelector('button').addEventListener('click', function () {
+                            selectedMap.delete(id);
+                            syncSelectedSection();
+                            const c = resultsContainer.querySelector(`[data-id="${id}"]`);
+                            if (c) { c.className = 'flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150 bg-white dark:bg-zink-700 border-slate-100 dark:border-zink-600 hover:border-blue-300 hover:shadow-sm'; c.querySelector('.result-checkbox').checked = false; }
+                        });
+                        selectedTags.appendChild(tag);
+                        const inp = document.createElement('input');
+                        inp.type = 'hidden'; inp.name = 'student_ids[]'; inp.value = id;
+                        hiddenInputs.appendChild(inp);
+                    });
+                }
+                selectedCount.textContent = selectedMap.size;
+            }
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase().trim();
+                if (query === '') { searchPrompt.classList.remove('hidden'); searchResults.classList.add('hidden'); return; }
+                searchPrompt.classList.add('hidden');
+                searchResults.classList.remove('hidden');
+                renderResults(query);
             });
-
-            // Init
-            filteredRows = allRows;
-            renderPage(1);
         });
     </script>
 @endsection
