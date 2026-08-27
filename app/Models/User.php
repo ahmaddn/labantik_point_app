@@ -89,6 +89,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function getNipAttribute()
+    {
+        return $this->employee->nip ?? null;
+    }
+
     /**
      * Get the employee record associated with the user.
      */

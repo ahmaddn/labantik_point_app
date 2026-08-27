@@ -288,12 +288,11 @@
 
                                                                 <div class="mb-4" id="kepsek-container-{{ $student->id }}">
                                                                     <label for="kepsek-{{ $student->id }}"
-                                                                        class="mb-2 inline-block text-base font-medium">Pilih Kepala Sekolah <span class="text-red-500">*</span></label>
-                                                                    <select id="kepsek-{{ $student->id }}" name="kepala_sekolah_id" required
+                                                                        class="mb-2 inline-block text-base font-medium">Pilih Kepala Sekolah</label>
+                                                                    <select id="kepsek-{{ $student->id }}" name="kepala_sekolah_id"
                                                                         class="form-input w-full dark:border-zink-500 focus:border-custom-500 border-slate-200 focus:outline-none">
-                                                                        <option value="">Pilih Kepala Sekolah...</option>
-                                                                        @foreach ($kepalaSekolahList as $kepsekOption)
-                                                                            <option value="{{ $kepsekOption->id }}" {{ ($student->action_detail?->detail?->kepala_sekolah_id ?? '') == $kepsekOption->id ? 'selected' : '' }}>
+                                                                        @foreach ($kepalaSekolahList as $index => $kepsekOption)
+                                                                            <option value="{{ $kepsekOption->id }}" {{ (($student->action_detail?->detail?->kepala_sekolah_id ?? '') == $kepsekOption->id || (empty($student->action_detail?->detail?->kepala_sekolah_id) && $index === 0)) ? 'selected' : '' }}>
                                                                                 {{ $kepsekOption->employee->full_name ?? $kepsekOption->name }} (NIP. {{ $kepsekOption->employee->nip ?? '-' }})
                                                                             </option>
                                                                         @endforeach
@@ -540,6 +539,13 @@
                                                                 <circle cx="12" cy="12" r="3" />
                                                             </svg>
                                                         </a>
+                                                        @if($student->action_detail && (!empty($student->action_detail->handling->letter_type) ? $student->action_detail->handling->letter_type !== 'lisan' : !str_contains(strtolower($student->action_detail->handling->handling_action ?? ''), 'lisan')))
+                                                            <a href="{{ route('superadmin.actions.print', $student->action_detail->id) }}" target="_blank"
+                                                                class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-blue-500 bg-white p-0 text-blue-500 hover:border-blue-600 hover:bg-blue-600 hover:text-white"
+                                                                title="Cetak Ulang Surat">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+                                                            </a>
+                                                        @endif
                                                         <form method="POST" action="{{ route('superadmin.confirm-recaps.reset', $student->id) }}" class="inline-block" onsubmit="confirmReset(event, this)">
                                                             @csrf
                                                             <button type="submit" class="btn dark:bg-zink-700 flex size-[37.5px] items-center justify-center rounded-full border-red-500 bg-white p-0 text-red-500 hover:border-red-600 hover:bg-red-600 hover:text-white" title="Reset Poin ke 0 (Tobat)">
