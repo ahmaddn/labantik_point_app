@@ -374,7 +374,7 @@ class BKController extends Controller
                     } elseif ($lastActionDate) {
                         $newVerifiedCount = $student->recaps
                             ->where('status', 'verified')
-                            ->filter(function($r) use ($lastActionDate) {
+                            ->filter(function ($r) use ($lastActionDate) {
                                 return $r->created_at > $lastActionDate;
                             })
                             ->count();
@@ -396,9 +396,18 @@ class BKController extends Controller
                 return $student->has_new_violations;
             })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
 
-        $kepalaSekolahList = \App\Models\User::whereHas('roles', function($query) {
-                $query->where('code', 'kepala-sekolah');
-            })
+            $historyStudents = $allStudents->filter(function ($student) {
+                return $student->action_detail && !$student->has_new_violations;
+            })->sortBy(fn($student) => $student->student->full_name ?? '')->values();
+        } else {
+            $handlingOptions = collect();
+            $activeStudents = collect();
+            $historyStudents = collect();
+        }
+
+        $kepalaSekolahList = \App\Models\User::whereHas('roles', function ($query) {
+            $query->where('code', 'kepala-sekolah');
+        })
             ->with('employee')
             ->get();
 
@@ -588,9 +597,9 @@ class BKController extends Controller
                     ->with('employee')
                     ->first();
             } else {
-                $kepalaSekolah = \App\Models\User::whereHas('roles', function($query) {
-                        $query->where('code', 'kepala-sekolah');
-                    })
+                $kepalaSekolah = \App\Models\User::whereHas('roles', function ($query) {
+                    $query->where('code', 'kepala-sekolah');
+                })
                     ->with('employee')
                     ->first();
             }
@@ -656,7 +665,7 @@ class BKController extends Controller
         ]);
 
         if ($academicYear) {
-            $query->whereHas('academicYear', function($q) use ($academicYear) {
+            $query->whereHas('academicYear', function ($q) use ($academicYear) {
                 $q->where('academic_year', $academicYear);
             });
         }
@@ -664,7 +673,7 @@ class BKController extends Controller
         $actions = $query->orderByDesc('created_at')->get();
 
         // Group actions by class ID
-        $groupedActions = $actions->groupBy(function($act) {
+        $groupedActions = $actions->groupBy(function ($act) {
             return $act->academicYear->class->id ?? 0;
         });
 
@@ -705,12 +714,12 @@ class BKController extends Controller
             ->with([
                 'student',
                 'actions.handling',
-                'recaps' => function($q) {
+                'recaps' => function ($q) {
                     $q->where('status', 'verified')->with('violation');
                 }
             ])
             ->get()
-            ->map(function($student) {
+            ->map(function ($student) {
                 $student->total_points_verified = $student->recaps->sum(fn($r) => $r->violation->point ?? 0);
                 return $student;
             })
