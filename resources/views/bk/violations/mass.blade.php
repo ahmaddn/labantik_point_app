@@ -74,7 +74,7 @@
             @endif
 
             <div class="card border-none shadow-md rounded-xl bg-white dark:bg-zink-700">
-                <div class="card-body p-6">
+                <div class="card-body p-4 sm:p-6">
                     <form action="{{ route('kesiswaan-bk.violations.mass.store') }}" method="POST" class="space-y-6">
                         @csrf
 
@@ -134,9 +134,11 @@
                                 </div>
 
                                 <!-- Hasil pencarian -->
-                                <div id="search-results" class="hidden p-3">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="results-container"></div>
-                                    <div id="no-results" class="hidden text-center text-slate-400 dark:text-zink-500 py-6 text-sm">Tidak ada siswa ditemukan.</div>
+                                <div id="search-results" class="hidden">
+                                    <div class="max-h-64 overflow-y-auto p-3">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="results-container"></div>
+                                        <div id="no-results" class="hidden text-center text-slate-400 dark:text-zink-500 py-6 text-sm">Tidak ada siswa ditemukan.</div>
+                                    </div>
                                 </div>
 
                                 <!-- Siswa terpilih -->
@@ -153,8 +155,8 @@
                         </div>
 
                         <!-- 3. Submit -->
-                        <div class="pt-4 border-t border-slate-100 dark:border-zink-600 flex justify-end gap-3">
-                            <a href="{{ route('kesiswaan-bk.dashboard') }}" class="btn border border-slate-200 hover:bg-slate-50 dark:border-zink-600 dark:hover:bg-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-5 py-2.5 rounded-lg">
+                        <div class="pt-4 border-t border-slate-100 dark:border-zink-600 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                            <a href="{{ route('kesiswaan-bk.dashboard') }}" class="btn border border-slate-200 hover:bg-slate-50 dark:border-zink-600 dark:hover:bg-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-5 py-2.5 rounded-lg text-center">
                                 Batal
                             </a>
                             <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg">
