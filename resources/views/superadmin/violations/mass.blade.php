@@ -142,9 +142,11 @@
                                 <div id="search-prompt" class="text-center text-slate-400 dark:text-zink-500 py-8 text-sm px-4">
                                     Ketik nama, kelas, atau NIS untuk mencari siswa
                                 </div>
-                                <div id="search-results" class="hidden p-3">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="results-container"></div>
-                                    <div id="no-results" class="hidden text-center text-slate-400 dark:text-zink-500 py-6 text-sm">Tidak ada siswa ditemukan.</div>
+                                <div id="search-results" class="hidden">
+                                    <div class="max-h-64 overflow-y-auto p-3">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="results-container"></div>
+                                        <div id="no-results" class="hidden text-center text-slate-400 dark:text-zink-500 py-6 text-sm">Tidak ada siswa ditemukan.</div>
+                                    </div>
                                 </div>
                                 <div id="selected-section" class="hidden border-t border-slate-200 dark:border-zink-500 bg-white dark:bg-zink-700/50 p-3">
                                     <p class="text-xs font-semibold text-slate-500 dark:text-zink-400 uppercase tracking-wide mb-2">
@@ -158,8 +160,8 @@
                         </div>
 
                         <!-- 3. Submit -->
-                        <div class="flex justify-end gap-2 border-t border-slate-200 pt-4 dark:border-zink-500">
-                            <a href="{{ route('superadmin.violations') }}" class="btn bg-white text-red-500 border-slate-200 hover:bg-red-50 hover:text-red-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-500">
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 border-t border-slate-200 pt-4 dark:border-zink-500">
+                            <a href="{{ route('superadmin.violations') }}" class="btn bg-white text-red-500 border-slate-200 hover:bg-red-50 hover:text-red-500 dark:bg-zink-600 dark:border-zink-500 dark:text-zink-200 dark:hover:bg-zink-500 text-center">
                                 Batal
                             </a>
                             <button type="submit" class="btn bg-custom-500 border-custom-500 text-white hover:bg-custom-600 hover:border-custom-600 focus:bg-custom-600 focus:border-custom-600">
