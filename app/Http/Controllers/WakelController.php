@@ -528,4 +528,121 @@ class WakelController extends Controller
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+    public function massCreate()
+    {
+        $classId = $this->getClassId();
+
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $violations = P_Violations::with('category')->orderBy('point', 'asc')->get();
+
+        // Hanya siswa di kelas wakel ini
+        $studentAcademicYears = RefStudentAcademicYear::activeAcademicYear()
+            ->where('class_id', $classId)
+            ->with(['student', 'class'])
+            ->get()
+            ->sortBy(fn($say) => $say->student->full_name ?? '')
+            ->values();
+
+        return view('wakel.violations.mass', compact('violations', 'studentAcademicYears', 'activeConfig'));
+    }
+
+    public function massStore(Request $request)
+    {
+        $classId = $this->getClassId();
+        
+        $request->validate([
+            'violation_id' => 'required|exists:p_violations,id',
+            'student_ids'  => 'required|array',
+            'student_ids.*'=> 'exists:ref_student_academic_years,id',
+        ]);
+
+        $activeConfig = P_Configs::getActiveAcademicYear();
+        if (!$activeConfig) {
+            return back()->withErrors(['error' => 'Tidak ada konfigurasi tahun akademik yang aktif.']);
+        }
+
+        $activeAcademicYear = str_replace('-', '/', $activeConfig->academic_year);
+        $violation = P_Violations::findOrFail($request->violation_id);
+
+        $savedCount = 0;
+        $skippedCount = 0;
+        $skippedNames = [];
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->student_ids as $sayId) {
+                $studentAcademicYear = RefStudentAcademicYear::where('id', $sayId)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->where('class_id', $classId) // Pastikan siswa memang di kelas wakel ini
+                    ->with('student')
+                    ->first();
+
+                if (!$studentAcademicYear) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                // Check points limit
+                $existingRecaps = P_Recaps::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->with('violation')
+                    ->get();
+
+                $totalReductions = P_PointReduction::where('ref_student_id', $studentAcademicYear->student_id)
+                    ->where('academic_year', $activeAcademicYear)
+                    ->sum('points_reduced');
+
+                $currentVerifiedPoints = max(0, $existingRecaps->where('status', 'verified')->sum(fn($r) => $r->violation->point ?? 0) - $totalReductions);
+                $currentPendingPoints = $existingRecaps->where('status', 'pending')->sum(fn($r) => $r->violation->point ?? 0);
+                $currentTotalPoints = $currentVerifiedPoints + $currentPendingPoints;
+
+                if ($currentTotalPoints >= 100 || ($currentTotalPoints + $violation->point) > 100) {
+                    $skippedCount++;
+                    $skippedNames[] = $studentAcademicYear->student->full_name . " (Poin melebihi batas)";
+                    continue;
+                }
+
+                $createdAt = \Carbon\Carbon::now();
+                if ($request->date_mode === 'custom' && $request->violation_date) {
+                    try {
+                        $createdAt = \Carbon\Carbon::parse($request->violation_date)->setTimeFrom(\Carbon\Carbon::now());
+                    } catch (\Exception $e) {
+                        // Fallback to now
+                    }
+                }
+
+                // Create recap
+                P_Recaps::create([
+                    'ref_student_id'  => $studentAcademicYear->student_id,
+                    'p_violation_id'  => $violation->id,
+                    'status'          => 'pending',
+                    'created_by'      => Auth::id(),
+                    'updated_by'      => Auth::id(),
+                    'created_at'      => $createdAt,
+                    'updated_at'      => $createdAt,
+                ]);
+
+                $savedCount++;
+            }
+
+            DB::commit();
+
+            $msg = "Berhasil menyimpan {$savedCount} laporan pelanggaran secara massal.";
+            if ($skippedCount > 0) {
+                $msg .= " Dilewati: {$skippedCount} siswa (" . implode(', ', $skippedNames) . ").";
+                return back()->with('warning', $msg);
+            }
+
+            return back()->with('success', $msg);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Gagal menyimpan laporan massal: ' . $e->getMessage()]);
+        }
+    }
 }
