@@ -130,7 +130,7 @@ Route::prefix('siswa')
 // Wakel Routes
 Route::prefix('wakel')
     ->name('wakel.')
-    ->middleware(['auth', 'role:wakel'])
+    ->middleware(['auth', 'role:wali-kelas'])
     ->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\WakelController::class, 'index'])->name('dashboard');
         Route::get('/student-data', [\App\Http\Controllers\WakelController::class, 'studentData'])->name('student-data');
@@ -140,5 +140,7 @@ Route::prefix('wakel')
         Route::get('/recaps/{id}/approve', [\App\Http\Controllers\WakelController::class, 'approveConfirmRecaps'])->name('recaps.approve');
         Route::post('/recaps/{id}/action', [\App\Http\Controllers\WakelController::class, 'storeHandlingAction'])->name('actionConfirm-Recaps');
         Route::put('/violation-status/{id}', [\App\Http\Controllers\WakelController::class, 'updateViolationStatus'])->name('violation-status.update');
+        Route::get('/violations/mass', [\App\Http\Controllers\WakelController::class, 'massCreate'])->name('violations.mass');
+        Route::post('/violations/mass', [\App\Http\Controllers\WakelController::class, 'massStore'])->name('violations.mass.store');
         Route::get('/actions', [\App\Http\Controllers\WakelController::class, 'actions'])->name('actions');
     });
