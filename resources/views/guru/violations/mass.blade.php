@@ -150,13 +150,13 @@
                         </div>
 
                         <!-- 3. Submit -->
-                        <div class="pt-4 border-t border-slate-100 dark:border-zink-600 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-                            <a href="{{ route('guru.dashboard') }}" class="btn border border-slate-200 hover:bg-slate-50 dark:border-zink-600 dark:hover:bg-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-5 py-2.5 rounded-lg text-center">
-                                Batal
-                            </a>
+                        <div class="pt-4 border-t border-slate-100 dark:border-zink-600 flex flex-col sm:flex-row sm:justify-end gap-3">
                             <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg">
                                 Simpan Laporan Pelanggaran Massal
                             </button>
+                            <a href="{{ route('guru.dashboard') }}" class="btn border border-slate-200 hover:bg-slate-50 dark:border-zink-600 dark:hover:bg-zink-600 text-slate-700 dark:text-zink-100 text-sm font-medium px-5 py-2.5 rounded-lg text-center">
+                                Batal
+                            </a>
                         </div>
                     </form>
                 </div>
