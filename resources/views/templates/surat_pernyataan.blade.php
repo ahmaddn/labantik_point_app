@@ -99,7 +99,7 @@
 <div style="border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin-top: 5px; margin-bottom: 15px; width: 100%;"></div>
 <p style="margin-top: 0pt; margin-bottom: 0pt">&nbsp;</p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
-    <strong><u><span style="font-family: Arial">SURAT PERNYATAAN</span></u></strong>
+    <strong><u><span style="font-family: Arial">SURAT PENGEMBALIAN SISWA</span></u></strong>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center">
     <span style="font-family: Arial">Nomor : {{ $no_surat }}</span>
@@ -123,7 +123,7 @@
         style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="font-family: Arial">:</span><span style="font-family: Arial"> </span><strong><span
-            style="font-family: Arial">{{ $kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '') }}</span></strong>
+            style="font-family: Arial">{{ $kepsekData->name ?? ($kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '')) }}</span></strong>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
     <span style="font-family: Arial">NIP</span><span
@@ -132,7 +132,7 @@
         style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span style="font-family: Arial">
-        {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}
+        {{ $kepsekData->nip ?? (optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '-')) }}
     </span>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
@@ -233,12 +233,12 @@
     <span style="font-family: Arial">&nbsp;</span>
 </p>
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <strong><u><span style="font-family: Arial">{{ $kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '') }}</span></u></strong>
+    <strong><u><span style="font-family: Arial">{{ $kepsekData->name ?? ($kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '')) }}</span></u></strong>
 </p>
 
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
     <span style="font-family: Arial">NIP.
-        {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}
+        {{ $kepsekData->nip ?? (optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '-')) }}
     </span>
 </p>
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
