@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Cetak Surat Pengembalian</title>
+    <title>Cetak Surat Pernyataan</title>
     <style>
         .print-btn-container {
             padding: 15px;
@@ -49,221 +49,238 @@
     <div class="print-btn-container">
         <button class="print-btn" onclick="window.print()">Cetak Surat</button>
     </div>
-<table cellspacing="0" cellpadding="0" style="width: 559.95pt; border-collapse: collapse">
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:right;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:right;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:right;"><span style="font-family:Arial;">Talaga,
+        _______________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Kepada</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Yth.</span><span
+        style="width:14.65pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Kepala SMKN 1 Talaga</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Di&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><em><u><span
+                style="font-family:Arial;">Tempat</span></u></em></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:14pt;"><strong><u><span
+                style="font-family:Arial;">SURAT PERNYATAAN PENGUNDURAN DIRI</span></u></strong></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:center;"><span style="font-family:Arial;">Nomor : {{ $no_surat ?? '' }}</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><strong><span
+            style="font-family:Arial;">&nbsp;</span></strong></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><strong><span
+            style="font-family:Arial;">&nbsp;</span></strong></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Yang bertanda tangan
+        di bawah ini saya:</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Nama</span><span
+        style="width:3.99pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Umur</span><span
+        style="width:6.67pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">________ Tahun</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Pekerjaan</span><span
+        style="width:17.96pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Alamat</span><span
+        style="width:34.65pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">&nbsp;&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Adalah benar Orang
+        Tua atau Wali Siswa/i:</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Nama</span><span
+        style="width:3.99pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Tempat, Tanggal Lahir</span><span
+        style="width:23.27pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Jenis Kelamin</span><span
+        style="width:33.3pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">_________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">NIS</span><span
+        style="width:16pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">_________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">NISN</span><span
+        style="width:7.33pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">_________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Kelas</span><span
+        style="width:5.98pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">______</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Program Keahlian</span><span
+        style="width:11.95pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">Alamat</span><span
+        style="width:34.65pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">:</span><span style="font-family:Arial;">&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+        style="font-family:Arial;">&nbsp;&nbsp;&nbsp;</span><span
+        style="font-family:Arial;">___________________________________________</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Dengan ini
+        mengajukan Pengunduran Diri anak saya dari Siswa/i SMKN 1 Talaga dengan alasan:</span></p>
+<p style="margin-top:0pt; margin-left:36pt; margin-bottom:0pt; text-align:justify;"><span
+        style="font-family:Arial;">&nbsp;</span></p>
+<ol type="1" style="margin:0pt; padding-left:0pt;">
+    <li style="margin-left:33.01pt; text-align:justify; line-height:200%; padding-left:2.99pt; font-family:Arial;">
+        __________________________________________________________________</li>
+    <li style="margin-left:33.01pt; text-align:justify; line-height:200%; padding-left:2.99pt; font-family:Arial;">
+        __________________________________________________________________</li>
+</ol>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">Demikian Surat
+        Pengunduran Diri ini saya buat dengan sebenarnya dan dalam keadaan keadaan tanpa paksaan atau tekanan dari pihak
+        manapun. Atas perhatiannya saya ucapkan terima kasih.</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<p style="margin-top:0pt; margin-bottom:0pt; text-align:justify;"><span style="font-family:Arial;">&nbsp;</span></p>
+<table cellspacing="0" cellpadding="0" style="border-collapse: collapse; width: 100%;">
     <tbody>
-        <tr style="height: 1pt">
-            <td style="width: 72pt; padding-right: 5.4pt; padding-left: 5.4pt; vertical-align: top;">
-                <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center; font-size: 8pt;">
-                    <img src="{{ asset('assets/images/pemprov.png') }}" width="96" height="114"
-                        alt="Logo Pemprov Jabar.png" />
-                </p>
+        <tr>
+            <td style="width:292.3pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top;">
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+                        style="font-family:Arial;">Wali Kelas</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+                        style="font-family:Arial;">__________________________</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="width:36pt; font-family:Arial; display:inline-block;">&nbsp;</span><span
+                        style="font-family:Arial;">&nbsp;</span></p>
             </td>
-            <td style="width: 466.35pt; padding-right: 5.4pt; padding-left: 5.4pt; vertical-align: top;">
-                <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
-                    <strong><span style="font-family: Arial">PEMERINTAH DAERAH PROVINSI JAWA BARAT</span></strong>
-                </p>
-                <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 18pt;">
-                    <strong><span style="font-family: Arial">CABANG DINAS PENDIDIKAN WILAYAH IX</span></strong>
-                </p>
-                <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
-                    <strong><span style="font-family: Arial">SEKOLAH MENENGAH KEJURUAN NEGERI 1 TALAGA</span></strong>
-                </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Bidang Keahlian: Teknologi dan Rekayasa, Teknologi Informasi komunikasi, Bisnis dan Manajemen</span>
-                </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Kampus 1: Jalan Sekolah Nomor 20 Desa Talagakulon Kecamatan Talaga Kabupaten Majalengka</span>
-                </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Kampus 2: Jalan Talaga-Bantarujeg Desa Mekarrahaja Kecamatan Talaga Kabupaten Majalengka</span>
-                </p>
-                <p style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Telpon <span style="font-family: Wingdings"></span> (0233) 319238 FAX <span style="font-family: Wingdings"></span> (0233) 319238 POS <span style="font-family: Wingdings"></span> 45463 NPSN: 20213872</span>
-                </p>
-                <p
-                    style="margin-top: 0pt; margin-left: 7.1pt; margin-bottom: 0pt; text-align: center; font-size: 9pt;">
-                    <span style="font-family: Tahoma">Website <span style="font-family: Wingdings"></span> </span><a href="http://www.smkn1talaga.sch.id"
-                        style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; color: #0000ff;">www.smkn1talaga.sch.id</span></u></a><span
-                        style="font-family: Tahoma"> – Email <span style="font-family: Wingdings"></span> </span><a href="mailto:admin@smkn1talaga.sch.id"
-                        style="text-decoration: none"><u><span
-                                style="font-family: Tahoma; color: #0000ff;">admin@smkn1talaga.sch.id</span></u></a>
-                </p>
+            <td style="width:223.9pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top;">
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">Orang Tua/Wali Siswa</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial; color:#d9d9d9;">Materai 6000</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">&nbsp;</span></p>
+                <p style="margin-top:0pt; margin-bottom:0pt; text-align:justify; font-size:12pt;"><span
+                        style="font-family:Arial;">__________________________</span></p>
             </td>
         </tr>
     </tbody>
 </table>
-<div style="border-top: 3px solid #000; border-bottom: 1px solid #000; height: 2px; margin-top: 5px; margin-bottom: 15px; width: 100%;"></div>
-<p style="margin-top: 0pt; margin-bottom: 0pt">&nbsp;</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center; font-size: 14pt;">
-    <strong><u><span style="font-family: Arial">SURAT PERNYATAAN</span></u></strong>
+<p style="margin-top: 15pt; margin-bottom: 0pt; text-align: center;">
+    <span style="font-family: Arial">Mengetahui,</span>
 </p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center">
-    <span style="font-family: Arial">Nomor : {{ $no_surat }}</span>
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
+    <span style="font-family: Arial">Kepala SMKN 1 Talaga</span>
 </p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center">
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
     <span style="font-family: Arial">&nbsp;</span>
 </p>
-<p style="margin-top: 0pt; margin-bottom: 0pt">
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
     <span style="font-family: Arial">&nbsp;</span>
 </p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; line-height: 150%">
-    <span style="font-family: Arial">Yang bertanda tangan dibawah ini saya :</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; line-height: 150%">
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
     <span style="font-family: Arial">&nbsp;</span>
 </p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
-    <span style="font-family: Arial">Nama</span><span
-        style="width: 3.99pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">:</span><span style="font-family: Arial"> </span><strong><span
-            style="font-family: Arial">{{ $kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '') }}</span></strong>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
-    <span style="font-family: Arial">NIP</span><span
-        style="width: 16pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span style="font-family: Arial">
-        {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}
-    </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
-    <span style="font-family: Arial">Pangkat, Gol/Ruang</span><span
-        style="width: 35.93pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span
-        style="font-family: Arial">-</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
-    <span style="font-family: Arial">Jabatan</span><span
-        style="width: 29.3pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="width: 36pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span
-        style="font-family: Arial">Kepala Sekolah</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">Menyatakan bahwa :</span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">Nama</span><span
-        style="width: 116.29pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">Tempat, Tanggal Lahir </span><span
-        style="width: 27.57pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">NIS</span><span
-        style="width: 128.3pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">NISN</span><span
-        style="width: 119.63pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">Kelas</span><span
-        style="width: 118.28pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 150%;">
-    <span style="font-family: Arial">Program Keahlian</span><span
-        style="width: 52.25pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 115%;">
-    <span style="font-family: Arial">Alamat</span><span
-        style="width: 110.95pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
-        style="font-family: Arial">: </span>
-</p>
-<p
-    style="margin-top: 0pt; margin-left: 184.3pt; margin-bottom: 0pt; text-indent: -148.3pt; text-align: justify; line-height: 115%;">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">Berdasarkan:</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">Surat Pernyataan Pengunduran Diri </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">Maka atas dasar Surat Kepala Sekolah menyatakan bahwa Nama Siswa tersebut
-        dikembalikan kepada Orang Tua, sejak hari ini ….. Tanggal …. Bulan…… Tahun 202_ .</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">Demikian Surat ini kami buat untuk dipergunakan sebagaimana mestinya. </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify; line-height: 150%">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">Talaga, 202_ </span>
-</p>
-<p style="margin-top: 0pt; margin-left: 216pt; margin-bottom: 0pt; text-indent: 36pt; text-align: justify">
-    <span style="font-family: Arial">Kepala SMKN 1 Talaga,</span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
     <strong><u><span style="font-family: Arial">{{ $kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '') }}</span></u></strong>
 </p>
-
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">NIP.
-        {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '') }}
-    </span>
-</p>
-<p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">&nbsp;</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">Untuk diarsipkan : </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">1. Bagian Tata Usaha </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">2. Kesiswaan </span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">3. Operator Dapodik</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">4. Bagian ICT</span>
-</p>
-<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">5. Pembina OSIS</span>
+<p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
+    <span style="font-family: Arial">NIP. {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '-') }}</span>
 </p>
 </body>
 </html>

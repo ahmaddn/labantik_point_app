@@ -50,19 +50,21 @@ class TemplatesController extends Controller
             abort(404, 'Template tidak ditemukan');
         }
 
-        // Optimasi: Select hanya field yang diperlukan, cari berdasarkan role kepala-sekolah
-        $kepalaSekolah = User::select('id', 'name', 'email')
-            ->whereHas('roles', function($query) {
+        // Cari Kepala Sekolah berdasarkan role, email, atau user pertama
+        $kepalaSekolah = User::whereHas('roles', function($query) {
                 $query->where('code', 'kepala-sekolah');
             })
-            ->with('employee:id,user_id,full_name,nip')
+            ->with('employee')
             ->first();
 
         if (!$kepalaSekolah) {
-            $kepalaSekolah = User::select('id', 'name', 'email')
-                ->with('employee:id,user_id,full_name,nip')
-                ->where('email', 'kepsek@gmail.com')
+            $kepalaSekolah = User::where('email', 'kepsek@gmail.com')
+                ->with('employee')
                 ->first();
+        }
+
+        if (!$kepalaSekolah) {
+            $kepalaSekolah = User::with('employee')->first();
         }
 
         $no_surat = $request->input('no_surat');
