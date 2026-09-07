@@ -277,10 +277,10 @@
     <span style="font-family: Arial">&nbsp;</span>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
-    <strong><u><span style="font-family: Arial">{{ $kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '') }}</span></u></strong>
+    <strong><u><span style="font-family: Arial">{{ $kepsekData->name ?? ($kepalaSekolah->employee->full_name ?? ($kepalaSekolah->name ?? '')) }}</span></u></strong>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-align: center;">
-    <span style="font-family: Arial">NIP. {{ optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '-') }}</span>
+    <span style="font-family: Arial">NIP. {{ $kepsekData->nip ?? (optional($kepalaSekolah)->employee?->nip ?? (optional($kepalaSekolah)->employee?->nuptk ?? '-')) }}</span>
 </p>
 </body>
 </html>

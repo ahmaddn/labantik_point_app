@@ -67,8 +67,20 @@ class TemplatesController extends Controller
             $kepalaSekolah = User::with('employee')->first();
         }
 
+        // Format data kepala sekolah & NIP agar terisi dengan baik
+        $kepsekData = (object)[
+            'name' => $kepalaSekolah?->employee?->full_name ?? ($kepalaSekolah?->name ?? 'Kepala Sekolah'),
+            'nip' => $kepalaSekolah?->employee?->nip ?? ($kepalaSekolah?->employee?->nuptk ?? '-')
+        ];
+
+        // Set juga property pada object $kepalaSekolah jika dikirim ke view
+        if ($kepalaSekolah) {
+            $kepalaSekolah->name_formatted = $kepsekData->name;
+            $kepalaSekolah->nip_formatted = $kepsekData->nip;
+        }
+
         $no_surat = $request->input('no_surat');
 
-        return view('templates.' . $filename, compact('kepalaSekolah', 'no_surat'));
+        return view('templates.' . $filename, compact('kepalaSekolah', 'kepsekData', 'no_surat'));
     }
 }
