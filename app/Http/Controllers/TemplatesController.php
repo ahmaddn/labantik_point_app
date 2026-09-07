@@ -50,13 +50,30 @@ class TemplatesController extends Controller
             abort(404, 'Template tidak ditemukan');
         }
 
-        // Cari Kepala Sekolah berdasarkan role, email, atau user pertama
+        // Cari Kepala Sekolah yang memiliki role kepala-sekolah
         $kepalaSekolah = User::whereHas('roles', function($query) {
-                $query->where('code', 'kepala-sekolah');
+                $query->whereIn('code', ['kepala-sekolah', 'kepala_sekolah'])
+                      ->orWhere('name', 'like', '%Kepala Sekolah%');
+            })
+            ->whereHas('employee', function($query) {
+                $query->whereNotNull('nip')
+                      ->where('nip', '!=', '')
+                      ->where('nip', '!=', '-');
             })
             ->with('employee')
             ->first();
 
+        // Fallback: cari user dengan role kepala-sekolah apapun jika tidak ditemukan NIP khusus
+        if (!$kepalaSekolah) {
+            $kepalaSekolah = User::whereHas('roles', function($query) {
+                    $query->whereIn('code', ['kepala-sekolah', 'kepala_sekolah'])
+                          ->orWhere('name', 'like', '%Kepala Sekolah%');
+                })
+                ->with('employee')
+                ->first();
+        }
+
+        // Fallback email/user jika belum ada role kepala-sekolah
         if (!$kepalaSekolah) {
             $kepalaSekolah = User::where('email', 'kepsek@gmail.com')
                 ->with('employee')
@@ -68,15 +85,18 @@ class TemplatesController extends Controller
         }
 
         // Format data kepala sekolah & NIP agar terisi dengan baik
+        $name = $kepalaSekolah?->employee?->full_name ?? ($kepalaSekolah?->name ?? '-');
+        $nip = $kepalaSekolah?->employee?->nip ?? ($kepalaSekolah?->employee?->nuptk ?? '-');
+
         $kepsekData = (object)[
-            'name' => $kepalaSekolah?->employee?->full_name ?? ($kepalaSekolah?->name ?? 'Kepala Sekolah'),
-            'nip' => $kepalaSekolah?->employee?->nip ?? ($kepalaSekolah?->employee?->nuptk ?? '-')
+            'name' => $name,
+            'nip' => $nip
         ];
 
-        // Set juga property pada object $kepalaSekolah jika dikirim ke view
+        // Set juga property pada object $kepalaSekolah
         if ($kepalaSekolah) {
-            $kepalaSekolah->name_formatted = $kepsekData->name;
-            $kepalaSekolah->nip_formatted = $kepsekData->nip;
+            $kepalaSekolah->name_formatted = $name;
+            $kepalaSekolah->nip_formatted = $nip;
         }
 
         $no_surat = $request->input('no_surat');
