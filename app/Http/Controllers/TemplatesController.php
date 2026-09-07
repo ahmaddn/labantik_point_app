@@ -84,19 +84,22 @@ class TemplatesController extends Controller
             $kepalaSekolah = User::with('employee')->first();
         }
 
-        // Format data kepala sekolah & NIP agar terisi dengan baik
+        // Format data kepala sekolah & NIP & Pangkat agar terisi dengan baik
         $name = $kepalaSekolah?->employee?->full_name ?? ($kepalaSekolah?->name ?? '-');
         $nip = $kepalaSekolah?->employee?->nip ?? ($kepalaSekolah?->employee?->nuptk ?? '-');
+        $pangkat = $kepalaSekolah?->employee?->rank_end ?? '-';
 
         $kepsekData = (object)[
             'name' => $name,
-            'nip' => $nip
+            'nip' => $nip,
+            'pangkat' => $pangkat
         ];
 
         // Set juga property pada object $kepalaSekolah
         if ($kepalaSekolah) {
             $kepalaSekolah->name_formatted = $name;
             $kepalaSekolah->nip_formatted = $nip;
+            $kepalaSekolah->pangkat = $pangkat;
         }
 
         $no_surat = $request->input('no_surat');

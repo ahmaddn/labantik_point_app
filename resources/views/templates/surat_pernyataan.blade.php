@@ -139,7 +139,7 @@
     <span style="font-family: Arial">Pangkat, Gol/Ruang</span><span
         style="width: 35.93pt; text-indent: 0pt; font-family: Arial; display: inline-block;">&nbsp;</span><span
         style="font-family: Arial">:</span><span style="font-family: Arial"> </span><span
-        style="font-family: Arial">-</span>
+        style="font-family: Arial">{{ $kepsekData->pangkat ?? ($kepalaSekolah->employee->rank_end ?? '-') }}</span>
 </p>
 <p style="margin-top: 0pt; margin-bottom: 0pt; text-indent: 36pt; line-height: 150%;">
     <span style="font-family: Arial">Jabatan</span><span
