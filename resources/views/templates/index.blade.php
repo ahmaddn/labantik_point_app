@@ -86,7 +86,8 @@
                                                     <i data-lucide="download" class="size-4"></i>
                                                 </button>
                                                 @php
-                                                    $routePrefix = request()->is('superadmin*') ? 'superadmin' : 'kesiswaan-bk';
+                                                    $segments = explode('/', trim(request()->path(), '/'));
+                                                    $routePrefix = count($segments) > 0 ? $segments[0] : 'superadmin';
                                                 @endphp
                                                 <div id="modal-download{{ $index }}" modal-center=""
                                                      class="fixed flex flex-col hidden transition-all duration-300 ease-in-out left-2/4 z-drawer -translate-x-2/4 -translate-y-2/4 show">

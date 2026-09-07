@@ -35,6 +35,11 @@ Route::prefix('guru')
         Route::post('/violations/{student}', [GuruController::class, 'store'])->name('violations.store.student');
         Route::get('/violations/mass', [GuruController::class, 'massCreate'])->name('violations.mass');
         Route::post('/violations/mass', [GuruController::class, 'massStore'])->name('violations.mass.store');
+
+        // Templates
+        Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+        Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+            ->name('templates.download');
     });
 
 
@@ -125,6 +130,11 @@ Route::prefix('siswa')
         Route::get('/dashboard', [\App\Http\Controllers\SiswaController::class, 'index'])->name('dashboard');
         Route::get('/violations', [\App\Http\Controllers\SiswaController::class, 'violations'])->name('violations');
         Route::get('/actions', [\App\Http\Controllers\SiswaController::class, 'actions'])->name('actions');
+
+        // Templates
+        Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+        Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+            ->name('templates.download');
     });
 
 // Wakel Routes
@@ -143,4 +153,9 @@ Route::prefix('wakel')
         Route::get('/violations/mass', [\App\Http\Controllers\WakelController::class, 'massCreate'])->name('violations.mass');
         Route::post('/violations/mass', [\App\Http\Controllers\WakelController::class, 'massStore'])->name('violations.mass.store');
         Route::get('/actions', [\App\Http\Controllers\WakelController::class, 'actions'])->name('actions');
+
+        // Templates
+        Route::get('templates', [TemplatesController::class, 'index'])->name('templates');
+        Route::post('templates/download/{filename}', [TemplatesController::class, 'download'])
+            ->name('templates.download');
     });
