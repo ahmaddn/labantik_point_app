@@ -218,7 +218,7 @@
     <span style="font-family: Arial">&nbsp;</span>
 </p>
 <p style="margin-top: 0pt; margin-left: 252pt; margin-bottom: 0pt; text-align: justify">
-    <span style="font-family: Arial">Talaga, 202_ </span>
+    <span style="font-family: Arial">Talaga, .......................... 202_ </span>
 </p>
 <p style="margin-top: 0pt; margin-left: 216pt; margin-bottom: 0pt; text-indent: 36pt; text-align: justify">
     <span style="font-family: Arial">Kepala SMKN 1 Talaga,</span>
